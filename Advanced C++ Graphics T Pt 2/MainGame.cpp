@@ -401,11 +401,25 @@ void MainGame::drawGame() {
 
 
 	_agentSpriteBatch.begin();
+
+	/* NEW: agent dimensions (diameter) */
+	const glm::vec2 agentDims(AGENT_RADIUS * 2.0f);
+
 	for (unsigned int i = 0; i < _humans.size(); ++i) {
-		_humans[i]->draw(_agentSpriteBatch);
+
+		/* NEW */
+		if (_camera.isBoxInView(_humans[i]->getPosition(), agentDims)) {
+			_humans[i]->draw(_agentSpriteBatch); /* NEW: this line is not NEW */
+		}
+
 	}
 	for (unsigned int i = 0; i < _zombies.size(); ++i) {
-		_zombies[i]->draw(_agentSpriteBatch);
+
+		/* NEW */
+		if (_camera.isBoxInView(_zombies[i]->getPosition(), agentDims)) {
+			_zombies[i]->draw(_agentSpriteBatch); /* NEW: this line is not NEW */
+		}
+
 	}
 	for (unsigned int i = 0; i < _bullets.size(); ++i) {
 		_bullets[i].draw(_agentSpriteBatch);
