@@ -1,0 +1,48 @@
+Updated Files:
+	- Added AudioEngine.cpp in Bengine
+	- Added AudioEngine.h in Bengine
+	- Renamed Errors.h to BengineErrors.h
+	- Renamed Errors.cpp to BengineErrors.cpp
+		- there is a windows file called errors.h
+	- MainGame.cpp
+	- MainGame.h
+	- Gun.h
+	- Gun.cpp
+___________________________________________________________________________________
+Notes:
+	- fmod studio is an advanced development library
+	- what is used in the lesson is: SDL_mixer
+			- https://www.libsdl.org/projects/SDL_mixer/
+				- download the development libraries (Visual C++ 32/64-bit)
+					- move include file with all the other SDL .h files
+					- move the .lib file
+					- move all the .dll to the debug/release bin
+					- properties -> linker -> input -> .lib
+	- SDL_mixer:
+		- is a small library built on top of SDL
+		- higher level way of doing audio than the simple SDL audio stuff
+
+	- Handles 2 kinds of audio files: 
+		- mix chunck
+			- sound effect
+		- mix music
+			- music file
+
+			note: can play multiple sound effect, but only one music at a time
+					- channels can be implemented better but that is not in these tutorials
+
+		CAN GET MUSIC AT: opengameart.org:
+			- .ogg is a compressed audio format, it is a very good audio format
+			- .wav is good for sound effect
+		
+
+NEW: fatalError("Mix_Init error" + std::string(Mix_GetError()));
+		since it returns a c string to get a c++ string wrap a string constructor around it
+
+
+
+IMPROTANT:	key word friend:
+				friend class ClassName;
+					- this says that ClassName can use the any of the class's private variables
+
+

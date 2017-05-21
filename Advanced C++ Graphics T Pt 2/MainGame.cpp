@@ -50,6 +50,12 @@ void MainGame::run() {
 
 	initSystems();
 	initLevel();
+
+	/* NEW */
+	Bengine::Music music = m_audioEngine.loadMusic("Sound/boss_0.ogg");
+	/* NEW: play forever */
+	music.play(-1);
+
 	gameLoop();
 
 }
@@ -60,6 +66,12 @@ void MainGame::run() {
 void MainGame::initSystems() {
 
 	Bengine::init();
+
+	/* NEW: make sure to init all systems first, because it will init some SDL music stuff that SDL_mixer uses */
+	// Initialize sound
+	m_audioEngine.init();
+
+
 	m_window.create("ZombieGame", m_screenWidth, m_screenHeight, 0);
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 	initShaders();
@@ -110,6 +122,19 @@ void MainGame::initLevel() {
 		m_zombies.push_back(new Zombie);
 		m_zombies.back()->init(ZOMBIE_SPEED, zombiePositions[i]);
 	}
+
+
+
+	/* NEW: moved, this was in the wrong place (was in update agents) */
+	const float BULLET_SPEED = 20.0f;
+
+	/* NEW: added sound clip to constuctor */
+	m_player->addGun(new Gun("Magnum", 10, 1, 0.06f, 30, BULLET_SPEED, m_audioEngine.loadSoundEffect("Sound/shots/Futuristic_Assault_Rifle_Single_Shot_01.wav")));
+	/* NEW: added sound clip to constuctor */
+	m_player->addGun(new Gun("Shotgun", 30, 12, 0.7f, 4, BULLET_SPEED, m_audioEngine.loadSoundEffect("Sound/shots/Futuristic_Shotgun_Single_Shot.wav")));
+	/* NEW: added sound clip to constuctor */
+	m_player->addGun(new Gun("MP5", 2, 1, 0.2f, 20, BULLET_SPEED, m_audioEngine.loadSoundEffect("Sound/shots/Futuristic_SMG_Single_Shot.wav")));
+
 }
 
 
@@ -238,13 +263,13 @@ void MainGame::updateAgents(float deltaTime) {
 	}
 
 
-
-	const float BULLET_SPEED = 20.0f;
+	/* NEW: moved, is in wrong place from several tutorials ago */
+	/*const float BULLET_SPEED = 20.0f;
 
 
 	m_player->addGun(new Gun("Magnum", 10, 1, 0.06f, 30, BULLET_SPEED));
 	m_player->addGun(new Gun("Shotgun", 30, 12, 0.7f, 4, BULLET_SPEED));
-	m_player->addGun(new Gun("MP5", 2, 1, 0.2f, 20, BULLET_SPEED)); 
+	m_player->addGun(new Gun("MP5", 2, 1, 0.2f, 20, BULLET_SPEED)); */
 
 }
 

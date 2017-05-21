@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Errors.h"
+#include "BengineErrors.h"
 
 #include <SDL/SDL.h>
 

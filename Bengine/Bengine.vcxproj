@@ -136,9 +136,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="Bengine.cpp" />
     <ClCompile Include="Camera2D.cpp" />
-    <ClCompile Include="Errors.cpp" />
+    <ClCompile Include="BengineErrors.cpp" />
     <ClCompile Include="GLSLProgram.cpp" />
     <ClCompile Include="ImageLoader.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -153,9 +154,10 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="Bengine.h" />
     <ClInclude Include="Camera2D.h" />
-    <ClInclude Include="Errors.h" />
+    <ClInclude Include="BengineErrors.h" />
     <ClInclude Include="GLSLProgram.h" />
     <ClInclude Include="GLTexture.h" />
     <ClInclude Include="ImageLoader.h" />

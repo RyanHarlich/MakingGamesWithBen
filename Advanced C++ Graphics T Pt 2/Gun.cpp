@@ -6,15 +6,16 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 
-
-Gun::Gun(std::string name, int fireRate, int bulletsPerShot, float spread, int bulletDamage, float bulletSpeed) :
+/* NEW: Bengine::SoundEffect fireEffect paramter, with initialization list */
+Gun::Gun(std::string name, int fireRate, int bulletsPerShot, float spread, int bulletDamage, float bulletSpeed, Bengine::SoundEffect fireEffect) :
 	m_name(name), 
 	m_fireRate(fireRate),
 	m_bulletsPerShot(bulletsPerShot),
 	m_spread(spread),
 	m_bulletDamage(bulletDamage),
 	m_bulletSpeed(bulletSpeed),
-	m_frameCounter(0)
+	m_frameCounter(0),
+	m_fireEffect(fireEffect) /* NEW */
 {
 }
 
@@ -42,6 +43,10 @@ void Gun::fire(const glm::vec2& direction, const glm::vec2& position, std::vecto
 
 	static std::mt19937 randomEngine(time(nullptr));
 	std::uniform_real_distribution<float> randRotate(-m_spread, m_spread);
+
+
+	/* NEW */
+	m_fireEffect.play();
 
 
 	for (int i = 0; i < m_bulletsPerShot; ++i) {

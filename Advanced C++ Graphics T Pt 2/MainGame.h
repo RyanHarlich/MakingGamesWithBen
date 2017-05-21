@@ -11,6 +11,9 @@
 #include <Bengine/SpriteBatch.h>
 #include <Bengine/SpriteFont.h>
 
+/* NEW */
+#include <Bengine/AudioEngine.h>
+
 
 
 class Zombie;
@@ -69,12 +72,8 @@ private:
 	Bengine::SpriteBatch m_agentSpriteBatch; 
 	Bengine::SpriteBatch m_hudSpriteBatch;
 	std::vector<Level*> m_levels;
-
-	/* NEW: header initialization, not new variables only new initialization with an m in front */
 	int m_screenWidth = 1024;
 	int m_screenHeight = 768;
-
-
 	float m_fps;
 	int m_currentLevel;
 	Player* m_player;
@@ -84,6 +83,10 @@ private:
 	int m_numHumansKilled; 
 	int m_numZombiesKilled; 
 	Bengine::SpriteFont* m_spriteFont;
+
+	/* NEW */
+	Bengine::AudioEngine m_audioEngine;
+
 	GameState m_gameState;
 	
 

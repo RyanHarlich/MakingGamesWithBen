@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "Errors.h"
+#include "BengineErrors.h"
 
 
 namespace Bengine {

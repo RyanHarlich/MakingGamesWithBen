@@ -6,12 +6,15 @@
 
 #include <glm/glm.hpp>
 
+/* NEW */
+#include <Bengine/AudioEngine.h>
 
 
 class Gun
 {
 public:
-	Gun(std::string name, int fireRate, int bulletsPerShot, float spread, int bulletDamage, float bulletSpeed);
+	/* NEW: Bengine::SoundEffect fireEffect paramter */
+	Gun(std::string name, int fireRate, int bulletsPerShot, float spread, int bulletDamage, float bulletSpeed, Bengine::SoundEffect fireEffect);
 	~Gun();
 
 
@@ -21,6 +24,10 @@ public:
 	void fire(const glm::vec2& direction, const glm::vec2& position, std::vector<Bullet>& bullets);
 
 private:
+
+	/* NEW */
+	Bengine::SoundEffect m_fireEffect;
+
 	std::string m_name;
 	int m_fireRate; ///<< Fire rate in terms of frames
 	int m_bulletsPerShot; ///< How many bullets are fired at a time

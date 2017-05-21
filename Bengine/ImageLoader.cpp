@@ -2,7 +2,7 @@
 
 #include "ImageLoader.h"
 #include "IOManager.h"
-#include "Errors.h"
+#include "BengineErrors.h"
 #include "picoPNG.h"
 
 

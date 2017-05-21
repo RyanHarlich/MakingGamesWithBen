@@ -2,7 +2,7 @@
 
 #include "Sprite.h"
 #include "Vertex.h"
-#include "Errors.h"
+#include "BengineErrors.h"
 #include "ResourceManager.h"
 
 

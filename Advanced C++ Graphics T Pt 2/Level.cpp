@@ -3,7 +3,7 @@
 #include "Level.h"
 
 #include <Bengine/ResourceManager.h>
-#include <Bengine/Errors.h>
+#include <Bengine/BengineErrors.h>
 
 
 

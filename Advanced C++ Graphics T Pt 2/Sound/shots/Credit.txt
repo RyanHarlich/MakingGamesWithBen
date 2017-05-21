@@ -1,0 +1,10 @@
+Futuristic_Assault_Rifle_Single_Shot_01.wav
+Futuristic_Assault_Rifle_Single_Shot_02.wav
+
+Futuristic_Shotgun_Single_Shot.wav
+
+Futuristic_SMG_Single_Shot.wav
+
+
+Credit goes to: Michael Klier
+

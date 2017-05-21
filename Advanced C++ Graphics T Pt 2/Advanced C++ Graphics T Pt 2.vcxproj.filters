@@ -73,7 +73,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 33  - Header Initialization, Naming Convention!.txt">
+    <Text Include="Tutorial 34  - Audio, friend keyword.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>
