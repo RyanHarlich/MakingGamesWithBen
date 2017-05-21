@@ -73,7 +73,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 31 - Camera Culling 2D!.txt">
+    <Text Include="Tutorial 32  - SDL_ttf, SpriteFont!.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>

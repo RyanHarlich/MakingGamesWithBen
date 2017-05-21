@@ -10,6 +10,9 @@
 #include <Bengine/Camera2D.h>
 #include <Bengine/SpriteBatch.h>
 
+/* NEW */
+#include <Bengine/SpriteFont.h>
+
 
 
 class Zombie;
@@ -55,12 +58,25 @@ private:
 	
 	void drawGame();
 
+
+	/* NEW: Draws the HUD */
+	void drawHud();
+
+
 private:	
 	Bengine::Window _window;				
 	Bengine::GLSLProgram _textureProgram;	
 	Bengine::InputManager _inputManager;	
-	Bengine::Camera2D _camera;			
+	Bengine::Camera2D _camera;
+
+	/* NEW */
+	Bengine::Camera2D _hudCamera;
+
 	Bengine::SpriteBatch _agentSpriteBatch; 
+
+	/* NEW */
+	Bengine::SpriteBatch _hudSpriteBatch;
+
 	std::vector<Level*> _levels; 
 	int _screenWidth, _screenHeight;
 	float _fps;
@@ -71,9 +87,13 @@ private:
 	std::vector<Bullet> _bullets;
 	int _numHumansKilled; 
 	int _numZombiesKilled; 
+
+	/* NEW */
+	Bengine::SpriteFont* _spriteFont;
+
 	GameState _gameState;
 	
-	
+
 
 };
 

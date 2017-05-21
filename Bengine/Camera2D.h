@@ -19,7 +19,7 @@ namespace Bengine {
 
 		glm::vec2 convertScreenToWorld(glm::vec2 screenCoords);
 
-		/* NEW */
+
 		bool isBoxInView(const glm::vec2& position, const glm::vec2& dimensions);
 
 		// setters

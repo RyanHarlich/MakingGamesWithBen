@@ -1,4 +1,3 @@
-/* NEW */
 #include <algorithm>
 
 #include "Camera2D.h"
@@ -76,32 +75,28 @@ namespace Bengine {
 
 
 
-	/* NEW: Simple AABB test to see if a box is in the camera view */
+
 	bool Camera2D::isBoxInView(const glm::vec2& position, const glm::vec2& dimensions) {
 
 		glm::vec2 scaledScreenDimensions = glm::vec2(_screenWidth, _screenHeight) / _scale;
-		//DEBUGGING VERSION: of line above
-		scaledScreenDimensions = glm::vec2(_screenWidth, _screenHeight) / (_scale * 2.0f);
 
-		// The minimum distance before a collision occurs
-		const float MIN_DISTANCE_X = dimensions.x / 2.0f + scaledScreenDimensions.x / 2.0f; // dimensions is the diameter
+
+		const float MIN_DISTANCE_X = dimensions.x / 2.0f + scaledScreenDimensions.x / 2.0f;
 		const float MIN_DISTANCE_Y = dimensions.y / 2.0f + scaledScreenDimensions.y / 2.0f;
 
-		// Center position of the paramters
+
 		glm::vec2 centerPos = position + dimensions/ 2.0f;
-		// Center position of the camera
 		glm::vec2 centerCameraPos = _position;
-		// Vector from the input to the camera
+
 		glm::vec2 distVec = centerPos - centerCameraPos;
 
 		float xDepth = MIN_DISTANCE_X - abs(distVec.x);
 		float yDepth = MIN_DISTANCE_Y - abs(distVec.y);
 
 
-		// If this is true, collision has happened
-		if (xDepth > 0 && yDepth > 0) {
-			
-			// THere was a collision
+
+		if (xDepth > 0 && yDepth > 0) {		
+			// There was a collision
 			return true;
 		}
 		return false;

@@ -64,8 +64,20 @@ void MainGame::initSystems() {
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 	initShaders();
 	_agentSpriteBatch.init();
+
+	/* NEW */
+	_hudSpriteBatch.init();
+
+	/* NEW: Initialize sprite font (make sure to do after init openGL and shaders otherwise will be completely black */
+	_spriteFont = new Bengine::SpriteFont("Fonts/lucon.ttf", 64); // the higher pixel size will affect quality // higher will be sharper image but cannot go much above 64 set scale to half cost more texture memory
+
 	_camera.init(_screenWidth, _screenHeight);
 
+
+	/* NEW: Initialize hud camera to have it so the hud does not move */
+	_hudCamera.init(_screenWidth, _screenHeight);
+	/* NEW: offset hudCamera to the right so it correctly lines up to the left side of the screen, also line up with the bottom */
+	_hudCamera.setPosition(glm::vec2(_screenWidth / 2, _screenHeight /2));
 
 }
 
@@ -171,9 +183,13 @@ void MainGame::gameLoop() {
 		}
 
 		_camera.setPosition(_player->getPosition());
-
-
 		_camera.update();
+
+
+		/* NEW: update hud camera, but setPosition in the initialize section to offset hudCamera to the right so it correctly lines up to the left side of the screen */
+		_hudCamera.update();
+
+
 		drawGame();
 
 		_fps = fpsLimiter.end();
@@ -402,24 +418,18 @@ void MainGame::drawGame() {
 
 	_agentSpriteBatch.begin();
 
-	/* NEW: agent dimensions (diameter) */
+
 	const glm::vec2 agentDims(AGENT_RADIUS * 2.0f);
 
 	for (unsigned int i = 0; i < _humans.size(); ++i) {
-
-		/* NEW */
 		if (_camera.isBoxInView(_humans[i]->getPosition(), agentDims)) {
-			_humans[i]->draw(_agentSpriteBatch); /* NEW: this line is not NEW */
+			_humans[i]->draw(_agentSpriteBatch);
 		}
-
 	}
 	for (unsigned int i = 0; i < _zombies.size(); ++i) {
-
-		/* NEW */
 		if (_camera.isBoxInView(_zombies[i]->getPosition(), agentDims)) {
-			_zombies[i]->draw(_agentSpriteBatch); /* NEW: this line is not NEW */
+			_zombies[i]->draw(_agentSpriteBatch);
 		}
-
 	}
 	for (unsigned int i = 0; i < _bullets.size(); ++i) {
 		_bullets[i].draw(_agentSpriteBatch);
@@ -428,7 +438,34 @@ void MainGame::drawGame() {
 	_agentSpriteBatch.renderBatch();
 
 
+	/* NEW: Render the heads up display */
+	drawHud();
+
 
 	_textureProgram.unuse();
 	_window.swapBuffer();
+}
+
+
+
+
+/* NEW: Draws the HUD */
+void MainGame::drawHud() {
+	char buffer[256];
+
+	glm::mat4 projectionMatrix = _hudCamera.getCameraMatrix();
+	glUniformMatrix4fv(_textureProgram.getUniformLocation("P"), 1, GL_FALSE, &projectionMatrix[0][0]);
+
+	_hudSpriteBatch.begin();
+
+	sprintf_s(buffer, "Num Humans %d", _humans.size()); // will fill the buffer with the following string // visual studio perfers sprintf_s() over sprintf()
+	_spriteFont->draw(_hudSpriteBatch, buffer, glm::vec2(0, 0), 
+		glm::vec2(0.5), 0.0f, Bengine::ColorRGBA8(255, 255, 255, 255));
+
+	sprintf_s(buffer, "Num Zombies %d", _zombies.size());
+	_spriteFont->draw(_hudSpriteBatch, buffer, glm::vec2(0, 36),
+		glm::vec2(0.5), 0.0f, Bengine::ColorRGBA8(255, 255, 255, 255));
+
+	_hudSpriteBatch.end();
+	_hudSpriteBatch.renderBatch();
 }
