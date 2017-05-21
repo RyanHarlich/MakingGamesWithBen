@@ -8,7 +8,7 @@
 
 namespace Bengine {
 
-	GLSLProgram::GLSLProgram() : _programID(0), _vertexShaderID(0), _fragmentShaderID(0), _numAttrib(0)
+	GLSLProgram::GLSLProgram() : m_programID(0), m_vertexShaderID(0), m_fragmentShaderID(0), m_numAttrib(0)
 	{
 	}
 
@@ -23,31 +23,31 @@ namespace Bengine {
 
 
 	void GLSLProgram::addAttribute(const std::string &attributeName) {
-		glBindAttribLocation(_programID, _numAttrib++, attributeName.c_str());
+		glBindAttribLocation(m_programID, m_numAttrib++, attributeName.c_str());
 	}
 
 
 
 
 	void GLSLProgram::compileShaders(const std::string &vertexShaderFilePath, const std::string &fragmentShaderFilePath) {
-		_programID = glCreateProgram();
-		if (_programID == GL_FALSE) {
+		m_programID = glCreateProgram();
+		if (m_programID == GL_FALSE) {
 			fatalError("Program ID was not created!");
 
 		}
 
-		_vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-		if (_vertexShaderID == GL_FALSE) {
+		m_vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+		if (m_vertexShaderID == GL_FALSE) {
 			fatalError("Vertex Shader ID was not created!");
 		}
 
-		_fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-		if (_fragmentShaderID == GL_FALSE) {
+		m_fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		if (m_fragmentShaderID == GL_FALSE) {
 			fatalError("Fragment Shader ID was not created!");
 		}
 
-		compileShader(vertexShaderFilePath, _vertexShaderID);
-		compileShader(fragmentShaderFilePath, _fragmentShaderID);
+		compileShader(vertexShaderFilePath, m_vertexShaderID);
+		compileShader(fragmentShaderFilePath, m_fragmentShaderID);
 	}
 
 
@@ -56,35 +56,35 @@ namespace Bengine {
 
 	void GLSLProgram::linkShaders() {
 
-		glAttachShader(_programID, _vertexShaderID);
-		glAttachShader(_programID, _fragmentShaderID);
+		glAttachShader(m_programID, m_vertexShaderID);
+		glAttachShader(m_programID, m_fragmentShaderID);
 
-		glLinkProgram(_programID);
+		glLinkProgram(m_programID);
 
 
 
 		GLint isLinked = 0;
-		glGetProgramiv(_programID, GL_LINK_STATUS, &isLinked);
+		glGetProgramiv(m_programID, GL_LINK_STATUS, &isLinked);
 		if (isLinked == GL_FALSE) {
 			GLint maxLength = 0;
-			glGetProgramiv(_programID, GL_INFO_LOG_LENGTH, &maxLength);
+			glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &maxLength);
 			std::vector<char> errorLog(maxLength);
 
-			glDeleteShader(_vertexShaderID);
-			glDeleteShader(_fragmentShaderID);
-			glDeleteProgram(_programID);
+			glDeleteShader(m_vertexShaderID);
+			glDeleteShader(m_fragmentShaderID);
+			glDeleteProgram(m_programID);
 
-			glGetProgramInfoLog(_programID, maxLength, &maxLength, &errorLog[0]);
+			glGetProgramInfoLog(m_programID, maxLength, &maxLength, &errorLog[0]);
 			printf("%s\n", &errorLog[0]);
 			fatalError("Shaders were not linked to program!");
 		}
 
 
 
-		glDetachShader(_programID, _vertexShaderID);
-		glDetachShader(_programID, _fragmentShaderID);
-		glDeleteShader(_vertexShaderID);
-		glDeleteShader(_fragmentShaderID);
+		glDetachShader(m_programID, m_vertexShaderID);
+		glDetachShader(m_programID, m_fragmentShaderID);
+		glDeleteShader(m_vertexShaderID);
+		glDeleteShader(m_fragmentShaderID);
 	}
 
 
@@ -93,7 +93,7 @@ namespace Bengine {
 
 	GLuint GLSLProgram::getUniformLocation(const std::string& uniformName) {
 
-		GLuint location = glGetUniformLocation(_programID, uniformName.c_str());
+		GLuint location = glGetUniformLocation(m_programID, uniformName.c_str());
 
 		if (location == GL_INVALID_INDEX) {
 			fatalError("Uniform " + uniformName + " not found in shader!");
@@ -107,9 +107,9 @@ namespace Bengine {
 
 	void GLSLProgram::use() {
 
-		glUseProgram(_programID);
+		glUseProgram(m_programID);
 
-		for (int i = 0; i < _numAttrib; ++i) {
+		for (int i = 0; i < m_numAttrib; ++i) {
 			glEnableVertexAttribArray(i);
 		}
 	}
@@ -121,7 +121,7 @@ namespace Bengine {
 
 		glUseProgram(0);
 
-		for (int i = 0; i < _numAttrib; ++i) {
+		for (int i = 0; i < m_numAttrib; ++i) {
 			glEnableVertexAttribArray(i);
 		}
 	}

@@ -36,7 +36,7 @@ public:
 
 
 	// Getter
-	glm::vec2 getPosition() const { return _position; }
+	glm::vec2 getPosition() const { return m_position; }
 
 protected:
 	
@@ -48,9 +48,9 @@ protected:
 	void collideWithTile(glm::vec2 tilePos);
 
 
-	glm::vec2 _position;	
-	Bengine::ColorRGBA8 _color;
-	float _speed;
-	float _health;
+	glm::vec2 m_position;	
+	Bengine::ColorRGBA8 m_color;
+	float m_speed;
+	float m_health;
 };
 

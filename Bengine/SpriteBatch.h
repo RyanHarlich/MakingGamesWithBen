@@ -108,12 +108,12 @@ namespace Bengine {
 
 
 
-		GLuint _vbo;
-		GLuint _vao;
-		GlyphSortType _sortType;
-		std::vector<Glyph*> _glyphPointers; ///< This is for sorting
-		std::vector<Glyph> _glyphs; ///< These are the actual glyphs
-		std::vector<RenderBatch> _renderBatches;
+		GLuint m_vboID;
+		GLuint m_vaoID;
+		GlyphSortType m_sortType;
+		std::vector<Glyph*> m_glyphPointers; ///< This is for sorting
+		std::vector<Glyph> m_glyphs; ///< These are the actual glyphs
+		std::vector<RenderBatch> m_renderBatches;
 
 	};
 

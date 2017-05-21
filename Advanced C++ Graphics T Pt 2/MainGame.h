@@ -9,8 +9,6 @@
 #include <Bengine/InputManager.h>
 #include <Bengine/Camera2D.h>
 #include <Bengine/SpriteBatch.h>
-
-/* NEW */
 #include <Bengine/SpriteFont.h>
 
 
@@ -59,39 +57,34 @@ private:
 	void drawGame();
 
 
-	/* NEW: Draws the HUD */
 	void drawHud();
 
 
 private:	
-	Bengine::Window _window;				
-	Bengine::GLSLProgram _textureProgram;	
-	Bengine::InputManager _inputManager;	
-	Bengine::Camera2D _camera;
+	Bengine::Window m_window;				
+	Bengine::GLSLProgram m_textureProgram;	
+	Bengine::InputManager m_inputManager;	
+	Bengine::Camera2D m_camera;
+	Bengine::Camera2D m_hudCamera;
+	Bengine::SpriteBatch m_agentSpriteBatch; 
+	Bengine::SpriteBatch m_hudSpriteBatch;
+	std::vector<Level*> m_levels;
 
-	/* NEW */
-	Bengine::Camera2D _hudCamera;
+	/* NEW: header initialization, not new variables only new initialization with an m in front */
+	int m_screenWidth = 1024;
+	int m_screenHeight = 768;
 
-	Bengine::SpriteBatch _agentSpriteBatch; 
 
-	/* NEW */
-	Bengine::SpriteBatch _hudSpriteBatch;
-
-	std::vector<Level*> _levels; 
-	int _screenWidth, _screenHeight;
-	float _fps;
-	int _currentLevel;
-	Player* _player;
-	std::vector<Human*> _humans; 
-	std::vector<Zombie*> _zombies; 
-	std::vector<Bullet> _bullets;
-	int _numHumansKilled; 
-	int _numZombiesKilled; 
-
-	/* NEW */
-	Bengine::SpriteFont* _spriteFont;
-
-	GameState _gameState;
+	float m_fps;
+	int m_currentLevel;
+	Player* m_player;
+	std::vector<Human*> m_humans; 
+	std::vector<Zombie*> m_zombies; 
+	std::vector<Bullet> m_bullets;
+	int m_numHumansKilled; 
+	int m_numZombiesKilled; 
+	Bengine::SpriteFont* m_spriteFont;
+	GameState m_gameState;
 	
 
 

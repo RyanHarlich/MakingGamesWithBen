@@ -21,8 +21,9 @@ public:
 
 private:
 	Human* getNearestHuman(std::vector<Human*>& humans);
-	glm::vec2 _direction;
-	int _frames;
-	int _framesZombieTransparency;
+
+	glm::vec2 m_direction;
+	int m_frames;
+	int m_framesZombieTransparency;
 };
 

@@ -7,7 +7,7 @@
 
 namespace Bengine {
 
-	SpriteBatch::SpriteBatch() : _vbo(0), _vao(0)
+	SpriteBatch::SpriteBatch() : m_vboID(0), m_vaoID(0)
 	{
 	}
 
@@ -29,9 +29,9 @@ namespace Bengine {
 
 
 	void SpriteBatch::begin(GlyphSortType sortType /* GlyphSortTypeT30::TEXTURE */) {
-		_sortType = sortType;	
-		_renderBatches.clear();
-		_glyphs.clear();
+		m_sortType = sortType;	
+		m_renderBatches.clear();
+		m_glyphs.clear();
 	}
 
 
@@ -39,9 +39,9 @@ namespace Bengine {
 
 
 	void SpriteBatch::end() {
-		_glyphPointers.resize(_glyphs.size());
-		for (unsigned int i = 0; i < _glyphs.size(); ++i) {
-			_glyphPointers[i] = &_glyphs[i];
+		m_glyphPointers.resize(m_glyphs.size());
+		for (unsigned int i = 0; i < m_glyphs.size(); ++i) {
+			m_glyphPointers[i] = &m_glyphs[i];
 		}
 		sortGlyphs();
 		createRenderBatchs();
@@ -52,7 +52,7 @@ namespace Bengine {
 
 
 	void SpriteBatch::draw(const glm::vec4& destRect, const glm::vec4& uvRect, GLuint texture, float depth, const ColorRGBA8& color) { 
-		_glyphs.emplace_back(destRect, uvRect, texture, depth, color);
+		m_glyphs.emplace_back(destRect, uvRect, texture, depth, color);
 	}																									  
 
 
@@ -60,10 +60,10 @@ namespace Bengine {
 
 
 	void SpriteBatch::renderBatch() {
-		glBindVertexArray(_vao);
-		for (unsigned int i = 0; i < _renderBatches.size(); ++i) {
-			glBindTexture(GL_TEXTURE_2D, _renderBatches[i].texture);
-			glDrawArrays(GL_TRIANGLES, _renderBatches[i].offset, _renderBatches[i].numVertices);
+		glBindVertexArray(m_vaoID);
+		for (unsigned int i = 0; i < m_renderBatches.size(); ++i) {
+			glBindTexture(GL_TEXTURE_2D, m_renderBatches[i].texture);
+			glDrawArrays(GL_TRIANGLES, m_renderBatches[i].offset, m_renderBatches[i].numVertices);
 		}
 		glBindVertexArray(0);
 	}
@@ -76,45 +76,45 @@ namespace Bengine {
 
 		std::vector <Vertex> vertices;
 
-		vertices.resize(_glyphPointers.size() * 6);
+		vertices.resize(m_glyphPointers.size() * 6);
 
-		if (_glyphPointers.empty()) {
+		if (m_glyphPointers.empty()) {
 			return;
 		}
 
 		int offset = 0;
 		int cv = 0; // current vertex
 
-		_renderBatches.emplace_back(offset, 6, _glyphPointers[0]->texture);
+		m_renderBatches.emplace_back(offset, 6, m_glyphPointers[0]->texture);
 
-		vertices[cv++] = _glyphPointers[0]->topLeft;
-		vertices[cv++] = _glyphPointers[0]->bottomLeft;
-		vertices[cv++] = _glyphPointers[0]->bottomRight;
-		vertices[cv++] = _glyphPointers[0]->bottomRight;
-		vertices[cv++] = _glyphPointers[0]->topRight;
-		vertices[cv++] = _glyphPointers[0]->topLeft;
+		vertices[cv++] = m_glyphPointers[0]->topLeft;
+		vertices[cv++] = m_glyphPointers[0]->bottomLeft;
+		vertices[cv++] = m_glyphPointers[0]->bottomRight;
+		vertices[cv++] = m_glyphPointers[0]->bottomRight;
+		vertices[cv++] = m_glyphPointers[0]->topRight;
+		vertices[cv++] = m_glyphPointers[0]->topLeft;
 
 		offset += 6;
 
-		for (unsigned int cg = 1; cg < _glyphs.size(); ++cg) { //current Glyph
-			if (_glyphPointers[cg]->texture != _glyphPointers[cg - 1]->texture) {
-				_renderBatches.emplace_back(offset, 6, _glyphPointers[cg]->texture);
+		for (unsigned int cg = 1; cg < m_glyphs.size(); ++cg) { //current Glyph
+			if (m_glyphPointers[cg]->texture != m_glyphPointers[cg - 1]->texture) {
+				m_renderBatches.emplace_back(offset, 6, m_glyphPointers[cg]->texture);
 			}
 			else {
-				_renderBatches.back().numVertices += 6;
+				m_renderBatches.back().numVertices += 6;
 			}
 
-			vertices[cv++] = _glyphPointers[cg]->topLeft;
-			vertices[cv++] = _glyphPointers[cg]->bottomLeft;
-			vertices[cv++] = _glyphPointers[cg]->bottomRight;
-			vertices[cv++] = _glyphPointers[cg]->bottomRight;
-			vertices[cv++] = _glyphPointers[cg]->topRight;
-			vertices[cv++] = _glyphPointers[cg]->topLeft;
+			vertices[cv++] = m_glyphPointers[cg]->topLeft;
+			vertices[cv++] = m_glyphPointers[cg]->bottomLeft;
+			vertices[cv++] = m_glyphPointers[cg]->bottomRight;
+			vertices[cv++] = m_glyphPointers[cg]->bottomRight;
+			vertices[cv++] = m_glyphPointers[cg]->topRight;
+			vertices[cv++] = m_glyphPointers[cg]->topLeft;
 
 			offset += 6;
 		}
 
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
 		// unbind buffer
@@ -127,16 +127,16 @@ namespace Bengine {
 
 	void SpriteBatch::createVertexArray() {
 
-		if (_vao == 0) { 
-			glGenVertexArrays(1, &_vao);
+		if (m_vaoID == 0) { 
+			glGenVertexArrays(1, &m_vaoID);
 		}
-		glBindVertexArray(_vao);
+		glBindVertexArray(m_vaoID);
 
 
-		if (_vbo == 0) {
-			glGenBuffers(1, &_vbo);
+		if (m_vboID == 0) {
+			glGenBuffers(1, &m_vboID);
 		}
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
 
 
@@ -165,15 +165,15 @@ namespace Bengine {
 
 	void SpriteBatch::sortGlyphs() {
 
-		switch (_sortType) {
+		switch (m_sortType) {
 		case GlyphSortType::BACK_TO_FRONT:
-			std::stable_sort(_glyphPointers.begin(), _glyphPointers.end(), compareBackToFront);
+			std::stable_sort(m_glyphPointers.begin(), m_glyphPointers.end(), compareBackToFront);
 			break;
 		case GlyphSortType::FRONT_TO_BACK:
-			std::stable_sort(_glyphPointers.begin(), _glyphPointers.end(), compareFrontToBack);
+			std::stable_sort(m_glyphPointers.begin(), m_glyphPointers.end(), compareFrontToBack);
 			break;
 		case GlyphSortType::TEXTURE:
-			std::stable_sort(_glyphPointers.begin(), _glyphPointers.end(), compareTexture);
+			std::stable_sort(m_glyphPointers.begin(), m_glyphPointers.end(), compareTexture);
 			break;
 		}	
 	}

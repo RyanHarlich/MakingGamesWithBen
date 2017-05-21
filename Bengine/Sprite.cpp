@@ -10,7 +10,7 @@
 
 namespace Bengine {
 
-	Sprite::Sprite() : _vboID(0)
+	Sprite::Sprite() : m_vboID(0)
 	{
 	}
 
@@ -19,8 +19,8 @@ namespace Bengine {
 	Sprite::~Sprite()
 	{
 
-		if (_vboID != 0) {
-			glDeleteBuffers(1, &_vboID);
+		if (m_vboID != 0) {
+			glDeleteBuffers(1, &m_vboID);
 		}
 	}
 
@@ -29,17 +29,17 @@ namespace Bengine {
 
 
 	void Sprite::init(float x, float y, float width, float height, std::string texturePath) {
-		_x = x;
-		_y = y;
-		_width = width;
-		_height = height;
-		_texture = ResourceManager::getTexture(texturePath);
+		m_x = x;
+		m_y = y;
+		m_width = width;
+		m_height = height;
+		m_texture = ResourceManager::getTexture(texturePath);
 
-		if (_vboID == 0) {
-			glGenBuffers(1, &_vboID);
+		if (m_vboID == 0) {
+			glGenBuffers(1, &m_vboID);
 		}
 
-		if (_vboID == 0) {
+		if (m_vboID == 0) {
 			fatalError("Vertex Buffer ID was not created!");
 		}
 
@@ -71,7 +71,7 @@ namespace Bengine {
 
 
 		//bind to VBO CPU
-		glBindBuffer(GL_ARRAY_BUFFER, _vboID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
 		//upload to GPU
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
@@ -87,9 +87,9 @@ namespace Bengine {
 
 	void Sprite::draw() {
 
-		glBindTexture(GL_TEXTURE_2D, _texture.id);
+		glBindTexture(GL_TEXTURE_2D, m_texture.id);
 		//bind to VBO
-		glBindBuffer(GL_ARRAY_BUFFER, _vboID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
 
 		// add position

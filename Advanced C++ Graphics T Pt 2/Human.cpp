@@ -9,7 +9,7 @@
 
 
 Human::Human() :
-	_frames(0)
+	m_frames(0)
 {
 }
 
@@ -24,21 +24,21 @@ void Human::init(float speed, glm::vec2 pos) {
 	static std::mt19937 randomEngine(time(nullptr));
 	std::uniform_real_distribution<float> randDir(-1.0f, 1.0f); 
 
-	_health = 20;
+	m_health = 20;
 
-	_speed = speed;
-	_position = pos;
-
-
-	_color = Bengine::ColorRGBA8(200, 0, 200, 255);
+	m_speed = speed;
+	m_position = pos;
 
 
-	_direction = glm::vec2(randDir(randomEngine), randDir(randomEngine));
-
-	if (_direction.length() == 0) _direction = glm::vec2(1.0f, 0.0f);
+	m_color = Bengine::ColorRGBA8(200, 0, 200, 255);
 
 
-	_direction = glm::normalize(_direction);
+	m_direction = glm::vec2(randDir(randomEngine), randDir(randomEngine));
+
+	if (m_direction.length() == 0) m_direction = glm::vec2(1.0f, 0.0f);
+
+
+	m_direction = glm::normalize(m_direction);
 
 }
 
@@ -55,21 +55,21 @@ void Human::update(const std::vector<std::string>& levelData,
 
 
 
-	_position += _direction * _speed * deltaTime;
+	m_position += m_direction * m_speed * deltaTime;
 
 
 
-	if (_frames == 60) {
-		_direction = glm::rotate(_direction, randRotate(randomEngine));
-		_frames = 0;
+	if (m_frames == 60) {
+		m_direction = glm::rotate(m_direction, randRotate(randomEngine));
+		m_frames = 0;
 	}
 	else {
-		++_frames;
+		++m_frames;
 	}
 	
 
 	if (collideWithLevel(levelData)) {
-		_direction = glm::rotate(_direction, randRotate(randomEngine));
+		m_direction = glm::rotate(m_direction, randRotate(randomEngine));
 	}
 
 }

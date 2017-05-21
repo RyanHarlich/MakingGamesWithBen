@@ -30,10 +30,10 @@ namespace Bengine {
 		void compileShader(const std::string filePath, GLint shaderID);
 
 
-		GLuint _programID;
-		GLuint _vertexShaderID;
-		GLuint _fragmentShaderID;
-		int _numAttrib;
+		GLuint m_programID;
+		GLuint m_vertexShaderID;
+		GLuint m_fragmentShaderID;
+		int m_numAttrib;
 
 	};
 

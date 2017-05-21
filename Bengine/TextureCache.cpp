@@ -25,11 +25,11 @@ namespace Bengine {
 
 	GLTexture TextureCache::getTexture(std::string texturePath) {
 
-		auto mit = _textureMap.find(texturePath);
+		auto mit = m_textureMap.find(texturePath);
 
-		if (mit == _textureMap.end()) {
+		if (mit == m_textureMap.end()) {
 			GLTexture newTexture = ImageLoader::loadPNG(texturePath);
-			_textureMap.insert(make_pair(texturePath, newTexture));
+			m_textureMap.insert(make_pair(texturePath, newTexture));
 
 			// commented out, will assume texture was loaded and there is no errors
 			//std::cout << "Loaded Texture!\n";

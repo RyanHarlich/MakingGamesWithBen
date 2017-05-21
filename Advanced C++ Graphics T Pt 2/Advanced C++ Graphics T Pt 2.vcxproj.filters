@@ -73,7 +73,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 32  - SDL_ttf, SpriteFont!.txt">
+    <Text Include="Tutorial 33  - Header Initialization, Naming Convention!.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>

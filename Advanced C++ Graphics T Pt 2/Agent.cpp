@@ -24,23 +24,23 @@ bool Agent::collideWithLevel(const std::vector<std::string>& levelData) {
 	// Check the four corners for collision
 	// First corner
 	checkTilePosition(levelData, collideTilePositions,
-		_position.x,
-		_position.y);
+		m_position.x,
+		m_position.y);
 
 	// Second corner
 	checkTilePosition(levelData, collideTilePositions,
-		_position.x + AGENT_WIDTH,
-		_position.y);
+		m_position.x + AGENT_WIDTH,
+		m_position.y);
 
 	// Third corner
 	checkTilePosition(levelData, collideTilePositions,
-		_position.x,
-		_position.y + AGENT_WIDTH);
+		m_position.x,
+		m_position.y + AGENT_WIDTH);
 
 	// Fourth corner
 	checkTilePosition(levelData, collideTilePositions,
-		_position.x + AGENT_WIDTH,
-		_position.y + AGENT_WIDTH);
+		m_position.x + AGENT_WIDTH,
+		m_position.y + AGENT_WIDTH);
 
 	// if no corners collided return false
 	if (collideTilePositions.size() == 0) { return false; }
@@ -64,7 +64,7 @@ bool Agent::collideWithAgent(Agent* agent) {
 
 	const float MIN_DISTANCE = AGENT_RADIUS * 2.0f;
 
-	glm::vec2 centerPosA = _position + glm::vec2(AGENT_RADIUS);
+	glm::vec2 centerPosA = m_position + glm::vec2(AGENT_RADIUS);
 	glm::vec2 centerPosB = agent->getPosition() + glm::vec2(AGENT_RADIUS);
 
 	glm::vec2 distVec = centerPosA - centerPosB;
@@ -75,8 +75,8 @@ bool Agent::collideWithAgent(Agent* agent) {
 
 	if (collisionDepth > 0) {
 		glm::vec2 collisionDepthVec = glm::normalize(distVec) * collisionDepth; 
-		_position += collisionDepthVec / 2.0f;
-		agent->_position -= collisionDepthVec / 2.0f;
+		m_position += collisionDepthVec / 2.0f;
+		agent->m_position -= collisionDepthVec / 2.0f;
 		return true;
 	}
 	return false;
@@ -92,19 +92,19 @@ void Agent::draw(Bengine::SpriteBatch& spriteBatch) {
 	const glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
 
 	glm::vec4 destRect;
-	destRect.x = _position.x;
-	destRect.y = _position.y;
+	destRect.x = m_position.x;
+	destRect.y = m_position.y;
 	destRect.z = AGENT_WIDTH;
 	destRect.w = AGENT_WIDTH;
 
-	spriteBatch.draw(destRect, uvRect, textureID, 0.0f, _color);
+	spriteBatch.draw(destRect, uvRect, textureID, 0.0f, m_color);
 }
 
 
 
 bool Agent::applyDamage(float damage) {
-	_health -= damage;
-	if (_health <= 0) {
+	m_health -= damage;
+	if (m_health <= 0) {
 		return true;
 	}
 	return false;
@@ -144,7 +144,7 @@ void Agent::collideWithTile(glm::vec2 tilePos) {
 	const float TILE_RADIUS = (float)TILE_WIDTH / 2.0f;
 	const float MIN_DISTANCE = AGENT_RADIUS + TILE_RADIUS;
 
-	glm::vec2 centerPlayerPos = _position + glm::vec2(AGENT_RADIUS);
+	glm::vec2 centerPlayerPos = m_position + glm::vec2(AGENT_RADIUS);
 	glm::vec2 distVec = centerPlayerPos - tilePos;
 
 	float xDepth = MIN_DISTANCE - abs(distVec.x);
@@ -155,18 +155,18 @@ void Agent::collideWithTile(glm::vec2 tilePos) {
 	if (xDepth > 0 && yDepth > 0) { 
 		if (std::max(xDepth, 0.0f) < std::max(yDepth, 0.0f)) { // if not larger than 0
 			if (distVec.x < 0) {
-				_position.x -= xDepth;
+				m_position.x -= xDepth;
 			}
 			else {
-				_position.x += xDepth;
+				m_position.x += xDepth;
 			}
 		}
 		else { // push out by y depth
 			if (distVec.y < 0) {
-				_position.y -= yDepth;
+				m_position.y -= yDepth;
 			}
 			else {
-				_position.y += yDepth;
+				m_position.y += yDepth;
 			}
 		}
 	}
