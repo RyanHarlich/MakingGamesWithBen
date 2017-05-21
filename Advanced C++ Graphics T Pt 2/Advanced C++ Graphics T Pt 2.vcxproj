@@ -145,7 +145,7 @@
     <ClInclude Include="Zombie.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 34  - Audio, friend keyword.txt" />
+    <Text Include="Tutorial 35 - for each loop.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

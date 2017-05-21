@@ -73,7 +73,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 34  - Audio, friend keyword.txt">
+    <Text Include="Tutorial 35 - for each loop.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>

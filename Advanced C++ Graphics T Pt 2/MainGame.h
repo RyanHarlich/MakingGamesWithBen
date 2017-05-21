@@ -10,8 +10,6 @@
 #include <Bengine/Camera2D.h>
 #include <Bengine/SpriteBatch.h>
 #include <Bengine/SpriteFont.h>
-
-/* NEW */
 #include <Bengine/AudioEngine.h>
 
 
@@ -83,10 +81,7 @@ private:
 	int m_numHumansKilled; 
 	int m_numZombiesKilled; 
 	Bengine::SpriteFont* m_spriteFont;
-
-	/* NEW */
 	Bengine::AudioEngine m_audioEngine;
-
 	GameState m_gameState;
 	
 

@@ -1,0 +1,16 @@
+Updated Files:
+	- MainGame.cpp forgot to delete m_spriteFont;
+	- AudoEngine.cpp
+			- init fatalError check
+			- destory deleteing with for each loops (and some forgot closes)
+___________________________________________________________________________________
+Notes:
+	for each loop
+		- use amperstand
+		- use . instead of -> because it is a reference operator
+		- itertor reference and collection to go through
+		- can use a for each loop if it has a defined begin and an end method
+		- can use on own self-made class that has a begin and end that returns an iterator
+		- not more efficent but more compact in code writing
+
+
