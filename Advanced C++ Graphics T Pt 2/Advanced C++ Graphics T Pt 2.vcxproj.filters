@@ -73,13 +73,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 36 - cache-Friendliness.txt">
+    <Text Include="Tutorial 37 - ParticleEngine2D!.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Tutorial 36 - Cache-Friendliness.png">
-      <Filter>Tutorial Notes</Filter>
-    </Image>
   </ItemGroup>
 </Project>

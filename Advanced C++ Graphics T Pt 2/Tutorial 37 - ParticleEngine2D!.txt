@@ -1,0 +1,11 @@
+Updated Files:
+	- Add ParticleEngine2D class to Bengine
+	- Add ParticleBatch2D class to Bengine
+	- MainGame.h
+	- MainGame.cpp
+	- Bullet.h getPosition function
+
+___________________________________________________________________________________
+Notes:
+	- Rendering particles in a cache friendly way
+	- Problem with polymorphism: if two classes each have a variable, the base class would be 1 bytes and the sub-class would be 2 bytes because it has its own variable and the base class variable. So when looping through a base class array that has a bunch of sub-classes in it, it will only be going through 1 byte and not 2 bytes.

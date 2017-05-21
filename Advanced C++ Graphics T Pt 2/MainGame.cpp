@@ -10,6 +10,12 @@
 #include <Bengine/Bengine.h>
 #include <Bengine/Timing.h>
 
+/* NEW */
+#include <Bengine/ResourceManager.h>
+
+/* NEW */
+#include <glm/gtx/rotate_vector.hpp>
+
 
 const float HUMAN_SPEED = 1.0f;
 const float ZOMBIE_SPEED = 1.3f;
@@ -76,6 +82,13 @@ void MainGame::initSystems() {
 	m_camera.init(m_screenWidth, m_screenHeight);
 	m_hudCamera.init(m_screenWidth, m_screenHeight);
 	m_hudCamera.setPosition(glm::vec2(m_screenWidth / 2, m_screenHeight /2));
+
+	/* NEW: Initialize particles */
+	m_bloodPaticleBatch = new Bengine::ParticleBatch2D();
+	/* NEW: circle is actually a particle for this program */
+	m_bloodPaticleBatch->init(1000, 0.05f, Bengine::ResourceManager::getTexture("Textures/Circle/circle_0.png"));
+	/* NEW */
+	m_particleEngine.addParticleBatch(m_bloodPaticleBatch);
 
 }
 
@@ -186,8 +199,16 @@ void MainGame::gameLoop() {
 			updateBullets(deltaTime);
 
 
+			/* NEW */
+			m_particleEngine.update(deltaTime);
+
+
 			totalDeltaTime -= deltaTime;
 		}
+
+
+
+
 
 		m_camera.setPosition(m_player->getPosition());
 		m_camera.update();
@@ -278,7 +299,12 @@ void MainGame::updateBullets(float deltaTime) {
 		wasBulletRemoved = false;
 
 		for (unsigned int j = 0; j < m_zombies.size();) {	
-			if (m_bullets[i].collideWithAgent(m_zombies[j])) {		
+			if (m_bullets[i].collideWithAgent(m_zombies[j])) {
+
+				/* NEW */
+				addBlood(m_bullets[i].getPosition(), 5);
+
+
 				if (m_zombies[j]->applyDamage(m_bullets[i].getDamage())) {		
 					delete m_zombies[j];
 					m_zombies[j] = m_zombies.back();
@@ -308,7 +334,13 @@ void MainGame::updateBullets(float deltaTime) {
 	
 		if (wasBulletRemoved == false) {
 			for (unsigned int j = 1; j < m_humans.size();) { 		
-				if (m_bullets[i].collideWithAgent(m_humans[j])) {			
+				if (m_bullets[i].collideWithAgent(m_humans[j])) {
+
+
+					/* NEW */
+					addBlood(m_bullets[i].getPosition(), 5);
+
+
 					if (m_humans[j]->applyDamage(m_bullets[i].getDamage())) {
 
 						delete m_humans[j];
@@ -432,6 +464,11 @@ void MainGame::drawGame() {
 
 
 
+	/* NEW: render the particles on top of agents, reuse agent sprite batch to reuse memory buffer so it is more efficient */
+	m_particleEngine.draw(&m_agentSpriteBatch);
+
+
+
 	drawHud();
 
 
@@ -461,4 +498,21 @@ void MainGame::drawHud() {
 
 	m_hudSpriteBatch.end();
 	m_hudSpriteBatch.renderBatch();
+}
+
+
+
+
+
+/* NEW: Adds blood to the particle engine */
+void MainGame::addBlood(const glm::vec2& position, int numParticles) {
+
+	static std::mt19937 randEngine(time(nullptr));
+	static std::uniform_real_distribution<float> randAngle(0.0f, 360.0f);//2.0f * M_PI); // glm rotate expects degrees not radians
+
+	glm::vec2 vel(2.0f, 0.0f);
+	
+	for (int i = 0; i < numParticles; ++i) {
+		m_bloodPaticleBatch->addParticle(position, glm::rotate(vel, randAngle(randEngine)), Bengine::ColorRGBA8(255, 0, 0, 255), 30.0f);
+	}
 }

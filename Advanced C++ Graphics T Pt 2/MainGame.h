@@ -12,6 +12,11 @@
 #include <Bengine/SpriteFont.h>
 #include <Bengine/AudioEngine.h>
 
+/* NEW */
+#include <Bengine/ParticleEngine2D.h>
+/* NEW */
+#include <Bengine/ParticleBatch2D.h>
+
 
 
 class Zombie;
@@ -60,6 +65,9 @@ private:
 
 	void drawHud();
 
+	/* NEW: Adds blood to the particle engine */
+	void addBlood(const glm::vec2& position, int numParticles);
+
 
 private:	
 	Bengine::Window m_window;				
@@ -69,6 +77,12 @@ private:
 	Bengine::Camera2D m_hudCamera;
 	Bengine::SpriteBatch m_agentSpriteBatch; 
 	Bengine::SpriteBatch m_hudSpriteBatch;
+
+	/* NEW */
+	Bengine::ParticleEngine2D m_particleEngine;
+	/* NEW */
+	Bengine::ParticleBatch2D* m_bloodPaticleBatch;
+
 	std::vector<Level*> m_levels;
 	int m_screenWidth = 1024;
 	int m_screenHeight = 768;

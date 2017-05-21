@@ -29,6 +29,9 @@ public:
 
 	// Getter
 	float getDamage() const { return m_damage; }
+	
+	/* NEW */
+	glm::vec2 getPosition() const { return m_position; }
 
 
 private:
