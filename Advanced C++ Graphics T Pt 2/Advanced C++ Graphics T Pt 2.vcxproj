@@ -145,7 +145,10 @@
     <ClInclude Include="Zombie.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 35 - for each loop.txt" />
+    <Text Include="Tutorial 36 - cache-Friendliness.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Tutorial 36 - Cache-Friendliness.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -67,9 +67,7 @@ namespace Bengine {
 
 	void AudioEngine::init() {
 
-		/* NEW */
 		if (m_isInitialized) {
-			/* NEW */
 			fatalError("Tried to initialize Audio Engine twice!\n");
 		}
 
@@ -93,35 +91,19 @@ namespace Bengine {
 		if (m_isInitialized) {
 			m_isInitialized = false;
 			
-
-			/* NEW: for each loop */
 			for (auto& it : m_effectMap) {
 				Mix_FreeChunk(it.second);
 			}
-			/* NEW: for each loop */
 			for (auto& it : m_musicMap) {
 				Mix_FreeMusic(it.second);
 			}
 
-
-			/* NEW: although memory as clear, the map still has all its elements */
 			m_effectMap.clear();
-			/* NEW: although memory as clear, the map still has all its elements */
 			m_musicMap.clear();
 
-
-			/* NEW: this is the opposite of Mix_OpenAudio() */
 			Mix_CloseAudio();
-			// this is the opposite of Mix_Init()
 			Mix_Quit();
-		} /* New: block statement/curly brace closes down here */
-
-
-		///* NEW: for loop (old method): of the loop above */
-		//for (auto it = m_effectMap.begin; it != m_effectMap.end(); ++it) {
-		//	Mix_FreeChunk(it->second);
-		//}
-
+		}
 	}
 
 

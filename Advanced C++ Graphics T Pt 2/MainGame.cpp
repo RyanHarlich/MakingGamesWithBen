@@ -42,8 +42,6 @@ MainGame::~MainGame()
 	for (unsigned int i = 0; i < m_zombies.size(); ++i) {
 		delete m_zombies[i];
 	}
-
-	/* NEW */
 	delete m_spriteFont;
 }
 

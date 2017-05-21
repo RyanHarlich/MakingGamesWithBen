@@ -73,8 +73,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 35 - for each loop.txt">
+    <Text Include="Tutorial 36 - cache-Friendliness.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Tutorial 36 - Cache-Friendliness.png">
+      <Filter>Tutorial Notes</Filter>
+    </Image>
   </ItemGroup>
 </Project>
