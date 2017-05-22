@@ -9,11 +9,8 @@
 
 #include <Bengine/Bengine.h>
 #include <Bengine/Timing.h>
-
-/* NEW */
 #include <Bengine/ResourceManager.h>
 
-/* NEW */
 #include <glm/gtx/rotate_vector.hpp>
 
 
@@ -69,6 +66,18 @@ void MainGame::run() {
 
 
 
+
+/* NEW: a function used for a function pointer in initSystems, this would be better if there was a seperate .cpp file for a bunch of functions for updating particle different ways if not using a lambdas */
+//void updateBloodParticle(Bengine::Particle2D& particle, float deltaTime) {
+//	particle.position += particle.velocity * deltaTime;
+//	particle.color.a = (GLubyte)(particle.life * 255.0f);
+//}
+
+
+
+
+
+
 void MainGame::initSystems() {
 
 	Bengine::init();
@@ -76,18 +85,29 @@ void MainGame::initSystems() {
 	m_window.create("ZombieGame", m_screenWidth, m_screenHeight, 0);
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 	initShaders();
+
 	m_agentSpriteBatch.init();
+
 	m_hudSpriteBatch.init();
 	m_spriteFont = new Bengine::SpriteFont("Fonts/lucon.ttf", 64);
 	m_camera.init(m_screenWidth, m_screenHeight);
 	m_hudCamera.init(m_screenWidth, m_screenHeight);
 	m_hudCamera.setPosition(glm::vec2(m_screenWidth / 2, m_screenHeight /2));
 
-	/* NEW: Initialize particles */
 	m_bloodPaticleBatch = new Bengine::ParticleBatch2D();
-	/* NEW: circle is actually a particle for this program */
-	m_bloodPaticleBatch->init(1000, 0.05f, Bengine::ResourceManager::getTexture("Textures/Circle/circle_0.png"));
-	/* NEW */
+
+
+
+	/* NEW: function pointer argument function found above this method, has a default function pointer if not */
+	//m_bloodPaticleBatch->init(1000, 0.05f, Bengine::ResourceManager::getTexture("Textures/Circle/circle_0.png"), updateBloodParticle); /* NEW: here is the function pointing to the function above */
+	/* NEW: here is the Lambdas version of the above function pointer, this does not need the function updateBloodParticle defined in the .cpp file or anywhere */
+	m_bloodPaticleBatch->init(1000, 0.05f, Bengine::ResourceManager::getTexture("Textures/Circle/circle_0.png"), [](Bengine::Particle2D& particle, float deltaTime) {
+		particle.position += particle.velocity * deltaTime;
+		particle.color.a = (GLubyte)(particle.life * 255.0f);
+	});
+
+
+
 	m_particleEngine.addParticleBatch(m_bloodPaticleBatch);
 
 }
@@ -198,10 +218,7 @@ void MainGame::gameLoop() {
 			updateAgents(deltaTime);
 			updateBullets(deltaTime);
 
-
-			/* NEW */
 			m_particleEngine.update(deltaTime);
-
 
 			totalDeltaTime -= deltaTime;
 		}
@@ -301,9 +318,7 @@ void MainGame::updateBullets(float deltaTime) {
 		for (unsigned int j = 0; j < m_zombies.size();) {	
 			if (m_bullets[i].collideWithAgent(m_zombies[j])) {
 
-				/* NEW */
 				addBlood(m_bullets[i].getPosition(), 5);
-
 
 				if (m_zombies[j]->applyDamage(m_bullets[i].getDamage())) {		
 					delete m_zombies[j];
@@ -336,10 +351,7 @@ void MainGame::updateBullets(float deltaTime) {
 			for (unsigned int j = 1; j < m_humans.size();) { 		
 				if (m_bullets[i].collideWithAgent(m_humans[j])) {
 
-
-					/* NEW */
 					addBlood(m_bullets[i].getPosition(), 5);
-
 
 					if (m_humans[j]->applyDamage(m_bullets[i].getDamage())) {
 
@@ -462,15 +474,9 @@ void MainGame::drawGame() {
 	m_agentSpriteBatch.end();
 	m_agentSpriteBatch.renderBatch();
 
-
-
-	/* NEW: render the particles on top of agents, reuse agent sprite batch to reuse memory buffer so it is more efficient */
 	m_particleEngine.draw(&m_agentSpriteBatch);
 
-
-
 	drawHud();
-
 
 	m_textureProgram.unuse();
 	m_window.swapBuffer();
@@ -504,11 +510,11 @@ void MainGame::drawHud() {
 
 
 
-/* NEW: Adds blood to the particle engine */
+
 void MainGame::addBlood(const glm::vec2& position, int numParticles) {
 
 	static std::mt19937 randEngine(time(nullptr));
-	static std::uniform_real_distribution<float> randAngle(0.0f, 360.0f);//2.0f * M_PI); // glm rotate expects degrees not radians
+	static std::uniform_real_distribution<float> randAngle(0.0f, 360.0f);
 
 	glm::vec2 vel(2.0f, 0.0f);
 	

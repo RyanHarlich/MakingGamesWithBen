@@ -145,7 +145,7 @@
     <ClInclude Include="Zombie.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 37 - ParticleEngine2D!.txt" />
+    <Text Include="Tutorial 37 - Function Pointers, Lambdas.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

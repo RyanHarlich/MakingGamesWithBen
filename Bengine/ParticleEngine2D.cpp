@@ -5,7 +5,7 @@
 
 namespace Bengine {
 
-	// This also works instead of wrapping the namespace around everything, but would have to say Bengine:: alot
+
 	Bengine::ParticleEngine2D::ParticleEngine2D()
 	{
 	}
