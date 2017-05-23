@@ -1,9 +1,12 @@
 Futuristic_Assault_Rifle_Single_Shot_01.wav
 Futuristic_Assault_Rifle_Single_Shot_02.wav
+https://opengameart.org/content/futuristic-weapons-assault-rifle
 
 Futuristic_Shotgun_Single_Shot.wav
+https://opengameart.org/content/futuristic-shotgun
 
 Futuristic_SMG_Single_Shot.wav
+https://opengameart.org/content/futuristic-smg
 
 
 Credit goes to: Michael Klier

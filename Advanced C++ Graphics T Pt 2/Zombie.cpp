@@ -22,12 +22,26 @@ Zombie::~Zombie()
 
 
 
-
-void Zombie::init(float speed, glm::vec2 pos) {	
+/* NEW: added stance arguments */
+void Zombie::init(float speed, glm::vec2 pos, const std::unordered_map<unsigned int, GLuint>& stancesIDs, const NumStances& numStances) {
 	m_speed = speed;
 	m_position = pos;
 	m_health = 150;
-	m_color = Bengine::ColorRGBA8(0, 160, 0, 255);
+
+	/* NEW: change color so solid white */
+	//m_color = Bengine::ColorRGBA8(0, 160, 0, 255);
+	m_color = Bengine::ColorRGBA8(255, 255, 255, 255);
+
+
+
+
+	/* NEW */
+	m_numStances = numStances;
+	m_stanceIDs = stancesIDs;
+	m_textureID = m_stanceIDs[m_currentMoveImage];
+	/* NEW: end of new */
+
+
 }
 
 
@@ -36,6 +50,17 @@ void Zombie::update(const std::vector<std::string>& levelData,
 	std::vector<Human*>& humans,
 	std::vector<Zombie*>& zombies,
 	float deltaTime) {
+
+
+
+	/* NEW */
+	spriteStanceUpdate();
+
+
+
+
+
+
 
 	static std::mt19937 randomEngine(time(nullptr));
 
@@ -52,8 +77,16 @@ void Zombie::update(const std::vector<std::string>& levelData,
 	Human* closestHuman = getNearestHuman(humans);
 
 	if (closestHuman != nullptr) {
-		glm::vec2 direction = glm::normalize(closestHuman->getPosition() - m_position);
-		m_position += direction * m_speed * deltaTime;
+
+		/* NEW: now agent protected variable */
+		//glm::vec2 direction = glm::normalize(closestHuman->getPosition() - m_position);
+		m_direction = glm::normalize(closestHuman->getPosition() - m_position);
+
+		/* NEW */
+		//m_position += direction * m_speed * deltaTime;
+		m_position += m_direction * m_speed * deltaTime;
+
+
 	}
 	else {
 		//TO DO: implement
@@ -92,4 +125,22 @@ Human* Zombie::getNearestHuman(std::vector<Human*>& humans) {
 
 
 	return closestHuman;	
+}
+
+
+
+
+
+
+
+/* NEW */
+void Zombie::spriteStanceUpdate(Uint32 currentSpriteStance /*  = SpriteStance::MOVING */) {
+	/* NEW */
+	++m_currentMoveImage;
+	/* NEW: moving image */
+	if (m_currentMoveImage > m_numStances.lMove) {
+		m_currentMoveImage = m_numStances.fMove;
+	}
+	m_textureID = m_stanceIDs[m_currentMoveImage];
+	/* NEW: end of new */
 }

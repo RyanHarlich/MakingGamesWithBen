@@ -1,6 +1,5 @@
 #pragma once
 
-/* NEW: access to function pointers */
 #include <functional>
 
 #include "Vertex.h"
@@ -14,11 +13,6 @@ namespace Bengine {
 
 	// If particle is small it will be more cache friendly, because if a cache line is 64 bytes, then if Particle is small will be getting more particles per cache line fetched
 	class Particle2D {
-		/* NEW: removed for function pointing */
-		//public:	
-		//friend class ParticleBatch2D;
-		//void update(float deltaTime);
-	    //private:
 		public:
 		glm::vec2 position = glm::vec2(0.0f);
 		glm::vec2 velocity = glm::vec2(0.0f);
@@ -28,7 +22,7 @@ namespace Bengine {
 	};
 
 
-	/* NEW: default update function, signature of function pointer has to match this function */
+
 	inline void defualtParticleUpdate(Particle2D& particle, float deltaTime) {
 		particle.position += particle.velocity * deltaTime;
 	}
@@ -42,7 +36,6 @@ namespace Bengine {
 		ParticleBatch2D();
 		~ParticleBatch2D();
 
-		/* NEW: function pointer argument */
 		void init(int maxParticles, float decayRate, GLTexture texture,
 			std::function<void(Particle2D&, float)> updateFunc = defualtParticleUpdate);
 
@@ -60,12 +53,10 @@ namespace Bengine {
 		int findFreeParticle();
 
 
-		/* NEW: function pointer */
+
 		std::function<void(Particle2D&, float)> m_updateFunc;
-
-
 		float m_decayRate = 0.1f;
-		Particle2D* m_particles = nullptr; //buffer was = new Particle[10000]; now a dynamic array
+		Particle2D* m_particles = nullptr;
 		int m_maxParticles = 0;
 		int m_lastFreeParticle = 0;
 		GLTexture m_texture;

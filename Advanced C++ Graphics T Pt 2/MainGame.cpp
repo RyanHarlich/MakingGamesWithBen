@@ -7,6 +7,12 @@
 #include "MainGame.h"
 #include "Zombie.h"
 
+
+/* NEW */
+#include "UploadStances.h"
+
+
+
 #include <Bengine/Bengine.h>
 #include <Bengine/Timing.h>
 #include <Bengine/ResourceManager.h>
@@ -66,18 +72,6 @@ void MainGame::run() {
 
 
 
-
-/* NEW: a function used for a function pointer in initSystems, this would be better if there was a seperate .cpp file for a bunch of functions for updating particle different ways if not using a lambdas */
-//void updateBloodParticle(Bengine::Particle2D& particle, float deltaTime) {
-//	particle.position += particle.velocity * deltaTime;
-//	particle.color.a = (GLubyte)(particle.life * 255.0f);
-//}
-
-
-
-
-
-
 void MainGame::initSystems() {
 
 	Bengine::init();
@@ -94,19 +88,14 @@ void MainGame::initSystems() {
 	m_hudCamera.init(m_screenWidth, m_screenHeight);
 	m_hudCamera.setPosition(glm::vec2(m_screenWidth / 2, m_screenHeight /2));
 
+
+
 	m_bloodPaticleBatch = new Bengine::ParticleBatch2D();
 
-
-
-	/* NEW: function pointer argument function found above this method, has a default function pointer if not */
-	//m_bloodPaticleBatch->init(1000, 0.05f, Bengine::ResourceManager::getTexture("Textures/Circle/circle_0.png"), updateBloodParticle); /* NEW: here is the function pointing to the function above */
-	/* NEW: here is the Lambdas version of the above function pointer, this does not need the function updateBloodParticle defined in the .cpp file or anywhere */
-	m_bloodPaticleBatch->init(1000, 0.05f, Bengine::ResourceManager::getTexture("Textures/Circle/circle_0.png"), [](Bengine::Particle2D& particle, float deltaTime) {
+	m_bloodPaticleBatch->init(1000, 0.05f, Bengine::ResourceManager::getTexture("Textures/Blood/whitePuff06.png"), [](Bengine::Particle2D& particle, float deltaTime) {
 		particle.position += particle.velocity * deltaTime;
 		particle.color.a = (GLubyte)(particle.life * 255.0f);
 	});
-
-
 
 	m_particleEngine.addParticleBatch(m_bloodPaticleBatch);
 
@@ -116,7 +105,6 @@ void MainGame::initSystems() {
 
 
 void MainGame::initLevel() {
-	
 
 	m_levels.push_back(new Level("Levels/level1.txt"));
 
@@ -124,7 +112,18 @@ void MainGame::initLevel() {
 	m_currentLevel = 0;
 
 	m_player = new Player();
-	m_player->init(PLAYER_SPEED, m_levels[m_currentLevel]->getStartPlayerPos(), &m_inputManager, &m_camera, &m_bullets);
+
+
+	/* NEW */
+	std::unordered_map<unsigned int, GLuint> playerStanceIDs;
+	UploadStances playerStances;
+	/* NEW */
+	NumStances numStances = playerStances.uploadPlayerStances(playerStanceIDs);
+	/* NEW: added arguments ID stances */
+	m_player->init(PLAYER_SPEED, m_levels[m_currentLevel]->getStartPlayerPos(), &m_inputManager, &m_camera, &m_bullets, playerStanceIDs, numStances);
+
+
+
 
 	m_humans.push_back(m_player); 
 
@@ -141,14 +140,32 @@ void MainGame::initLevel() {
 	for (int i = 0; i < m_levels[m_currentLevel]->getNumHumans(); ++i) {
 		m_humans.push_back(new Human);
 		glm::vec2 pos(randX(randomEngine) * TILE_WIDTH, randY(randomEngine) * TILE_WIDTH);
-		m_humans.back()->init(HUMAN_SPEED, pos);
+
+
+		/* NEW */
+		std::unordered_map<unsigned int, GLuint> humanStanceIDs;
+		UploadStances humanStances;
+		/* NEW */
+		NumStances numStances = humanStances.uploadHumanStances(humanStanceIDs);
+		/* NEW: added arguments ID stances */
+		m_humans.back()->init(HUMAN_SPEED, pos,humanStanceIDs, numStances);
 	}
 
 	
 	const std::vector<glm::vec2>& zombiePositions = m_levels[m_currentLevel]->getZombieStartPositions();
 	for (unsigned int i = 0; i < zombiePositions.size(); ++i) {
 		m_zombies.push_back(new Zombie);
-		m_zombies.back()->init(ZOMBIE_SPEED, zombiePositions[i]);
+
+		
+		/* NEW */
+		std::unordered_map<unsigned int, GLuint> zombieStanceIDs;
+		UploadStances zombieStances;
+		/* NEW */
+		NumStances numStances = zombieStances.uploadZombieStances(zombieStanceIDs);
+		/* NEW: added arguments ID stances */
+		m_zombies.back()->init(ZOMBIE_SPEED, zombiePositions[i], zombieStanceIDs, numStances);
+
+
 	}
 
 
@@ -180,8 +197,11 @@ void MainGame::gameLoop() {
 	Bengine::FpsLimiter fpsLimiter;
 	fpsLimiter.setMaxFPS(20.0f);
 
+	/* NEW: zoomed in a little, zoom out by 3x */
+	//const float CAMERA_SCALE = 1.0f / 4.0f;
+	const float CAMERA_SCALE = 1.0f / 3.0f;
 
-	const float CAMERA_SCALE = 1.0f / 4.0f;
+
 	m_camera.setScale(CAMERA_SCALE);
 
 
@@ -265,8 +285,19 @@ void MainGame::updateAgents(float deltaTime) {
 			if (m_zombies[i]->collideWithAgent(m_humans[j])) {
 		
 				m_zombies.push_back(new Zombie);
-				m_zombies.back()->init(ZOMBIE_SPEED, m_humans[j]->getPosition());
+
+
+
+				/* NEW */
+				std::unordered_map<unsigned int, GLuint> zombieStanceIDs;
+				UploadStances zombieStances;
+				/* NEW */
+				NumStances numStances = zombieStances.uploadZombieStances(zombieStanceIDs);
+				/* NEW: added arguments ID stances */
+				m_zombies.back()->init(ZOMBIE_SPEED, m_humans[j]->getPosition(), zombieStanceIDs, numStances);
 			
+
+
 				delete m_humans[j];
 				m_humans[j] = m_humans.back();
 				m_humans.pop_back();
@@ -494,7 +525,10 @@ void MainGame::drawHud() {
 
 	m_hudSpriteBatch.begin();
 
-	sprintf_s(buffer, "Num Humans %d", m_humans.size());
+	/* NEW: subtract player from size */
+	sprintf_s(buffer, "Num Humans %d", m_humans.size() - 1);
+
+
 	m_spriteFont->draw(m_hudSpriteBatch, buffer, glm::vec2(0, 0), 
 		glm::vec2(0.5), 0.0f, Bengine::ColorRGBA8(255, 255, 255, 255));
 

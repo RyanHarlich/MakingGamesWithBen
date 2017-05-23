@@ -4,15 +4,7 @@
 
 namespace Bengine {
 
-	/* NEW: removed */
-	//void Particle2D::update(float deltaTime) {
-	//	m_position += velocity * deltaTime;
-	//}
-
-
-
-
-		
+	
 	ParticleBatch2D::ParticleBatch2D()
 	{
 	}
@@ -28,14 +20,13 @@ namespace Bengine {
 
 
 
-	/* NEW: function pointer argument */
+
+
 	void ParticleBatch2D::init(int maxParticles, float decayRate, GLTexture texture, std::function<void(Particle2D&, float)> updateFunc /* = defaultParticleUpdate */) {
 		m_maxParticles = maxParticles;
 		m_particles = new Particle2D[maxParticles];
 		m_decayRate = decayRate;
 		m_texture = texture;
-
-		/* NEW */
 		m_updateFunc = updateFunc;
 	}
 
@@ -49,15 +40,8 @@ namespace Bengine {
 		for (int i = 0; i < m_maxParticles; ++i) {
 			// check if particle is active
 			if (m_particles[i].life > 0.0f) { 
-
-				/* NEW: removed and changed to function pointer style */
-				//m_particles[i].update(deltaTime);
-				/* NEW use of function pointer */
 				m_updateFunc(m_particles[i], deltaTime);
-
-
-				m_particles[i].life -= m_decayRate * deltaTime;
-				
+				m_particles[i].life -= m_decayRate * deltaTime;			
 			}
 		}
 	}

@@ -50,21 +50,24 @@ Level::Level(const std::string& fileName)
 			case 'G': 
 				m_spriteBatch.draw(destRect,
 					uvRect,
-					Bengine::ResourceManager::getTexture("Textures/wezu_tex_cc_by/wall2_shga.png").id,
+					/* NEW: file path changed to Wall */
+					Bengine::ResourceManager::getTexture("Textures/Wall/wall2_shga.png").id,
 					0.0f,
 					whiteColor);
 				break;
 			case 'R': 
 				m_spriteBatch.draw(destRect,
 					uvRect,
-					Bengine::ResourceManager::getTexture("Textures/wezu_tex_cc_by/wall1_color.png").id,
+					/* NEW: file path changed to Wall */
+					Bengine::ResourceManager::getTexture("Textures/Wall/wall1_color.png").id,
 					0.0f,
 					whiteColor);
 				break;
 			case 'P':
 				m_spriteBatch.draw(destRect,
 					uvRect,
-					Bengine::ResourceManager::getTexture("Textures/wezu_tex_cc_by/wall2_n.png").id,
+					/* NEW: file path changed to Wall */
+					Bengine::ResourceManager::getTexture("Textures/Wall/wall2_n.png").id,
 					0.0f,
 					whiteColor);
 				break;

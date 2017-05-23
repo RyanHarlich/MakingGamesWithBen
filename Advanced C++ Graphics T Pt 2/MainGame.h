@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Bullet.h"
 
+
 #include <Bengine/Window.h>
 #include <Bengine/GLSLProgram.h>
 #include <Bengine/InputManager.h>
@@ -90,8 +91,6 @@ private:
 	Bengine::SpriteFont* m_spriteFont;
 	Bengine::AudioEngine m_audioEngine;
 	GameState m_gameState;
-	
-
 
 };
 

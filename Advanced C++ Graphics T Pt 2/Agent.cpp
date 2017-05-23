@@ -87,9 +87,12 @@ bool Agent::collideWithAgent(Agent* agent) {
 
 void Agent::draw(Bengine::SpriteBatch& spriteBatch) {
 
-	static GLuint textureID = Bengine::ResourceManager::getTexture("Textures/Bubble/BubbleSimple_1.png").id;
+	/* NEW: removed */
+	//static GLuint textureID = Bengine::ResourceManager::getTexture("Textures/Bubble/BubbleSimple_1.png").id;
 
-	const glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
+
+	/* NEW: changed for human sheet */
+	//const glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
 
 	glm::vec4 destRect;
 	destRect.x = m_position.x;
@@ -97,7 +100,11 @@ void Agent::draw(Bengine::SpriteBatch& spriteBatch) {
 	destRect.z = AGENT_WIDTH;
 	destRect.w = AGENT_WIDTH;
 
-	spriteBatch.draw(destRect, uvRect, textureID, 0.0f, m_color);
+
+	/* NEW: pass direction for new angle implemantation */
+	//spriteBatch.draw(destRect, m_uvRect, m_textureID, 0.0f, m_color);
+	spriteBatch.draw(destRect, m_uvRect, m_textureID, 0.0f, m_color, m_direction);
+
 }
 
 

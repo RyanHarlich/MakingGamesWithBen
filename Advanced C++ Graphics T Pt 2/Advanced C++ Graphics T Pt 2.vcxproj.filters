@@ -45,6 +45,9 @@
     <ClCompile Include="Zombie.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UploadStances.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agent.h">
@@ -71,10 +74,18 @@
     <ClInclude Include="Zombie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UploadStances.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 37 - Function Pointers, Lambdas.txt">
+    <Text Include="Tutorial 39 - 2D Rotations!.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Tutorial 39 - Angle Rotations.png">
+      <Filter>Tutorial Notes</Filter>
+    </Image>
   </ItemGroup>
 </Project>
