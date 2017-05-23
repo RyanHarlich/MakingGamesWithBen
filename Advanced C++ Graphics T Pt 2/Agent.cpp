@@ -46,7 +46,7 @@ bool Agent::collideWithLevel(const std::vector<std::string>& levelData) {
 	if (collideTilePositions.size() == 0) { return false; }
 
 	// Do the collision
-	for (unsigned int i = 0; i < collideTilePositions.size(); ++i) {
+	for (size_t i = 0; i < collideTilePositions.size(); ++i) {
 		collideWithTile(collideTilePositions[i]);
 	}
 
@@ -87,24 +87,13 @@ bool Agent::collideWithAgent(Agent* agent) {
 
 void Agent::draw(Bengine::SpriteBatch& spriteBatch) {
 
-	/* NEW: removed */
-	//static GLuint textureID = Bengine::ResourceManager::getTexture("Textures/Bubble/BubbleSimple_1.png").id;
-
-
-	/* NEW: changed for human sheet */
-	//const glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
-
 	glm::vec4 destRect;
 	destRect.x = m_position.x;
 	destRect.y = m_position.y;
 	destRect.z = AGENT_WIDTH;
 	destRect.w = AGENT_WIDTH;
 
-
-	/* NEW: pass direction for new angle implemantation */
-	//spriteBatch.draw(destRect, m_uvRect, m_textureID, 0.0f, m_color);
 	spriteBatch.draw(destRect, m_uvRect, m_textureID, 0.0f, m_color, m_direction);
-
 }
 
 

@@ -1,5 +1,7 @@
 #pragma once 
 
+/* NEW: moved from Timing.cpp */
+#include <SDL/SDL.h>
 
 
 namespace Bengine {
@@ -22,9 +24,18 @@ namespace Bengine {
 
 
 		float m_maxFPS;
-		unsigned int m_startTicks; 
+
+		/* NEW: changed to Uint32 */
+		//unsigned int m_startTicks; 
+		Uint32 m_startTicks;
+
+
 		float m_fps;
-		float m_frameTime;
+
+
+		/* NEW: changed to Uint32 */
+		//float m_frameTime;
+		Uint32 m_frameTime;
 
 
 	};

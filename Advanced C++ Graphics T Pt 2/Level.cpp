@@ -36,8 +36,8 @@ Level::Level(const std::string& fileName)
 	Bengine::ColorRGBA8 whiteColor(255, 255, 255, 255);
 
 	
-	for (unsigned int y = 0; y < m_levelData.size(); ++y) {
-		for (unsigned int x = 0; x < m_levelData[y].size(); ++x) {
+	for (size_t y = 0; y < m_levelData.size(); ++y) {
+		for (size_t x = 0; x < m_levelData[y].size(); ++x) {
 
 			
 			char tile = m_levelData[y][x];
@@ -50,7 +50,6 @@ Level::Level(const std::string& fileName)
 			case 'G': 
 				m_spriteBatch.draw(destRect,
 					uvRect,
-					/* NEW: file path changed to Wall */
 					Bengine::ResourceManager::getTexture("Textures/Wall/wall2_shga.png").id,
 					0.0f,
 					whiteColor);
@@ -58,7 +57,6 @@ Level::Level(const std::string& fileName)
 			case 'R': 
 				m_spriteBatch.draw(destRect,
 					uvRect,
-					/* NEW: file path changed to Wall */
 					Bengine::ResourceManager::getTexture("Textures/Wall/wall1_color.png").id,
 					0.0f,
 					whiteColor);
@@ -66,7 +64,6 @@ Level::Level(const std::string& fileName)
 			case 'P':
 				m_spriteBatch.draw(destRect,
 					uvRect,
-					/* NEW: file path changed to Wall */
 					Bengine::ResourceManager::getTexture("Textures/Wall/wall2_n.png").id,
 					0.0f,
 					whiteColor);

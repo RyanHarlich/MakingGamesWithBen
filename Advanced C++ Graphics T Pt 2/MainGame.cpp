@@ -6,12 +6,7 @@
 #include "Gun.h"
 #include "MainGame.h"
 #include "Zombie.h"
-
-
-/* NEW */
 #include "UploadStances.h"
-
-
 
 #include <Bengine/Bengine.h>
 #include <Bengine/Timing.h>
@@ -42,13 +37,23 @@ MainGame::MainGame() :
 
 MainGame::~MainGame()
 {
-	for (unsigned int i = 0; i < m_levels.size(); ++i) {
+	/* NEW: changed to size_t */
+	/*for (unsigned int i = 0; i < m_levels.size(); ++i) {
 		delete m_levels[i];
 	}
 	for (unsigned int i = 0; i < m_humans.size(); ++i) {
 		delete m_humans[i];
 	}
 	for (unsigned int i = 0; i < m_zombies.size(); ++i) {
+		delete m_zombies[i];
+	}*/
+	for (size_t i = 0; i < m_levels.size(); ++i) {
+		delete m_levels[i];
+	}
+	for (size_t i = 0; i < m_humans.size(); ++i) {
+		delete m_humans[i];
+	}
+	for (size_t i = 0; i < m_zombies.size(); ++i) {
 		delete m_zombies[i];
 	}
 	delete m_spriteFont;
@@ -114,12 +119,10 @@ void MainGame::initLevel() {
 	m_player = new Player();
 
 
-	/* NEW */
 	std::unordered_map<unsigned int, GLuint> playerStanceIDs;
 	UploadStances playerStances;
-	/* NEW */
 	NumStances numStances = playerStances.uploadPlayerStances(playerStanceIDs);
-	/* NEW: added arguments ID stances */
+
 	m_player->init(PLAYER_SPEED, m_levels[m_currentLevel]->getStartPlayerPos(), &m_inputManager, &m_camera, &m_bullets, playerStanceIDs, numStances);
 
 
@@ -142,27 +145,25 @@ void MainGame::initLevel() {
 		glm::vec2 pos(randX(randomEngine) * TILE_WIDTH, randY(randomEngine) * TILE_WIDTH);
 
 
-		/* NEW */
+
 		std::unordered_map<unsigned int, GLuint> humanStanceIDs;
 		UploadStances humanStances;
-		/* NEW */
 		NumStances numStances = humanStances.uploadHumanStances(humanStanceIDs);
-		/* NEW: added arguments ID stances */
+
 		m_humans.back()->init(HUMAN_SPEED, pos,humanStanceIDs, numStances);
 	}
 
 	
 	const std::vector<glm::vec2>& zombiePositions = m_levels[m_currentLevel]->getZombieStartPositions();
-	for (unsigned int i = 0; i < zombiePositions.size(); ++i) {
+	for (size_t i = 0; i < zombiePositions.size(); ++i) {
 		m_zombies.push_back(new Zombie);
 
 		
-		/* NEW */
+
 		std::unordered_map<unsigned int, GLuint> zombieStanceIDs;
 		UploadStances zombieStances;
-		/* NEW */
 		NumStances numStances = zombieStances.uploadZombieStances(zombieStanceIDs);
-		/* NEW: added arguments ID stances */
+
 		m_zombies.back()->init(ZOMBIE_SPEED, zombiePositions[i], zombieStanceIDs, numStances);
 
 
@@ -197,8 +198,7 @@ void MainGame::gameLoop() {
 	Bengine::FpsLimiter fpsLimiter;
 	fpsLimiter.setMaxFPS(20.0f);
 
-	/* NEW: zoomed in a little, zoom out by 3x */
-	//const float CAMERA_SCALE = 1.0f / 4.0f;
+
 	const float CAMERA_SCALE = 1.0f / 3.0f;
 
 
@@ -208,7 +208,10 @@ void MainGame::gameLoop() {
 	const float MS_PER_SECOND = 1000; 
 	const float DESIRED_FRAMETIME = MS_PER_SECOND / DESIRED_FPS; 
 	const float MAX_DELTA_TIME = 1.0f; 
-	float previousTicks = (float)SDL_GetTicks();
+
+	/* NEW: changed to Uint32 */
+	//float previousTicks = (float)SDL_GetTicks();
+	Uint32 previousTicks = SDL_GetTicks();
 
 
 
@@ -217,8 +220,15 @@ void MainGame::gameLoop() {
 		fpsLimiter.begin();
 
 
-		float newTicks = (float)SDL_GetTicks();
-		float frameTime = newTicks - previousTicks;
+		/* NEW: changed to Uint32 */
+		//float newTicks = (float)SDL_GetTicks();
+		Uint32 newTicks = SDL_GetTicks();
+
+
+		/* NEW: changed to Uint32 */
+		//float frameTime = newTicks - previousTicks;
+		Uint32 frameTime = newTicks - previousTicks;
+
 		previousTicks = newTicks;
 		float totalDeltaTime = frameTime / DESIRED_FRAMETIME;
 
@@ -266,37 +276,31 @@ void MainGame::gameLoop() {
 
 void MainGame::updateAgents(float deltaTime) {
 	
-	for (unsigned int i = 0; i < m_humans.size(); ++i) {
+	for (size_t i = 0; i < m_humans.size(); ++i) {
 		m_humans[i]->update(m_levels[m_currentLevel]->getLevelData(), m_humans, m_zombies, deltaTime);
 	}
 
 
-	for (unsigned int i = 0; i < m_zombies.size(); ++i) {
+	for (size_t i = 0; i < m_zombies.size(); ++i) {
 		m_zombies[i]->update(m_levels[m_currentLevel]->getLevelData(), m_humans, m_zombies, deltaTime);
 	}
 
 
-	for (unsigned int i = 0; i < m_zombies.size(); ++i) {	
-		for (unsigned int j = i + 1; j < m_zombies.size(); ++j) { 
+	for (size_t i = 0; i < m_zombies.size(); ++i) {	
+		for (size_t j = i + 1; j < m_zombies.size(); ++j) { 
 			m_zombies[i]->collideWithAgent(m_zombies[j]);
 		}	
 
-		for (unsigned int j = 1; j < m_humans.size(); ++j) { 	
+		for (size_t j = 1; j < m_humans.size(); ++j) { 	
 			if (m_zombies[i]->collideWithAgent(m_humans[j])) {
 		
 				m_zombies.push_back(new Zombie);
 
-
-
-				/* NEW */
 				std::unordered_map<unsigned int, GLuint> zombieStanceIDs;
 				UploadStances zombieStances;
-				/* NEW */
 				NumStances numStances = zombieStances.uploadZombieStances(zombieStanceIDs);
-				/* NEW: added arguments ID stances */
-				m_zombies.back()->init(ZOMBIE_SPEED, m_humans[j]->getPosition(), zombieStanceIDs, numStances);
-			
 
+				m_zombies.back()->init(ZOMBIE_SPEED, m_humans[j]->getPosition(), zombieStanceIDs, numStances);
 
 				delete m_humans[j];
 				m_humans[j] = m_humans.back();
@@ -315,8 +319,8 @@ void MainGame::updateAgents(float deltaTime) {
 	}
 
 
-	for (unsigned int i = 0; i < m_humans.size(); ++i) {	
-		for (unsigned int j = i + 1; j < m_humans.size(); ++j) { 
+	for (size_t i = 0; i < m_humans.size(); ++i) {	
+		for (size_t j = i + 1; j < m_humans.size(); ++j) { 
 			m_humans[i]->collideWithAgent(m_humans[j]);
 		}
 	}
@@ -328,7 +332,7 @@ void MainGame::updateAgents(float deltaTime) {
 
 void MainGame::updateBullets(float deltaTime) {
 
-	for (unsigned int i = 0; i < m_bullets.size();) {
+	for (size_t i = 0; i < m_bullets.size();) {
 
 		if (m_bullets[i].update(m_levels[m_currentLevel]->getLevelData(), deltaTime)) {
 			m_bullets[i] = m_bullets.back();
@@ -342,11 +346,11 @@ void MainGame::updateBullets(float deltaTime) {
 	bool wasBulletRemoved;
 
 
-	for (unsigned int i = 0; i < m_bullets.size(); ++i) {
+	for (size_t i = 0; i < m_bullets.size(); ++i) {
 
 		wasBulletRemoved = false;
 
-		for (unsigned int j = 0; j < m_zombies.size();) {	
+		for (size_t j = 0; j < m_zombies.size();) {	
 			if (m_bullets[i].collideWithAgent(m_zombies[j])) {
 
 				addBlood(m_bullets[i].getPosition(), 5);
@@ -379,7 +383,7 @@ void MainGame::updateBullets(float deltaTime) {
 
 	
 		if (wasBulletRemoved == false) {
-			for (unsigned int j = 1; j < m_humans.size();) { 		
+			for (size_t j = 1; j < m_humans.size();) { 		
 				if (m_bullets[i].collideWithAgent(m_humans[j])) {
 
 					addBlood(m_bullets[i].getPosition(), 5);
@@ -489,17 +493,17 @@ void MainGame::drawGame() {
 
 	const glm::vec2 agentDims(AGENT_RADIUS * 2.0f);
 
-	for (unsigned int i = 0; i < m_humans.size(); ++i) {
+	for (size_t i = 0; i < m_humans.size(); ++i) {
 		if (m_camera.isBoxInView(m_humans[i]->getPosition(), agentDims)) {
 			m_humans[i]->draw(m_agentSpriteBatch);
 		}
 	}
-	for (unsigned int i = 0; i < m_zombies.size(); ++i) {
+	for (size_t i = 0; i < m_zombies.size(); ++i) {
 		if (m_camera.isBoxInView(m_zombies[i]->getPosition(), agentDims)) {
 			m_zombies[i]->draw(m_agentSpriteBatch);
 		}
 	}
-	for (unsigned int i = 0; i < m_bullets.size(); ++i) {
+	for (size_t i = 0; i < m_bullets.size(); ++i) {
 		m_bullets[i].draw(m_agentSpriteBatch);
 	}
 	m_agentSpriteBatch.end();
@@ -525,7 +529,6 @@ void MainGame::drawHud() {
 
 	m_hudSpriteBatch.begin();
 
-	/* NEW: subtract player from size */
 	sprintf_s(buffer, "Num Humans %d", m_humans.size() - 1);
 
 

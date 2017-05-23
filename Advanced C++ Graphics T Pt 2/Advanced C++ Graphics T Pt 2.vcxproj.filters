@@ -79,13 +79,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 39 - 2D Rotations!.txt">
+    <Text Include="COMPLETED TUTORIAL 31-39!.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Tutorial 39 - Angle Rotations.png">
-      <Filter>Tutorial Notes</Filter>
-    </Image>
   </ItemGroup>
 </Project>
