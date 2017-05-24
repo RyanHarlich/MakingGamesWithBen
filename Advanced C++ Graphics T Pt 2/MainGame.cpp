@@ -37,16 +37,6 @@ MainGame::MainGame() :
 
 MainGame::~MainGame()
 {
-	/* NEW: changed to size_t */
-	/*for (unsigned int i = 0; i < m_levels.size(); ++i) {
-		delete m_levels[i];
-	}
-	for (unsigned int i = 0; i < m_humans.size(); ++i) {
-		delete m_humans[i];
-	}
-	for (unsigned int i = 0; i < m_zombies.size(); ++i) {
-		delete m_zombies[i];
-	}*/
 	for (size_t i = 0; i < m_levels.size(); ++i) {
 		delete m_levels[i];
 	}
@@ -133,7 +123,7 @@ void MainGame::initLevel() {
 
 
 	static std::mt19937 randomEngine;
-	randomEngine.seed(time(nullptr));
+	randomEngine.seed((unsigned int)time(nullptr));
 	std::uniform_int_distribution<int> randX(2, m_levels[m_currentLevel]->getWidth() - 2); 
 	std::uniform_int_distribution<int> randY(2, m_levels[m_currentLevel]->getHeight() - 2);
 
@@ -182,9 +172,15 @@ void MainGame::initLevel() {
 
 void MainGame::initShaders() {
 	m_textureProgram.compileShaders("Shaders/textureShading.vert", "Shaders/textureShading.frag");
-	m_textureProgram.addAttribute("fragmentPosition");
-	m_textureProgram.addAttribute("fragmentColor");
-	m_textureProgram.addAttribute("fragmentUV");
+
+	/* NEW: THIS WAS SUPPOSE TO BE VERTEX, IT SAID FRAGMENT! 
+			THAT WOULD WORK SINCE IT OUTS TO .FRAG BUT IS NOT RIGHT */
+	m_textureProgram.addAttribute("vertexPosition");
+	m_textureProgram.addAttribute("vertexColor");
+	m_textureProgram.addAttribute("vertexUV");
+
+
+
 	m_textureProgram.linkShaders();
 
 }
@@ -209,8 +205,7 @@ void MainGame::gameLoop() {
 	const float DESIRED_FRAMETIME = MS_PER_SECOND / DESIRED_FPS; 
 	const float MAX_DELTA_TIME = 1.0f; 
 
-	/* NEW: changed to Uint32 */
-	//float previousTicks = (float)SDL_GetTicks();
+
 	Uint32 previousTicks = SDL_GetTicks();
 
 
@@ -219,14 +214,8 @@ void MainGame::gameLoop() {
 	while (m_gameState == GameState::PLAY) {
 		fpsLimiter.begin();
 
-
-		/* NEW: changed to Uint32 */
-		//float newTicks = (float)SDL_GetTicks();
 		Uint32 newTicks = SDL_GetTicks();
 
-
-		/* NEW: changed to Uint32 */
-		//float frameTime = newTicks - previousTicks;
 		Uint32 frameTime = newTicks - previousTicks;
 
 		previousTicks = newTicks;
@@ -550,7 +539,7 @@ void MainGame::drawHud() {
 
 void MainGame::addBlood(const glm::vec2& position, int numParticles) {
 
-	static std::mt19937 randEngine(time(nullptr));
+	static std::mt19937 randEngine((unsigned int)time(nullptr));
 	static std::uniform_real_distribution<float> randAngle(0.0f, 360.0f);
 
 	glm::vec2 vel(2.0f, 0.0f);

@@ -1,8 +1,5 @@
 #include "Timing.h"
 
-/* NEW: moved to Timing.h */
-//#include <SDL/SDL.h>
-
 
 
 
@@ -49,9 +46,6 @@ namespace Bengine {
 		calculateFPS();
 
 		// Limits the frame rate
-
-		/* NEW: changed to Uint32 */
-		//float frameTicks = (float)SDL_GetTicks() - (float)m_startTicks;
 		Uint32 frameTicks = SDL_GetTicks() - m_startTicks;
 
 
@@ -71,26 +65,16 @@ namespace Bengine {
 	void FpsLimiter::calculateFPS() {
 		static const int NUM_SAMPLES = 10;
 
-
-		/* NEW: changed to Uint32 */
-		//static float frameTimes[NUM_SAMPLES];
 		static Uint32 frameTimes[NUM_SAMPLES];
 
 
 		static int currentFrame = 0;
 
-
-		/* NEW: changed to Uint32 */
-		//static float prevTicks = (float)SDL_GetTicks();
 		static Uint32 prevTicks = SDL_GetTicks();
 
-
-		/* NEW: changed to Uint32 */
-		//float currentTicks;
 		Uint32 currentTicks;
 
-		/* NEW: changed to Uint32 */
-		//currentTicks = (float)SDL_GetTicks();
+
 		currentTicks = SDL_GetTicks();
 
 

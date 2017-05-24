@@ -1,0 +1,13 @@
+
+
+
+
+****************************************************************************************************
+*
+*		IMPORTANT: Disregard last version of this COMLETED TUTORIAL 31-39! Problem resolved.
+*						- Tutorial notes moved to BallGame project
+*						- Files updated do regard, removed them from this version
+*
+*		MISTAKE!: Shader attribute went to .frag instead of .vert, suppose to say vertexPosition...
+*
+****************************************************************************************************

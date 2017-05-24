@@ -22,7 +22,7 @@ Human::~Human()
 void Human::init(float speed, glm::vec2 pos, const std::unordered_map<unsigned int, GLuint>& stancesIDs, const NumStances& numStances) {
 
 
-	static std::mt19937 randomEngine(time(nullptr));
+	static std::mt19937 randomEngine((unsigned int)time(nullptr));
 	std::uniform_real_distribution<float> randDir(-1.0f, 1.0f); 
 
 	m_health = 20;
@@ -58,7 +58,7 @@ void Human::update(const std::vector<std::string>& levelData,
 
 	spriteStanceUpdate();
 
-	static std::mt19937 randomEngine(time(nullptr));
+	static std::mt19937 randomEngine((unsigned int)time(nullptr));
 	std::uniform_real_distribution<float> randRotate(-40.0f, 40.0f);
 
 

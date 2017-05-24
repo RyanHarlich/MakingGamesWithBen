@@ -48,7 +48,7 @@ void Zombie::update(const std::vector<std::string>& levelData,
 	spriteStanceUpdate();
 
 
-	static std::mt19937 randomEngine(time(nullptr));
+	static std::mt19937 randomEngine((unsigned int)time(nullptr));
 
 	++m_framesZombieTransparency;
 

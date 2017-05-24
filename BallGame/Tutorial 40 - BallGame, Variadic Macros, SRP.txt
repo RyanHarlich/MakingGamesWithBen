@@ -1,0 +1,136 @@
+Updated Files:
+		- Some updates from the COMPLETED 31-39 version were removed, look at main project tutorial notes for details or I listed it at the bottom of this file with some additional things
+
+		- NEW PROJECT: BallGame
+				- All files in project are new
+				- MainGame.cpp <- Changes poorly documented to none (attribute fragmentPosition was changed to vertexPosition to not skip the .vert)
+				- MainGame.h
+
+		- MISTAKE DURING SOME PREVIOUS TUTORIAL!: Shader attribute went to .frag instead of .vert, suppose to say vertexPosition... instead of fragmentPosition... in MainGame.cpp
+
+
+		- There are 3 options to choose from in the initBalls() function by commenting and uncommenting
+
+___________________________________________________________________________________
+Notes:
+		- Warnings
+				- For vector for loops
+						- use size_t or unsigned int instead of int
+								- size_t is better in case the vector is not a 32 bit
+								- could return a 64 bit so size_t is best for vector .size() loops
+						- for random time seeding: std::mt19937 randomEngine(time(nullptr));
+								- cast with (unsigned int)
+								- std::mt19937 randomEngine((unsigned int)time(nullptr));
+						- Uint32 for SDL_GetTicks();
+								- better for precesion and better for warnings
+
+
+		- POD: Plain Old Data
+				- Struct, with no functions (maybe a constructor), public data
+						- do not need getters and setters, can trust programmer
+				
+
+		- SRP: Single Responsibility Principle
+				- Each class should have one single responsibility
+						- Should be able to describe the class in one simple sentence
+
+		- Usually Ball would have a draw class
+				- instead, have a BallRender class to have different draws so the ball class does not get to big
+		
+		- Decoupling: Decoupling logic from class
+				- To have a render class with different types of renders within it
+				- Have different types of logics to switch between
+
+
+		- Variadic Macros:
+			#define MACRO_NAME std::cout << "Hello World";
+				- expands the macro into some code
+				- when use MACRO_NAME it will copy and paste the macro in replace for the macro name
+				- can define within a method
+				- harder to debug
+				- mimimize usage of macros
+				- always use capatialization
+			can do functions too
+
+			#define PRINTSTUFF(a) std::cout << a;
+
+			PRINTSTUFF("Hello World");
+
+				- use a \ to indicate would like to continue on another line at the end of the line
+				#define PRINTSTUFF(a) std::cout << a; \
+					continue macro here end with a semi-colon;
+
+
+		- Variadic Arguments: example below followed by what it replaces
+				
+					
+		#define ADD_BALL(p, ...) \
+			totalProbability += p; \
+			possibleBalls.emplace_back(__VA_ARGS__);
+
+		float totalProbability = 0.0f;
+
+		ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
+		20.0f, 1.0f, 0.1f, 7.0f, totalProbability);
+
+
+				- note: the p goes to the p, and the ... goes to the __VA_ARGS__ which can be any number of arguments, this stands for Variadic Arguments (a variable number of arguments)
+				- also, the scope of the variable totalProbability and such only matter when the macro is actually called not when it is defined
+
+
+
+
+		/* THE MACRO REPLACES THIS */
+		float totalProbability = 0.0f;
+		totalProbability += 20.0f;
+		possibleBalls.emplace_back(Bengine::ColorRGBA8(255, 255, 255, 255),
+				20.0f, 1.0f, 0.1f, 7.0f, totalProbability);
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+***THIS IS FROM PREVIOUS VERSION NOT THIS VERSION***
+
+Updated Files:
+		- MainGame.cpp (in destructor i showed an example of size_t and did it throughout the program)
+		- Timing.cpp & .h with MainGame.cpp (changed SDL_GetTicks()  to Uint32)
+
+****************************************************************************************************
+*
+*		IMPORTANT: Solution and Project was discountunied to make new MainGame class for Ball Game.
+*						- Project on GIT was renamed
+*						- Started new Solution and Project on GIT for lessons after 39
+*
+*
+****************************************************************************************************
+
+
+___________________________________________________________________________________
+Notes:
+		- Warnings
+				- For vector for loops
+						- use size_t or unsigned int instead of int
+								- size_t is better in case the vector is not a 32 bit
+								- could return a 64 bit so size_t is best for vector .size() loops
+				
+								
