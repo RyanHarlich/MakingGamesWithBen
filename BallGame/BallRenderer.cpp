@@ -4,10 +4,7 @@
 
 void BallRenderer::renderBalls(Bengine::SpriteBatch & spriteBatch, const std::vector<Ball>& balls, const glm::mat4& projectionMatrix){
 
-
-	/* NEW: switch back to regular background */
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
 
 	// Lazily initialize the program
 	if (m_program == nullptr) {
@@ -19,8 +16,6 @@ void BallRenderer::renderBalls(Bengine::SpriteBatch & spriteBatch, const std::ve
 		m_program->linkShaders();
 	}
 	m_program->use();
-
-	/* NEW: moved here from MainGame.cpp to make sure spriteBatch renders batch before the shader program is unused, so moved all spriteBatch calls here (omit init) */
 	spriteBatch.begin();
 
 	// Grab camera matrix
@@ -38,23 +33,19 @@ void BallRenderer::renderBalls(Bengine::SpriteBatch & spriteBatch, const std::ve
 	}
 
 
-	/* NEW: moved here from MainGame.cpp to make sure spriteBatch renders batch before the shader program is unused */
 	spriteBatch.end();
 	spriteBatch.renderBatch();
-
 	m_program->unuse();
-
-
 }
 
 
 
 
 
-/* NEW: momentum is equal to the velocity * the mass */
+// momentum is equal to the velocity * the mass
 void MomentumBallRenderer::renderBalls(Bengine::SpriteBatch& spriteBatch, const std::vector<Ball>& balls, const glm::mat4& projectionMatrix) {
 
-	/* NEW: blue background */
+
 	glClearColor(0.0f, 0.1f, 0.5f, 1.0f);
 
 	// Lazily initialize the program
@@ -76,10 +67,8 @@ void MomentumBallRenderer::renderBalls(Bengine::SpriteBatch& spriteBatch, const 
 	// Render all the balls
 	for (auto& ball : balls) {
 
-		/* NEW: color added to change with respect to its ball's velocity * its mass (which is momentum, momentum = velocity * mass) */
+
 		Bengine::ColorRGBA8 color;
-		// needs to be a GLubyte so the colorVal is between 0-255, and clamp needs to be a float
-		/* NEW: IMPORTANT: NEED TO MULTIPLY MASS BY 12 OR ELSE THERE WILL NOT BE ENOUGH MOMENTUM */
 		GLubyte colorVal = (GLubyte)(glm::clamp(glm::length(ball.velocity) * ball.mass * 12.0f, 0.0f, 255.0f));
 		color.r = colorVal;
 		color.g = colorVal;
@@ -91,7 +80,7 @@ void MomentumBallRenderer::renderBalls(Bengine::SpriteBatch& spriteBatch, const 
 			glm::vec4(0.0f, 0.0f, 1.0f, 1.0f),
 			ball.textureID,
 			0.0f,
-			color); /* NEW: changed to the new color */
+			color);
 	}
 
 
@@ -121,10 +110,9 @@ VelocityBallRenderer::VelocityBallRenderer(int screenWidth, int screenHeight) :
 
 
 
-/* NEW: only visually velocity in the x direction, visualize position with color */
+// only visually velocity in the x direction, visualize position with color 
 void VelocityBallRenderer::renderBalls(Bengine::SpriteBatch& spriteBatch, const std::vector<Ball>& balls, const glm::mat4& projectionMatrix) {
 
-	/* NEW: blue background */
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Lazily initialize the program
@@ -146,7 +134,7 @@ void VelocityBallRenderer::renderBalls(Bengine::SpriteBatch& spriteBatch, const 
 	// Render all the balls
 	for (auto& ball : balls) {
 
-		/* NEW: color added to change with respect to its ball's velocity only in x direction, while visualizing position with color */
+
 		Bengine::ColorRGBA8 color;
 		float mult = 100.0f; //multiplier
 		// needs to be a GLubyte so the colorVal is between 0-255, and clamp needs to be a float
@@ -161,7 +149,7 @@ void VelocityBallRenderer::renderBalls(Bengine::SpriteBatch& spriteBatch, const 
 			glm::vec4(0.0f, 0.0f, 1.0f, 1.0f),
 			ball.textureID,
 			0.0f,
-			color); /* NEW: changed to the new color */
+			color);
 	}
 
 
@@ -231,11 +219,10 @@ void SelfMade::renderBalls(Bengine::SpriteBatch& spriteBatch, const std::vector<
 
 
 
-/* NEW */
+
 TrippyBallRenderer::TrippyBallRenderer(int screenWidth, int screenHeight) :
 	m_screenWidth(screenWidth),
 	m_screenHeight(screenHeight) {
-	// Empty
 }
 
 
@@ -243,8 +230,7 @@ TrippyBallRenderer::TrippyBallRenderer(int screenWidth, int screenHeight) :
 
 
 
-
-/* NEW: copied and pasted from GitHub, not in video */
+//copied and pasted from GitHub, not in video 
 void TrippyBallRenderer::renderBalls(Bengine::SpriteBatch& spriteBatch, const std::vector<Ball>& balls, const glm::mat4& projectionMatrix) {
 	glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
 

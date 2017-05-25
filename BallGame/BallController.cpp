@@ -170,8 +170,8 @@ void BallController::updateCollision(Grid * grid) {
 
 
 
-void BallController::checkCollision(Ball* ball, std::vector<Ball*>& ballsToCheck, int startingIndex){
-	
+void BallController::checkCollision(Ball* ball, std::vector<Ball*>& ballsToCheck, int startingIndex) {
+
 	for (size_t i = startingIndex; i < ballsToCheck.size(); ++i) {
 		checkCollision(*ball, *ballsToCheck[i]); // dereference is hacky
 	}
@@ -192,104 +192,58 @@ void BallController::checkCollision(Ball& b1, Ball& b2) {
 	float totalRadius = b1.radius + b2.radius;
 
 	float collisionDepth = totalRadius - dist;
+
+
+	/* NEW: feature color changing when collision has happened */
 	//// Check for collision
-	if (collisionDepth > 0) {
+	if (m_isColorChangingOn_Collision == false) {
+		// Collision option 1: no color changing when colliding with other ball
+		if (collisionDepth > 0) {
 
-		// Push away the less massive one
-		if (b1.mass < b2.mass) {
-			b1.position -= distDir * collisionDepth;
+			// Push away the less massive one
+			if (b1.mass < b2.mass) {
+				b1.position -= distDir * collisionDepth;
+			}
+			else {
+				b2.position += distDir * collisionDepth;
+			}
+
+			// Calcuate deflection. http://stackoverflow.com/a/345863
+			float aci = glm::dot(b1.velocity, distDir);
+			float bci = glm::dot(b2.velocity, distDir);
+			float acf = (aci * (b1.mass - b2.mass) + 2 * b2.mass * bci) / (b1.mass + b2.mass);
+			float bcf = (bci * (b2.mass - b1.mass) + 2 * b1.mass * aci) / (b1.mass + b2.mass);
+			b1.velocity += (acf - aci) * distDir;
+			b2.velocity += (bcf - bci) * distDir;
+
 		}
-		else {
-			b2.position += distDir * collisionDepth;
-		}
-
-		// Calcuate deflection. http://stackoverflow.com/a/345863
-		float aci = glm::dot(b1.velocity, distDir);
-		float bci = glm::dot(b2.velocity, distDir);
-		float acf = (aci * (b1.mass - b2.mass) + 2 * b2.mass * bci) / (b1.mass + b2.mass);
-		float bcf = (bci * (b2.mass - b1.mass) + 2 * b1.mass * aci) / (b1.mass + b2.mass);
-		b1.velocity += (acf - aci) * distDir;
-		b2.velocity += (bcf - bci) * distDir;
-
 	}
+	else {
+		// collision option 2: change color with collide ball
+		if (collisionDepth > 0) {
+			// Push away the balls based on ratio of masses
+			b1.position -= distDir * collisionDepth * (b2.mass / b1.mass) * 0.5f;
+			b2.position += distDir * collisionDepth * (b1.mass / b2.mass) * 0.5f;
 
-	//// Check for collision
-	/* NEW: no elastic collision (this one drops the fps) */
-	/* NEW: IMPORTANT: the fps problem seemed to have been from prior to the adding of more varietys of balls, after adding more varietys of balls this one still slows the fps */
-	/*if (collisionDepth > 0) {
+			// Calculate deflection. http://stackoverflow.com/a/345863
+			// Fixed thanks to youtube user Sketchy502
+			float aci = glm::dot(b1.velocity, distDir);
+			float bci = glm::dot(b2.velocity, distDir);
+			float acf = (aci * (b1.mass - b2.mass) + 2 * b2.mass * bci) / (b1.mass + b2.mass);
+			float bcf = (bci * (b2.mass - b1.mass) + 2 * b1.mass * aci) / (b1.mass + b2.mass);
+			b1.velocity += (acf - aci) * distDir;
+			b2.velocity += (bcf - bci) * distDir;
 
-		// Push away the less massive one
-		if (b1.mass < b2.mass) {
-			b1.position -= distDir * collisionDepth;
+
+				if (glm::length(b1.velocity + b2.velocity) > 0.5f) {
+					// Choose the faster ball
+					bool choice = glm::length(b1.velocity) < glm::length(b2.velocity);
+					// Faster ball transfers it's color to the slower ball
+					choice ? b2.color = b1.color : b1.color = b2.color;
+				}
+			
 		}
-		else {
-			b2.position += distDir * collisionDepth;
-		}
-
-		// Calcuate deflectiopn. http://stackoverflow.com/a/345863
-		float aci = glm::dot(b1.velocity, distDir) / b2.mass;
-		float bci = glm::dot(b2.velocity, distDir) / b1.mass;
-
-		float massRatio = b1.mass / b2.mass;
-
-		b1.velocity += (bci - aci) * distDir * (1.0f / massRatio);
-		b2.velocity += (aci - bci) * distDir * massRatio;
-
-	}*/
-
-
-
-
-	/* NEW: one used in tutorial (same one as the original one for some reason the fps was not at 60, possibly when made the screen dimensions to fit the whole screen did the fps go back to 60, but do not remember it doing that when original tried different screen sizes */
-	/* NEW: IMPORTANT: the fps problem seemed to have been from prior to the adding of more varietys of balls */
-	//if (collisionDepth > 0) {
-
-	//// Push away the less massive one
-	//if (b1.mass < b2.mass) {
-	//b1.position -= distDir * collisionDepth;
-	//}
-	//else {
-	//b2.position += distDir * collisionDepth;
-	//}
-
-	//// Calcuate deflection. http://stackoverflow.com/a/345863
-	//float aci = glm::dot(b1.velocity, distDir);
-	//float bci = glm::dot(b2.velocity, distDir);
-
-	//float acf = (aci * (b1.mass - b2.mass) + 2 * b2.mass * bci) / (b1.mass + b2.mass);
-	//float bcf = (bci * (b2.mass - b1.mass) + 2 * b1.mass * aci) / (b1.mass + b2.mass);
-
-	//b1.velocity += (acf - aci) * distDir;
-	//b2.velocity += (bcf - bci) * distDir;
-	//}
-
-
-
-
-	/* NEW: better no elastic collision from GitHub copied and pasted, this is much better for the fps than the one above */
-	// Check for collision
-	/* if (collisionDepth > 0) {
-		// Push away the balls based on ratio of masses
-		b1.position -= distDir * collisionDepth * (b2.mass / b1.mass) * 0.5f;
-		b2.position += distDir * collisionDepth * (b1.mass / b2.mass) * 0.5f;
-
-		// Calculate deflection. http://stackoverflow.com/a/345863
-		// Fixed thanks to youtube user Sketchy502
-		float aci = glm::dot(b1.velocity, distDir);
-		float bci = glm::dot(b2.velocity, distDir);
-		float acf = (aci * (b1.mass - b2.mass) + 2 * b2.mass * bci) / (b1.mass + b2.mass);
-		float bcf = (bci * (b2.mass - b1.mass) + 2 * b1.mass * aci) / (b1.mass + b2.mass);
-		b1.velocity += (acf - aci) * distDir;
-		b2.velocity += (bcf - bci) * distDir;
-
-		if (glm::length(b1.velocity + b2.velocity) > 0.5f) {
-		// Choose the faster ball
-		bool choice = glm::length(b1.velocity) < glm::length(b2.velocity);
-		// Faster ball transfers it's color to the slower ball
-		choice ? b2.color = b1.color : b1.color = b2.color;
-		}
-	}*/
-
+	}
 
 
 }

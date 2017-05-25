@@ -19,16 +19,20 @@ public:
 	void onMouseUp(std::vector <Ball>& balls);
 	void onMouseMove(std::vector <Ball>& balls, float mouseX, float mouseY);
 	void setGravityDirection(GravityDirection dir) { m_gravityDirection = dir; }
+
+	/* NEW */
+	void setIsColorChangingOn_Collision(bool isColorChangingOn_Collision) { m_isColorChangingOn_Collision = isColorChangingOn_Collision; }
+	bool getIsColorChangingOn_Collision() { return m_isColorChangingOn_Collision; }
+	/* NEW: end of new */
+
+
 private:
 
 
 	void updateCollision(Grid* grid);
 	void checkCollision(Ball* ball, std::vector<Ball*>& ballsToCheck, int startingIndex);
-
-
 	/// Checks collision between two balls
 	void checkCollision(Ball& b1, Ball& b2);
-
 	/// Returns true if the mouse is hovering over a ball
 	bool isMouseOnBall(Ball& b, float mouseX, float mouseY);
 	glm::vec2 getGravityAccel();
@@ -36,7 +40,10 @@ private:
 	int m_grabbedBall = -1; ///< The ball we are currently grabbing on to
 	glm::vec2 m_prevPos = glm::vec2(0.0f); ///< Previous position of the grabbed ball
 	glm::vec2 m_grabOffSet = glm::vec2(0.0f); ///< Offset of the cursor on the selected ball
-
 	GravityDirection m_gravityDirection = GravityDirection::NONE;
+
+	/* NEW */
+	bool m_isColorChangingOn_Collision = false; // color changing for when they collide, not regular color changing
+
 };
 

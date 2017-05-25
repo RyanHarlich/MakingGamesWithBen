@@ -30,17 +30,13 @@ const int CELL_SIZE = 12;
 class MainGame
 {
 public:
-	/* NEW */
 	~MainGame();
 
 	void run();
 
 private:
 	void init();
-
-	/* NEW */
 	void initRenderers();
-
 	void initBalls();
 	void gameLoop();
 	void processInput();
@@ -62,12 +58,7 @@ private:
 	BallController m_ballController;
 	std::vector<Ball> m_balls; ///< if balls were delete should be pointers, but this is more cache friendly if not
 	std::unique_ptr<Grid> m_grid; ///< Grid for spatial partitioning for collision
-
-	/* NEW: removed and replaced */
-	//BallRenderer m_ballRenderer;
-	/* NEW */
 	std::vector<BallRenderer*> m_ballRenderers;
-	/* NEW */
 	int m_currentRenderer = 0;
 	
 

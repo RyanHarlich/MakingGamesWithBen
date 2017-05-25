@@ -63,9 +63,9 @@ void Grid::addBall(Ball* ball, Cell* cell){
 // Get cell based on cell coordinates, get cell based on position of cell
 Cell* Grid::getCell(int x, int y){
 	if (x < 0) x = 0;
-	if (x >= m_numXCells) x = m_numXCells - 1; /* NEW: fyi need this (- 1) here so does not pop out of the grid */
+	if (x >= m_numXCells) x = m_numXCells - 1; 
 	if (y < 0) y = 0;
-	if (y >= m_numYCells) y = m_numYCells - 1;/* NEW: fyi need this (- 1) here so does not pop out of the grid */
+	if (y >= m_numYCells) y = m_numYCells - 1;
 
 	// 1D array treated as a 2D array spot [0][1] is 1 and [1][1] is 11 if 10x10
 	return &m_cells[y * m_numXCells + x];

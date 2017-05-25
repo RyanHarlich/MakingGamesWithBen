@@ -139,7 +139,7 @@
     <ClInclude Include="MainGame.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 43 - Multiple Renderers, Lazy Init.txt" />
+    <Text Include="COMPLETED TUTORIAL 40-43!.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
