@@ -139,10 +139,10 @@
     <ClInclude Include="MainGame.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 41 - Spatial Partition Pt. 1.txt" />
+    <Text Include="Tutorial 42 - Spatial Partition Pt. 2.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Tutorial 41 - Spatial Partition.png" />
+    <Image Include="Tutorial 42 - Spatial Partition.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,8 +5,7 @@
 #include <glm/glm.hpp>
 
 
-/* NEW */
-class Cell;
+struct Cell;
 
 
 struct Ball {
@@ -20,9 +19,10 @@ struct Ball {
 	glm::vec2 position;
 	unsigned int textureID = 0;
 	Bengine::ColorRGBA8 color;
+	Cell* ownerCell = nullptr; // nullptr violations are alot easier to debug than random violations memory
 
 	/* NEW */
-	Cell* ownerCell = nullptr; // nullptr violations are alot easier to debug than random violations memory
+	int cellVectorIndex = -1;
 
 };
 

@@ -123,9 +123,7 @@ struct BallSpawn {
 
 void MainGame::initBalls() {
 
-	/* NEW: initialize the grid */
 	m_grid = std::make_unique<Grid>(m_screenWidth, m_screenHeight, CELL_SIZE);
-
 
 
 #define ADD_BALL(p, ...) \
@@ -142,14 +140,33 @@ void MainGame::initBalls() {
 	std::vector<BallSpawn> possibleBalls;
 	float totalProbability = 0.0f;
 
-	
-	const int NUM_BALLS = 100;
+	/* NEW: more balls, and decressed size of all balls */
+	const int NUM_BALLS = 40000;
+	// Option 2:
+	ADD_BALL(2.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
+		//ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255), here was a probibility mistake, says 2 instead of 20
+		1.0f, 1.0f, 0.1f, 7.0f, totalProbability);
+	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
+		2.0f, 2.0f, 0.1f, 3.0f, totalProbability);
+	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
+		3.0f, 4.0f, 0.0f, 0.0f, totalProbability);
+	// Option 1:
+	/*const int NUM_BALLS = 20000;
+	ADD_BALL(2.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
+		//ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255), here was a probibility mistake, says 2 instead of 20
+		2.0f, 1.0f, 0.1f, 7.0f, totalProbability);
+	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
+		3.0f, 2.0f, 0.1f, 3.0f, totalProbability);
+	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
+		5.0f, 4.0f, 0.0f, 0.0f, totalProbability);*/
+	// Replaced big balls
+	/*const int NUM_BALLS = 100;
 	ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
 		20.0f, 1.0f, 0.1f, 7.0f, totalProbability);
 	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
 		30.0f, 2.0f, 0.1f, 3.0f, totalProbability);
 	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
-		50.0f, 4.0f, 0.0f, 0.0f, totalProbability);
+		50.0f, 4.0f, 0.0f, 0.0f, totalProbability);*/
 
 
 	// Random probability for ball spawn
@@ -157,7 +174,6 @@ void MainGame::initBalls() {
 
 	// Small optimization that sets the size of the internal array to prevent
 	// extra allocations
-	/* NEW: nothing was changed! But pointing out that if a pointer to a ball in a vector was pointing to one, and the vector changed, the pointer would lose the ball and no longer be pointing to that ball because as a vector changes it shifts around in memory and changes, this following line will prevent that from happening because the vector has been sized and would not be resized later unless done so, so its spot in memory will not change */
 	m_balls.reserve(NUM_BALLS);
 
 	BallSpawn* ballToSpawn = &possibleBalls[0];
@@ -165,9 +181,9 @@ void MainGame::initBalls() {
 		// Get the ball spawn rool
 		float spawnVal = spawn(randomEngine);
 
-		for (size_t i = 0; i < possibleBalls.size(); ++i) {
-			if (spawnVal <= possibleBalls[i].probability) {
-				ballToSpawn = &possibleBalls[i];
+		for (size_t j = 0; j < possibleBalls.size(); ++j) {
+			if (spawnVal <= possibleBalls[j].probability) {
+				ballToSpawn = &possibleBalls[j];
 				break;
 			}
 		}
@@ -188,7 +204,6 @@ void MainGame::initBalls() {
 		m_balls.emplace_back(ballToSpawn->radius, ballToSpawn->mass, pos, direction * ballToSpawn->randSpeed(randomEngine), Bengine::ResourceManager::getTexture("Texture/CircleSH.png").id, ballToSpawn->color);
 
 
-		/* NEW: add the ball to the grid. If you ever call emplace back after init balls, m_grid will have dangling pointers! */
 		m_grid->addBall(&m_balls.back());
 
 	}
@@ -202,7 +217,8 @@ void MainGame::initBalls() {
 
 
 void MainGame::update(float deltaTime) {
-	m_ballController.updateBalls(m_balls, deltaTime, m_screenWidth, m_screenHeight);
+	/* NEW: add m_grid to the list of arguments, -> is when want to access the grid . is when want to access the pointer and get() returns the smart unique pointers raw pointer */
+	m_ballController.updateBalls(m_balls, m_grid.get(), deltaTime, m_screenWidth, m_screenHeight);
 }
 
 

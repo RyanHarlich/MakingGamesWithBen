@@ -4,7 +4,7 @@
 
 #include "Ball.h"
 
-/* NEW */
+
 class Grid; // class forward declarations (for pointers only or reference) are to improve compile times because every file that includes ball.h will have to include grid.h if included, this forward declaration avoids that behaviour
 
 enum class GravityDirection {NONE, LEFT, UP, RIGHT, DOWN};
@@ -13,10 +13,7 @@ class BallController
 {
 public:
 	/// Updates the balls
-
-	/* NEW: Grid pointer */
 	void updateBalls(std::vector <Ball>& balls, Grid* grid, float deltaTime, int maxX, int maxY);
-
 	///Some simple event functions
 	void onMouseDown(std::vector <Ball>& balls, float mouseX, float mouseY);
 	void onMouseUp(std::vector <Ball>& balls);
@@ -24,10 +21,16 @@ public:
 	void setGravityDirection(GravityDirection dir) { m_gravityDirection = dir; }
 private:
 
-	/// Checks collision between two balls
+	/* NEW: updates collision */
+	void updateCollision(Grid* grid);
 
-	/* NEW: Grid pointer */
-	void checkCollision(Grid* grid, Ball& b1, Ball& b2);
+	/* NEW: Checks collision between a ball and a vector of balls, starting at a specific index, do not forget to pass vector by reference because to make a copy would be very slow, also startingIndex avoids duplicate checking by not checking with itself */
+	void checkCollision(Ball* ball, std::vector<Ball*>& ballsToCheck, int startingIndex);
+
+
+	/// Checks collision between two balls
+	/* NEW: removed Grid parameter, to instead have a checkCollision and a updateCollision */
+	void checkCollision(Ball& b1, Ball& b2);
 
 	/// Returns true if the mouse is hovering over a ball
 	bool isMouseOnBall(Ball& b, float mouseX, float mouseY);

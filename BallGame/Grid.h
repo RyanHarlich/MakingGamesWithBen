@@ -14,15 +14,29 @@ struct Cell {
 class Grid
 {
 public:
+	/* NEW */
+	friend class BallController;
+
 	Grid(int width, int height, int cellSize);
 	~Grid();
 
+	// Adds a ball and determines which cell it belongs to
 	void addBall(Ball* ball);
 
+	/* NEW: overloaded addBall and adds ball to specified cell */
+	void addBall(Ball* ball, Cell* cell);
+
+
+
 	// Get cell based on cell coordinates, get cell based on position of cell
-	Cell& getCell(int x, int y);
+	/* NEW: changed to return a pointer instead of a reference */
+	Cell* getCell(int x, int y);
 	// Gets cell based on window coordinates, get cell based on position of ball
-	Cell& getCell(const glm::vec2& pos);
+	/* NEW: changed to return a pointer instead of a reference */
+	Cell* getCell(const glm::vec2& pos);
+
+	/* NEW */
+	void removeBallFromCell(Ball* ball);
 
 
 	//2D grid array: treat a one-dimensional vector as a two-dimensional vector for cache friendliness, a two-dimensional vector jumps around in memory alot shown in .cpp file

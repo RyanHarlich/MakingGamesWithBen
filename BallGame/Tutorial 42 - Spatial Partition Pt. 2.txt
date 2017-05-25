@@ -1,0 +1,23 @@
+Updated Files:
+		- Grid.cpp
+		- Grid.h
+		- Ball.h
+		- BallController.cpp
+		- BallController.h
+		- SpriteFont.h (not suppose to change, but did for a struct forward declaration of GLTexture which was a class forward declaration which is not what it is declared)
+		- MainGame.cpp
+		- MainGame.h
+___________________________________________________________________________________
+Notes:
+		- Mistakes from part 1
+		- Cannot take the address of a reference, its a C++ 11 safty feature
+
+
+		WARNING:
+		C4099 type name first seen using 'class' now seen using 'struct'
+			- this says the forward declaration says:
+					class ClassName;
+				but is actually a struct, so needs a struct forward declaration
+					struct StructName;
+
+
