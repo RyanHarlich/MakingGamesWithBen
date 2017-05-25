@@ -21,15 +21,12 @@ public:
 	void setGravityDirection(GravityDirection dir) { m_gravityDirection = dir; }
 private:
 
-	/* NEW: updates collision */
-	void updateCollision(Grid* grid);
 
-	/* NEW: Checks collision between a ball and a vector of balls, starting at a specific index, do not forget to pass vector by reference because to make a copy would be very slow, also startingIndex avoids duplicate checking by not checking with itself */
+	void updateCollision(Grid* grid);
 	void checkCollision(Ball* ball, std::vector<Ball*>& ballsToCheck, int startingIndex);
 
 
 	/// Checks collision between two balls
-	/* NEW: removed Grid parameter, to instead have a checkCollision and a updateCollision */
 	void checkCollision(Ball& b1, Ball& b2);
 
 	/// Returns true if the mouse is hovering over a ball

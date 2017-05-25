@@ -1,6 +1,5 @@
 #include "BallController.h"
 
-/* NEW: need this to implement with the forward declaration */
 #include "Grid.h"
 
 
@@ -52,16 +51,11 @@ void BallController::updateBalls(std::vector <Ball>& balls, Grid* grid, float de
 			if (ball.velocity.y > 0) ball.velocity.y *= -1;
 		}
 
-		/* NEW: removed, will not be checking collision on the first pass, moved below */
-		////Check collisions
-		//for (size_t j = i + 1; j < balls.size(); ++j) {
-		//	checkCollision(ball, balls[j]);
-		//}
 
 
-		/* NEW: check to see if the ball moved */
+
 		Cell* newCell = grid->getCell(ball.position);
-		/* NEW */
+
 		if (newCell != ball.ownerCell) {
 			grid->removeBallFromCell(&balls[i]);
 			grid->addBall(&balls[i], newCell);
@@ -69,21 +63,7 @@ void BallController::updateBalls(std::vector <Ball>& balls, Grid* grid, float de
 
 	}
 
-
-	/* NEW: updateCollision function, updates all collisions using the spatial partitioning */
 	updateCollision(grid);
-
-	/* NEW: moved down here, but no longer need about 10mins in */
-	//Check collisions
-	/*for (size_t j = i + 1; j < balls.size(); ++j) {
-		checkCollision(ball, balls[j]);
-	}*/
-
-
-
-
-
-
 
 	// Update our grabbed ball
 	if (m_grabbedBall != -1) {
@@ -144,7 +124,7 @@ void BallController::onMouseMove(std::vector <Ball>& balls, float mouseX, float 
 
 
 
-/* NEW */
+
 void BallController::updateCollision(Grid * grid) {
 	for (size_t i = 0; i < grid->m_cells.size(); ++i) {
 
@@ -188,7 +168,8 @@ void BallController::updateCollision(Grid * grid) {
 
 
 
-/* NEW: Checks collision between a ball and a vector of balls, starting at a specific index, do not forget to pass vector by reference because to make a copy would be very slow, also startingIndex avoids duplicate checking by not checking with itself */
+
+
 void BallController::checkCollision(Ball* ball, std::vector<Ball*>& ballsToCheck, int startingIndex){
 	
 	for (size_t i = startingIndex; i < ballsToCheck.size(); ++i) {
@@ -201,7 +182,7 @@ void BallController::checkCollision(Ball* ball, std::vector<Ball*>& ballsToCheck
 
 
 
-/* NEW: removed Grid parameter and made an updateCollision function instead */
+
 void BallController::checkCollision(Ball& b1, Ball& b2) {
 
 	glm::vec2 distVec = b2.position - b1.position;
@@ -232,61 +213,85 @@ void BallController::checkCollision(Ball& b1, Ball& b2) {
 
 	}
 
+	//// Check for collision
+	/* NEW: no elastic collision (this one drops the fps) */
+	/* NEW: IMPORTANT: the fps problem seemed to have been from prior to the adding of more varietys of balls, after adding more varietys of balls this one still slows the fps */
+	/*if (collisionDepth > 0) {
 
-	/*
+		// Push away the less massive one
+		if (b1.mass < b2.mass) {
+			b1.position -= distDir * collisionDepth;
+		}
+		else {
+			b2.position += distDir * collisionDepth;
+		}
 
-	// GITHUB VERSION
+		// Calcuate deflectiopn. http://stackoverflow.com/a/345863
+		float aci = glm::dot(b1.velocity, distDir) / b2.mass;
+		float bci = glm::dot(b2.velocity, distDir) / b1.mass;
+
+		float massRatio = b1.mass / b2.mass;
+
+		b1.velocity += (bci - aci) * distDir * (1.0f / massRatio);
+		b2.velocity += (aci - bci) * distDir * massRatio;
+
+	}*/
+
+
+
+
+	/* NEW: one used in tutorial (same one as the original one for some reason the fps was not at 60, possibly when made the screen dimensions to fit the whole screen did the fps go back to 60, but do not remember it doing that when original tried different screen sizes */
+	/* NEW: IMPORTANT: the fps problem seemed to have been from prior to the adding of more varietys of balls */
+	//if (collisionDepth > 0) {
+
+	//// Push away the less massive one
+	//if (b1.mass < b2.mass) {
+	//b1.position -= distDir * collisionDepth;
+	//}
+	//else {
+	//b2.position += distDir * collisionDepth;
+	//}
+
+	//// Calcuate deflection. http://stackoverflow.com/a/345863
+	//float aci = glm::dot(b1.velocity, distDir);
+	//float bci = glm::dot(b2.velocity, distDir);
+
+	//float acf = (aci * (b1.mass - b2.mass) + 2 * b2.mass * bci) / (b1.mass + b2.mass);
+	//float bcf = (bci * (b2.mass - b1.mass) + 2 * b1.mass * aci) / (b1.mass + b2.mass);
+
+	//b1.velocity += (acf - aci) * distDir;
+	//b2.velocity += (bcf - bci) * distDir;
+	//}
+
+
+
+
+	/* NEW: better no elastic collision from GitHub copied and pasted, this is much better for the fps than the one above */
 	// Check for collision
-
-	if (collisionDepth > 0) {
-
-
-
+	/* if (collisionDepth > 0) {
 		// Push away the balls based on ratio of masses
-
 		b1.position -= distDir * collisionDepth * (b2.mass / b1.mass) * 0.5f;
-
 		b2.position += distDir * collisionDepth * (b1.mass / b2.mass) * 0.5f;
 
-
-
 		// Calculate deflection. http://stackoverflow.com/a/345863
-
 		// Fixed thanks to youtube user Sketchy502
-
 		float aci = glm::dot(b1.velocity, distDir);
-
 		float bci = glm::dot(b2.velocity, distDir);
-
-
-
 		float acf = (aci * (b1.mass - b2.mass) + 2 * b2.mass * bci) / (b1.mass + b2.mass);
-
 		float bcf = (bci * (b2.mass - b1.mass) + 2 * b1.mass * aci) / (b1.mass + b2.mass);
-
-
-
 		b1.velocity += (acf - aci) * distDir;
-
 		b2.velocity += (bcf - bci) * distDir;
 
-
-
 		if (glm::length(b1.velocity + b2.velocity) > 0.5f) {
-
-			// Choose the faster ball
-
-			bool choice = glm::length(b1.velocity) < glm::length(b2.velocity);
-
-
-
-			// Faster ball transfers it's color to the slower ball
-
-			choice ? b2.color = b1.color : b1.color = b2.color;
-
+		// Choose the faster ball
+		bool choice = glm::length(b1.velocity) < glm::length(b2.velocity);
+		// Faster ball transfers it's color to the slower ball
+		choice ? b2.color = b1.color : b1.color = b2.color;
 		}
-	}
-	*/
+	}*/
+
+
+
 }
 
 

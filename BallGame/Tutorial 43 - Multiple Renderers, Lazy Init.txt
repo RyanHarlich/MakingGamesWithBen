@@ -1,0 +1,41 @@
+Updated Files:
+		- BallRenderer.cpp
+		- BallRenderer.h
+		- MainGame.cpp
+		- MainGame.h
+		- BallController.cpp
+
+		NOTE: there are different collision options, commented out and uncommented (would ignore)
+		/* NEW: IMPORTANT: the fps problem seemed to have been from prior to the adding of more varietys of balls */
+___________________________________________________________________________________
+Notes:
+		- make a bunch of ball renders with the ball render class, as easy as popping in another ball render function
+		- each render will have its own shader, shaders DO NOT take up a bunch of vram
+				- could make a shader cache class
+				- could reuse alot of the code so a better way would be to create methods to simplify each renderer class (less lines of code or copy and pasting)
+
+		- instead of rendering a single ball in BallRenderer will loop through all the balls
+
+
+		- making an init function or a constructor for ballrender to initialize GLSLProgram pointer would not work in case BallRenderer class is created before openGL is initialized
+				so using Lazy Initialization would be a better approach:
+
+
+		Lazy Initialization: initializationing lazy way right before needing to use it, that way if renderBall is never called it will never be initialized, never allocating the program, saving resources
+				- initializing shaderProgram right before using instead of always
+
+
+		Math Clamp: makes number in range of two numbers (ex. 0, 255)
+		GLubyte colorVal = (GLubyte)(glm::clamp(glm::length(ball.velocity) * ball.mass, 0.0f, 255.0f));
+
+
+		Momentum needs an increase so need to multiple by 12
+
+
+
+
+
+		Hot Key: ctrl + k + o
+				- will take from .h file to .cpp file
+
+

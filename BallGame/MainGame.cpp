@@ -20,6 +20,12 @@ const float DESIRED_FRAMETIME = MS_PER_SECOND / DESIRE_FPS; // The desired frame
 const float MAX_DELTA_TIME = 1.0f; // Maximum size of deltaTime
 
 
+/* NEW */
+MainGame::~MainGame() {
+	for (size_t i = 0; i < m_ballRenderers.size(); ++i) {
+		delete m_ballRenderers[i];
+	}
+}
 
 
 
@@ -70,12 +76,19 @@ void MainGame::init() {
 	music.play();
 
 	// This size was bigger than full screen
-	/*m_screenWidth = 1920;
-	m_screenHeight = 1080;*/
-	m_screenWidth = 1476;
-	m_screenHeight = 900;
+	/* NEW: screen size was changed from 2560x1440 to the 1920x1080 */
+	/* NEW: IMPORTANT: the fps problem seemed to have been from prior to the adding of more varietys of balls */
+	/*m_screenWidth = 2560;
+	m_screenHeight = 1440;*/
+	m_screenWidth = 1920;   // this one matches the tutorial for the amount of collision so the fps will be better (with the updated collision copied from GitHub and noted in a /* NEW: __ */
+	m_screenHeight = 1080;
+	/* NEW: so the update for this particular computer looks like this in ~ratio (%75) */
+	//m_screenWidth = 1476; // switched back because this was 60 fps
+	//m_screenHeight = 900;
+	/*m_screenWidth = 1107; // to much collision
+	m_screenHeight = 675;*/
 
-	m_window.create("BallGame", m_screenWidth, m_screenHeight, 0);
+	m_window.create("Ball Game", m_screenWidth, m_screenHeight, 0);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	m_camera.init(m_screenWidth, m_screenHeight);
 	// Point the camera to the center of the screen
@@ -91,6 +104,24 @@ void MainGame::init() {
 	m_textureProgram.linkShaders();
 	
 	m_fpsLimiter.setMaxFPS(DESIRE_FPS);
+
+
+	/* NEW */
+	initRenderers();
+}
+
+
+
+
+
+
+/* NEW */
+void MainGame::initRenderers() {
+	m_ballRenderers.push_back(new BallRenderer);
+	m_ballRenderers.push_back(new MomentumBallRenderer);
+	m_ballRenderers.push_back(new VelocityBallRenderer(m_screenWidth, m_screenHeight));
+	m_ballRenderers.push_back(new TrippyBallRenderer(m_screenWidth, m_screenHeight));
+	m_ballRenderers.push_back(new SelfMade);
 }
 
 
@@ -140,33 +171,40 @@ void MainGame::initBalls() {
 	std::vector<BallSpawn> possibleBalls;
 	float totalProbability = 0.0f;
 
-	/* NEW: more balls, and decressed size of all balls */
-	const int NUM_BALLS = 40000;
-	// Option 2:
-	ADD_BALL(2.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
-		//ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255), here was a probibility mistake, says 2 instead of 20
-		1.0f, 1.0f, 0.1f, 7.0f, totalProbability);
-	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
-		2.0f, 2.0f, 0.1f, 3.0f, totalProbability);
-	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
-		3.0f, 4.0f, 0.0f, 0.0f, totalProbability);
-	// Option 1:
-	/*const int NUM_BALLS = 20000;
-	ADD_BALL(2.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
-		//ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255), here was a probibility mistake, says 2 instead of 20
+
+	/* NEW: for random balls */
+	/// Random values for ball types
+	std::uniform_real_distribution<float> r1(2.0f, 6.0f);
+	std::uniform_int_distribution<int> r2(0, 255);
+
+
+	/* NEW: changed from 40,000 to 20,000 */
+	const int NUM_BALLS = 20000;
+	/* NEW: different variaty of balls */
+	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
 		2.0f, 1.0f, 0.1f, 7.0f, totalProbability);
-	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
-		3.0f, 2.0f, 0.1f, 3.0f, totalProbability);
-	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
-		5.0f, 4.0f, 0.0f, 0.0f, totalProbability);*/
-	// Replaced big balls
-	/*const int NUM_BALLS = 100;
-	ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
-		20.0f, 1.0f, 0.1f, 7.0f, totalProbability);
-	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
-		30.0f, 2.0f, 0.1f, 3.0f, totalProbability);
-	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
-		50.0f, 4.0f, 0.0f, 0.0f, totalProbability);*/
+	ADD_BALL(1.0f, Bengine::ColorRGBA8(1, 254, 145, 255),
+		2.0f, 2.0f, 0.1f, 3.0f, totalProbability);
+	ADD_BALL(1.0f, Bengine::ColorRGBA8(177, 0, 254, 255),
+		3.0f, 4.0f, 0.0f, 0.0f, totalProbability)
+	ADD_BALL(1.0f, Bengine::ColorRGBA8(254, 0, 0, 255),
+		3.0f, 4.0f, 0.0f, 0.0f, totalProbability);
+	ADD_BALL(1.0f, Bengine::ColorRGBA8(0, 255, 255, 255),
+		3.0f, 4.0f, 0.0f, 0.0f, totalProbability);
+	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 255, 0, 255),
+		3.0f, 4.0f, 0.0f, 0.0f, totalProbability);
+	///* NEW: adds a bunch of different balls adding random values */
+	//// Make a bunch of random ball types
+	for (int i = 0; i < 10000; ++i) {
+		ADD_BALL(1.0f, Bengine::ColorRGBA8(r2(randomEngine), r2(randomEngine), r2(randomEngine), 255), r1(randomEngine), r1(randomEngine), 0.0f, 0.0f, totalProbability);
+	}
+	//ADD_BALL(2.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
+	//	1.0f, 1.0f, 0.1f, 7.0f, totalProbability);
+	//ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
+	//	2.0f, 2.0f, 0.1f, 3.0f, totalProbability);
+	//ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
+	//	3.0f, 4.0f, 0.0f, 0.0f, totalProbability);
+	
 
 
 	// Random probability for ball spawn
@@ -200,8 +238,11 @@ void MainGame::initBalls() {
 			direction = glm::vec2(1.0f, 0.0f); // default direction
 		}
 
+		/* NEW: velocity changed to not be reduced by half, which did not have in the first place */
 		// Add ball
-		m_balls.emplace_back(ballToSpawn->radius, ballToSpawn->mass, pos, direction * ballToSpawn->randSpeed(randomEngine), Bengine::ResourceManager::getTexture("Texture/CircleSH.png").id, ballToSpawn->color);
+		/*m_balls.emplace_back(ballToSpawn->radius, ballToSpawn->mass, pos, direction * ballToSpawn->randSpeed(randomEngine) * 0.5f, Bengine::ResourceManager::getTexture("Texture/CircleSH.png").id, ballToSpawn->color); */
+		m_balls.emplace_back(ballToSpawn->radius, ballToSpawn->mass, pos, direction * ballToSpawn->randSpeed(randomEngine), /* NEW: change was suppose to be here */
+			Bengine::ResourceManager::getTexture("Texture/CircleSH.png").id, ballToSpawn->color);
 
 
 		m_grid->addBall(&m_balls.back());
@@ -217,7 +258,6 @@ void MainGame::initBalls() {
 
 
 void MainGame::update(float deltaTime) {
-	/* NEW: add m_grid to the list of arguments, -> is when want to access the grid . is when want to access the pointer and get() returns the smart unique pointers raw pointer */
 	m_ballController.updateBalls(m_balls, m_grid.get(), deltaTime, m_screenWidth, m_screenHeight);
 }
 
@@ -228,29 +268,48 @@ void MainGame::update(float deltaTime) {
 void MainGame::draw() {
 	glClearDepth(1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	m_textureProgram.use();
+
+	/* NEW: moved so only the heads up display is using this textureProgram */
+	//m_textureProgram.use();
+
 	glActiveTexture(GL_TEXTURE0);
 
-	glUniform1i(m_textureProgram.getUniformLocation("mySampler"), 0);
+	/* NEW: moved to BallRenderer class, but the heads up display does need this down below */
+	//glUniform1i(m_textureProgram.getUniformLocation("mySampler"), 0);
 
 	glm::mat4 projectionMatrix = m_camera.getCameraMatrix();
-	glUniformMatrix4fv(m_textureProgram.getUniformLocation("P"), 1, GL_FALSE, &projectionMatrix[0][0]);
+
+	/* NEW: moved to BallRenderer class, but the heads up display does need this down below */
+	//glUniformMatrix4fv(m_textureProgram.getUniformLocation("P"), 1, GL_FALSE, &projectionMatrix[0][0]);
 
 
 
 
+	/* NEW: since the Lazy int unuses the shader program in BallRender, the program will not work unless renderingBatch is called before the shader program is unused, so move all spriteBatch things (omit init) to the BallRenderer.cpp */
+	//m_spriteBatch.begin();
 
-	m_spriteBatch.begin();
-
-
-	for (auto& ball : m_balls) {
+	/* NEW: loop is in the BallRenderer class*/
+	/*for (auto& ball : m_balls) {
 		m_ballRenderer.renderBall(m_spriteBatch, ball);
-	}
+	}*/
+	/* NEW: NEW: renderer selection */
+	//m_ballRenderer.renderBall(m_spriteBatch, m_balls, projectionMatrix);
+	m_ballRenderers[m_currentRenderer]->renderBalls(m_spriteBatch, m_balls, projectionMatrix);
 
 
-	m_spriteBatch.end();
-	m_spriteBatch.renderBatch();
 
+
+	/* NEW: since the Lazy int unuses the shader program in BallRender, the program will not work unless renderingBatch is called before the shader program is unused */
+	/*m_spriteBatch.end();
+	m_spriteBatch.renderBatch();*/
+
+
+	/* NEW: moved so only the heads up display is using this textureProgram */
+	m_textureProgram.use();
+	/* NEW: moved here as well as the BallRenderer class, because the heads up display does need this */
+	glUniform1i(m_textureProgram.getUniformLocation("mySampler"), 0);
+	/* NEW: moved here as well as the BallRenderer class, because the heads up display does need this */
+	glUniformMatrix4fv(m_textureProgram.getUniformLocation("P"), 1, GL_FALSE, &projectionMatrix[0][0]);
 
 	drawHud();
 
@@ -285,6 +344,9 @@ void MainGame::drawHud() {
 
 
 void MainGame::processInput() {
+
+	/* NEW: update inuput manager so that can tell if key is pressed for switching between renderers which was never called yet, for some reason it was working fine before */
+	m_inputManager.update();
 
 	SDL_Event evnt;
 
@@ -332,6 +394,17 @@ void MainGame::processInput() {
 	}
 	else if (m_inputManager.isKeyPressed(SDLK_SPACE)) {
 		m_ballController.setGravityDirection(GravityDirection::NONE);
+	}
+
+
+
+
+	/* NEW: changed to a new renderer */
+	if (m_inputManager.isKeyPressed(SDLK_1)) {
+		++m_currentRenderer;
+		if (m_currentRenderer >= (int)m_ballRenderers.size()) {
+			m_currentRenderer = 0;
+		}
 	}
 
 

@@ -139,10 +139,7 @@
     <ClInclude Include="MainGame.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 42 - Spatial Partition Pt. 2.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Tutorial 42 - Spatial Partition.png" />
+    <Text Include="Tutorial 43 - Multiple Renderers, Lazy Init.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

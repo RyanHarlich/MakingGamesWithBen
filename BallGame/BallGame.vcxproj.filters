@@ -55,13 +55,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 42 - Spatial Partition Pt. 2.txt">
+    <Text Include="Tutorial 43 - Multiple Renderers, Lazy Init.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Tutorial 42 - Spatial Partition.png">
-      <Filter>Tutorial Notes</Filter>
-    </Image>
   </ItemGroup>
 </Project>

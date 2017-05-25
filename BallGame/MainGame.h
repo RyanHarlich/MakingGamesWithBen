@@ -23,43 +23,33 @@ enum class GameState {
 	EXIT
 };
 
-/* NEW: with spatial partition running at less than 50 fps with size at 128 at 4000 balls (option 1) */
-//const int CELL_SIZE = 128;
-//const int CELL_SIZE = 32; // this runs at 60fps with 10,000 balls (option 1), (option 2) with 40,000 balls, smaller balls, runs at 2fps
-const int CELL_SIZE = 12; // the smaller the cells the more cells to iterate through (option 1, runs at 60fps with 20,000 balls with the same result if CELL_SIZE is 32), (option 2) with 40,000 balls, smaller balls, runs at 10fps
+
+const int CELL_SIZE = 12;
 
 
 class MainGame
 {
 public:
+	/* NEW */
+	~MainGame();
+
 	void run();
 
 private:
-
 	void init();
 
+	/* NEW */
+	void initRenderers();
 
 	void initBalls();
-
-
 	void gameLoop();
-
-
 	void processInput();
-
-	
 	void update(float deltaTime);
-
-
 	void draw();
-
-
 	void drawHud();
 
 
 
-
-private:
 	Bengine::Window m_window;
 	Bengine::GLSLProgram m_textureProgram;
 	Bengine::InputManager m_inputManager;
@@ -68,10 +58,18 @@ private:
 	Bengine::FpsLimiter m_fpsLimiter;
 	Bengine::AudioEngine m_audioEngine;
 
-	BallRenderer m_ballRenderer;
+
 	BallController m_ballController;
 	std::vector<Ball> m_balls; ///< if balls were delete should be pointers, but this is more cache friendly if not
 	std::unique_ptr<Grid> m_grid; ///< Grid for spatial partitioning for collision
+
+	/* NEW: removed and replaced */
+	//BallRenderer m_ballRenderer;
+	/* NEW */
+	std::vector<BallRenderer*> m_ballRenderers;
+	/* NEW */
+	int m_currentRenderer = 0;
+	
 
 	int m_screenWidth = 1024;
 	int m_screenHeight = 768;

@@ -20,8 +20,6 @@ struct Ball {
 	unsigned int textureID = 0;
 	Bengine::ColorRGBA8 color;
 	Cell* ownerCell = nullptr; // nullptr violations are alot easier to debug than random violations memory
-
-	/* NEW */
 	int cellVectorIndex = -1;
 
 };

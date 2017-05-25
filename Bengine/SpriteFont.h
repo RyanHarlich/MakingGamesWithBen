@@ -33,9 +33,8 @@
 
 namespace Bengine {
 
-	/* NEW: was class, needs to be struct for avoidence of warning */
-	struct GLTexture;
 
+	struct GLTexture;
 	class SpriteBatch;
 
 	struct CharGlyph {
