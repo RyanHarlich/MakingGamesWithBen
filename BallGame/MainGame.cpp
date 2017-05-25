@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS /* NEW To shut up the compiler about sprintf... */
+#define _CRT_SECURE_NO_WARNINGS // NEW To shut up the compiler about sprintf...
 #include "MainGame.h"
 #include <iostream>
 #include <random>
@@ -123,7 +123,11 @@ struct BallSpawn {
 
 void MainGame::initBalls() {
 
-	/* NEW */
+	/* NEW: initialize the grid */
+	m_grid = std::make_unique<Grid>(m_screenWidth, m_screenHeight, CELL_SIZE);
+
+
+
 #define ADD_BALL(p, ...) \
 	totalProbability += p; \
 	possibleBalls.emplace_back(__VA_ARGS__);
@@ -138,46 +142,14 @@ void MainGame::initBalls() {
 	std::vector<BallSpawn> possibleBalls;
 	float totalProbability = 0.0f;
 
-	/* NEW: macro implementation */
-	/* STAGE 1 */
-	/* // Number of balls to spawn
+	
 	const int NUM_BALLS = 100;
 	ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
 		20.0f, 1.0f, 0.1f, 7.0f, totalProbability);
 	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
 		30.0f, 2.0f, 0.1f, 3.0f, totalProbability);
 	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
-		50.0f, 4.0f, 0.0f, 0.0f, totalProbability);*/
-	/* STAGE 2: Smaller balls, and 1000 of them instead of 100 */
-	// Number of balls to spawn
-	/*const int NUM_BALLS = 1000;
-	ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
-		2.0f, 1.0f, 0.1f, 7.0f, totalProbability);
-	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
-		3.0f, 2.0f, 0.1f, 3.0f, totalProbability);
-	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
-		5.0f, 4.0f, 0.0f, 0.0f, totalProbability);*/
-	/* STAGE 3: Same size as stage 2, but 4000 balls to lag */
-	const int NUM_BALLS = 4000;
-	ADD_BALL(20.0f, Bengine::ColorRGBA8(255, 255, 255, 255),
-		2.0f, 1.0f, 0.1f, 7.0f, totalProbability);
-	ADD_BALL(10.0f, Bengine::ColorRGBA8(0, 0, 255, 255),
-		3.0f, 2.0f, 0.1f, 3.0f, totalProbability);
-	ADD_BALL(1.0f, Bengine::ColorRGBA8(255, 0, 0, 255),
-		5.0f, 4.0f, 0.0f, 0.0f, totalProbability);
-
-	/* NEW: this was the old method prior to the macro implementation */
-	/*totalProbability += 20.0f;
-	possibleBalls.emplace_back(Bengine::ColorRGBA8(255, 255, 255, 255),
-		20.0f, 1.0f, 0.1f, 7.0f, totalProbability);
-
-	totalProbability += 10.0f;
-	possibleBalls.emplace_back(Bengine::ColorRGBA8(0, 0, 255, 255),
-		30.0f, 2.0f, 0.1f, 3.0f, totalProbability);
-
-	totalProbability += 1.0f;
-	possibleBalls.emplace_back(Bengine::ColorRGBA8(255, 0, 0, 255),
-		50.0f, 4.0f, 0.0f, 0.0f, totalProbability);*/
+		50.0f, 4.0f, 0.0f, 0.0f, totalProbability);
 
 
 	// Random probability for ball spawn
@@ -185,6 +157,7 @@ void MainGame::initBalls() {
 
 	// Small optimization that sets the size of the internal array to prevent
 	// extra allocations
+	/* NEW: nothing was changed! But pointing out that if a pointer to a ball in a vector was pointing to one, and the vector changed, the pointer would lose the ball and no longer be pointing to that ball because as a vector changes it shifts around in memory and changes, this following line will prevent that from happening because the vector has been sized and would not be resized later unless done so, so its spot in memory will not change */
 	m_balls.reserve(NUM_BALLS);
 
 	BallSpawn* ballToSpawn = &possibleBalls[0];
@@ -213,6 +186,10 @@ void MainGame::initBalls() {
 
 		// Add ball
 		m_balls.emplace_back(ballToSpawn->radius, ballToSpawn->mass, pos, direction * ballToSpawn->randSpeed(randomEngine), Bengine::ResourceManager::getTexture("Texture/CircleSH.png").id, ballToSpawn->color);
+
+
+		/* NEW: add the ball to the grid. If you ever call emplace back after init balls, m_grid will have dangling pointers! */
+		m_grid->addBall(&m_balls.back());
 
 	}
 
@@ -249,7 +226,7 @@ void MainGame::draw() {
 
 	m_spriteBatch.begin();
 
-	/* NEW */
+
 	for (auto& ball : m_balls) {
 		m_ballRenderer.renderBall(m_spriteBatch, ball);
 	}
@@ -302,7 +279,6 @@ void MainGame::processInput() {
 			m_gameState = GameState::EXIT;
 			break;
 		case SDL_MOUSEMOTION:
-			/* NEW */
 			m_ballController.onMouseMove(m_balls, (float)evnt.motion.x, (float)m_screenHeight - (float)evnt.motion.y);
 			m_inputManager.setMouseCoords((float)evnt.motion.x, (float)evnt.motion.y);
 			break;
@@ -313,12 +289,10 @@ void MainGame::processInput() {
 			m_inputManager.releaseKey(evnt.key.keysym.sym);
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			/* NEW */
 			m_ballController.onMouseDown(m_balls, (float)evnt.motion.x, (float)m_screenHeight - (float)evnt.motion.y);
 			m_inputManager.pressKey(evnt.button.button);
 			break;
 		case SDL_MOUSEBUTTONUP:
-			/* NEW */
 			m_ballController.onMouseUp(m_balls);
 			m_inputManager.releaseKey(evnt.button.button);
 			break;

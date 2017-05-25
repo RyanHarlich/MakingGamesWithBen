@@ -33,6 +33,9 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h">
@@ -47,10 +50,18 @@
     <ClInclude Include="BallController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 40 - BallGame, Variadic Macros, SRP.txt">
+    <Text Include="Tutorial 41 - Spatial Partition Pt. 1.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Tutorial 41 - Spatial Partition.png">
+      <Filter>Tutorial Notes</Filter>
+    </Image>
   </ItemGroup>
 </Project>

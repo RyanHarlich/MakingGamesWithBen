@@ -5,6 +5,10 @@
 #include <glm/glm.hpp>
 
 
+/* NEW */
+class Cell;
+
+
 struct Ball {
 	Ball(float radiu, float mas, const glm::vec2& pos,
 		const glm::vec2& vel, unsigned int texturId,
@@ -16,6 +20,9 @@ struct Ball {
 	glm::vec2 position;
 	unsigned int textureID = 0;
 	Bengine::ColorRGBA8 color;
+
+	/* NEW */
+	Cell* ownerCell = nullptr; // nullptr violations are alot easier to debug than random violations memory
 
 };
 

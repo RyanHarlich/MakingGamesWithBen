@@ -172,15 +172,9 @@ void MainGame::initLevel() {
 
 void MainGame::initShaders() {
 	m_textureProgram.compileShaders("Shaders/textureShading.vert", "Shaders/textureShading.frag");
-
-	/* NEW: THIS WAS SUPPOSE TO BE VERTEX, IT SAID FRAGMENT! 
-			THAT WOULD WORK SINCE IT OUTS TO .FRAG BUT IS NOT RIGHT */
 	m_textureProgram.addAttribute("vertexPosition");
 	m_textureProgram.addAttribute("vertexColor");
 	m_textureProgram.addAttribute("vertexUV");
-
-
-
 	m_textureProgram.linkShaders();
 
 }

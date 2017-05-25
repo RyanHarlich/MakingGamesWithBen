@@ -127,6 +127,7 @@
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="BallController.cpp" />
     <ClCompile Include="BallRenderer.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainGame.cpp" />
   </ItemGroup>
@@ -134,10 +135,14 @@
     <ClInclude Include="Ball.h" />
     <ClInclude Include="BallController.h" />
     <ClInclude Include="BallRenderer.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="MainGame.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 40 - BallGame, Variadic Macros, SRP.txt" />
+    <Text Include="Tutorial 41 - Spatial Partition Pt. 1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Tutorial 41 - Spatial Partition.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

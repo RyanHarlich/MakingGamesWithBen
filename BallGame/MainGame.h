@@ -3,10 +3,13 @@
 #include <vector>
 #include <memory>
 
-/* NEW */
 #include "Ball.h"
 #include "BallController.h"
 #include "BallRenderer.h"
+
+/* NEW */
+#include "Grid.h"
+
 
 #include <Bengine/Window.h>
 #include <Bengine/GLSLProgram.h>
@@ -25,6 +28,13 @@ enum class GameState {
 	RUNNING,
 	EXIT
 };
+
+
+
+/* NEW */
+const int CELL_SIZE = 128;
+
+
 
 class MainGame
 {
@@ -65,11 +75,12 @@ private:
 	Bengine::FpsLimiter m_fpsLimiter;
 	Bengine::AudioEngine m_audioEngine;
 
-	/* NEW */
 	BallRenderer m_ballRenderer;
 	BallController m_ballController;
-	std::vector<Ball> m_balls;
+	std::vector<Ball> m_balls; ///< if balls were delete should be pointers, but this is more cache friendly if not
 
+	/* NEW */
+	std::unique_ptr<Grid> m_grid; ///< Grid for spatial partitioning for collision
 
 	int m_screenWidth = 1024;
 	int m_screenHeight = 768;

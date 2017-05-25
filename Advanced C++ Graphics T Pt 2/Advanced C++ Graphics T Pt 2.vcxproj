@@ -146,9 +146,6 @@
     <ClInclude Include="UploadStances.h" />
     <ClInclude Include="Zombie.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="IMPORTANT TUTORIAL NOTES.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
