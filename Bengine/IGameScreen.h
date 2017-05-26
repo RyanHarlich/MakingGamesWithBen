@@ -2,9 +2,11 @@
 
 #define SCREEN_INDEX_NO_SCREEN -1
 
+
+
 namespace Bengine {
 
-	class MainGame;
+	class IMainGame;
 
 	enum class ScreenState {
 		NONE,
@@ -17,10 +19,10 @@ namespace Bengine {
 	class IGameScreen
 	{
 	public:
-		IGameScreen() { // Empty
-		}
-		virtual ~IGameScreen() { // Empty 
-		}
+		friend class ScreenList;
+
+		IGameScreen() { /* Empty */ }
+		virtual ~IGameScreen() { /* Empty */ }
 
 		// Return the index of the next or previous screen when changing screens
 		virtual int getNextScreenIndex() const = 0;
@@ -40,14 +42,18 @@ namespace Bengine {
 
 		int getScreenIndex() const { return m_screenIndex; }
 
-		void setParentGame(MainGame* game) { m_game = game; }
+		void setRunning() { m_currentState = ScreenState::RUNNING; }
+
+		ScreenState getState() const { return m_currentState; }
+
+		void setParentGame(IMainGame* game) { m_game = game; }
 
 
 
 
 	protected:
 		ScreenState m_currentState = ScreenState::NONE;
-		MainGame* m_game = nullptr;
+		IMainGame* m_game = nullptr;
 		int m_screenIndex = SCREEN_INDEX_NO_SCREEN;
 
 

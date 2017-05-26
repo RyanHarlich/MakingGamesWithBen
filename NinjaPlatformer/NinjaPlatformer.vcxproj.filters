@@ -18,18 +18,32 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 44 - IMainGame + IGameScreen architecture.txt">
-      <Filter>Tutorial Notes</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameplayScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Tutorial 44 - IMainGame + IGameScreen architecture.png">
+    <Text Include="Tutorial 45 - Finished IMainGame + IGameScreen.txt">
+      <Filter>Tutorial Notes</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Tutorial 45 - IMainGame + IGameScreen architecture.png">
       <Filter>Tutorial Notes</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameplayScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

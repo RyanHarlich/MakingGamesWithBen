@@ -1,0 +1,14 @@
+Updated Files:
+		- IGameScreen.h
+		- IMainGame.cpp
+		- IMainGame.h
+		- ScreenList.cpp
+		- ScreenList.h
+		- Added to NinjaPlatformer project the class: App
+		- Added to NinjaPlatformer project the class: GameplayScreen		
+
+___________________________________________________________________________________
+Notes:
+		- Ctrl + x
+				- without highlighting a line will delete that entire line
+		

@@ -3,9 +3,18 @@
 
 namespace Bengine {
 
-	ScreenList::ScreenList(MainGame* game) : m_game(game) {
+	ScreenList::ScreenList(IMainGame* game) : m_game(game) {
 		//Empty
 	}
+
+
+
+
+	ScreenList::~ScreenList() {
+		destory();
+	}
+
+
 
 
 
@@ -36,6 +45,7 @@ namespace Bengine {
 
 
 	void ScreenList::addScreen(IGameScreen* newScreen) {
+		newScreen->m_screenIndex = m_screens.size();
 		m_screens.push_back(newScreen);
 		newScreen->build();
 		newScreen->setParentGame(m_game);
@@ -46,18 +56,11 @@ namespace Bengine {
 	void ScreenList::destory() {
 		for (size_t i = 0; i < m_screens.size(); ++i) {
 			m_screens[i]->destroy();
-			delete m_screens[i];
 		}
 		m_screens.resize(0);
 		m_currentScreenIndex = SCREEN_INDEX_NO_SCREEN;
 	}
 
-
-
-
-	ScreenList::~ScreenList() {
-		destory();
-	}
 
 
 

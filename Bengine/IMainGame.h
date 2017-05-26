@@ -4,6 +4,7 @@
 
 #include "Window.h"
 #include "Bengine.h"
+#include "InputManager.h"
 
 
 namespace Bengine {
@@ -16,19 +17,29 @@ namespace Bengine {
 		IMainGame();
 		virtual ~IMainGame();
 
+		// Runs and initializes the game
 		void run();
+		// Exits the game
 		void exitGame();
 
+		// Called on initialization 
 		virtual void onInit() = 0;
+		// For adding all screens
 		virtual void addScreens() = 0;
+		// Called when exiting
 		virtual void onExit() = 0;
 
-		virtual void update() = 0;
-		virtual void draw() = 0;
+		void onSDLEvent(SDL_Event& evnt);
 
 		const float getFps() const { return m_fps; }
 
 	protected:
+		// Custom update function
+		virtual void update();
+		// Custom render function
+		virtual void draw();
+
+		
 		bool init();
 		bool initSystems();
 
@@ -37,6 +48,7 @@ namespace Bengine {
 		bool m_isRunning = false;
 		float m_fps = 0.0f;
 		Window m_window;
+		InputManager m_inputManager;
 
 	};
 

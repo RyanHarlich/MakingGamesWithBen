@@ -2,15 +2,18 @@
 
 #include <vector>
 
-class MainGame;
-class IGameScreen;
+#include "IGameScreen.h"
+
 
 namespace Bengine {
+
+	class IMainGame;
 
 	class ScreenList
 	{
 	public:
-		ScreenList(MainGame* game);
+		ScreenList(IMainGame* game);
+		~ScreenList();
 
 		IGameScreen* moveNext();
 		IGameScreen* movePrevious();
@@ -20,12 +23,12 @@ namespace Bengine {
 
 		void destory();
 
-		~ScreenList();
+		
 
 		IGameScreen* getCurrent();
 
 	protected:
-		MainGame* m_game = nullptr;
+		IMainGame* m_game = nullptr;
 		std::vector<IGameScreen*> m_screens;
 		int m_currentScreenIndex = SCREEN_INDEX_NO_SCREEN;
 	};

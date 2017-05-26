@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)deps/include;$(SolutionDir)deps/WindowsKits10/include;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps/lib;$(SolutionDir)deps/WindowsKits10/lib;$(SolutionDir)release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)deps/lib;$(SolutionDir)deps/WindowsKits10/lib;$(SolutionDir)Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -124,13 +124,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Tutorial 44 - IMainGame + IGameScreen architecture.txt" />
+    <Text Include="Tutorial 45 - Finished IMainGame + IGameScreen.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="GameplayScreen.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Tutorial 44 - IMainGame + IGameScreen architecture.png" />
+    <Image Include="Tutorial 45 - IMainGame + IGameScreen architecture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.h" />
+    <ClInclude Include="GameplayScreen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -72,10 +72,10 @@
     <ClCompile Include="ParticleBatch2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScreenList.cpp">
+    <ClCompile Include="IMainGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IMainGame.cpp">
+    <ClCompile Include="ScreenList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,10 +143,10 @@
     <ClInclude Include="IGameScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScreenList.h">
+    <ClInclude Include="IMainGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IMainGame.h">
+    <ClInclude Include="ScreenList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
