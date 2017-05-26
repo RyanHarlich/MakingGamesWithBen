@@ -1,0 +1,29 @@
+Updated Files:
+		- Added new class to Bengine called: IGameScreen
+		- Added new class to Bengine called: MainGame
+		- Added new class to Bengine called: ScreenList
+
+		- NOTE: there is alot of errors in this version, check next version
+				- this video was for setting IGameScreen and IMainGame 
+						- not to forget ScreenList
+				- next video will create own implementation of these
+
+___________________________________________________________________________________
+Notes:
+		- A system for managing screens
+
+		- Game Engine will extend to have its own interface and screen interface
+				- that can be inherited from
+
+		- IGameScreen
+				- Interface for a screen
+
+
+		- In C++ 11 can have header initalizations
+
+
+		- I means Interface
+			-ex
+				IInterface
+
+		- Always have the destructor of a inherited class (a base class) virtual so its child's destructor gets called if deleting the instance of it's parent

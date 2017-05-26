@@ -20,10 +20,10 @@ public:
 	void onMouseMove(std::vector <Ball>& balls, float mouseX, float mouseY);
 	void setGravityDirection(GravityDirection dir) { m_gravityDirection = dir; }
 
-	/* NEW */
+	// Setter 
 	void setIsColorChangingOn_Collision(bool isColorChangingOn_Collision) { m_isColorChangingOn_Collision = isColorChangingOn_Collision; }
+	// Getter
 	bool getIsColorChangingOn_Collision() { return m_isColorChangingOn_Collision; }
-	/* NEW: end of new */
 
 
 private:
@@ -41,8 +41,6 @@ private:
 	glm::vec2 m_prevPos = glm::vec2(0.0f); ///< Previous position of the grabbed ball
 	glm::vec2 m_grabOffSet = glm::vec2(0.0f); ///< Offset of the cursor on the selected ball
 	GravityDirection m_gravityDirection = GravityDirection::NONE;
-
-	/* NEW */
 	bool m_isColorChangingOn_Collision = false; // color changing for when they collide, not regular color changing
 
 };

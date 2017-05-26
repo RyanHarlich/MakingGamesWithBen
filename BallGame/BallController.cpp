@@ -194,7 +194,7 @@ void BallController::checkCollision(Ball& b1, Ball& b2) {
 	float collisionDepth = totalRadius - dist;
 
 
-	/* NEW: feature color changing when collision has happened */
+
 	//// Check for collision
 	if (m_isColorChangingOn_Collision == false) {
 		// Collision option 1: no color changing when colliding with other ball

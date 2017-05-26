@@ -1,9 +1,0 @@
-Updated Files:
-
-
-___________________________________________________________________________________
-Notes:
-	- added a new color changing when balls collide
-			- press 1 for rendering changing
-			- press 2 for turning color changing when balls collide on and off
-	

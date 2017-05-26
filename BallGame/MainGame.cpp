@@ -358,7 +358,6 @@ void MainGame::processInput() {
 			m_currentRenderer = 0;
 		}
 	}
-	/* NEW */
 	if (m_inputManager.isKeyPressed(SDLK_2)) {
 		if (m_ballController.getIsColorChangingOn_Collision()) {
 			m_ballController.setIsColorChangingOn_Collision(false);
