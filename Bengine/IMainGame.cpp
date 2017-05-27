@@ -161,7 +161,7 @@ namespace Bengine {
 
 
 	bool IMainGame::initSystems() {
-		m_window.create("Default", 760, 760, 0);
+		m_window.create("Default", 1476, 876, 0);
 		//m_window.create("Default", 1920, 1080, 0);
 		return true;
 	}

@@ -27,16 +27,9 @@
     <ClCompile Include="GameplayScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Tutorial 45 - Finished IMainGame + IGameScreen.txt">
-      <Filter>Tutorial Notes</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Tutorial 45 - IMainGame + IGameScreen architecture.png">
-      <Filter>Tutorial Notes</Filter>
-    </Image>
+    <ClCompile Include="Box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -45,5 +38,13 @@
     <ClInclude Include="GameplayScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Tutorial 46 - Box2D Physics.txt">
+      <Filter>Tutorial Notes</Filter>
+    </Text>
   </ItemGroup>
 </Project>

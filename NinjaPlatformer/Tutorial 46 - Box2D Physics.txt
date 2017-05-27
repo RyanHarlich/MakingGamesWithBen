@@ -1,0 +1,89 @@
+Updated Files:
+		- 	Add to NinjaPlatformer project class: Box
+		-	GameplayScreen.h
+		-	GameplayScreen.cpp
+		-	Window.cpp (bug)
+		-	App.cpp
+___________________________________________________________________________________
+Notes:
+		- Box2D physics engine
+				- Before:
+						- circular collision
+						- axis aligned bounding box collision
+				- Now:
+						- Crates that can:
+								- be knocked over
+								- rotation
+								- friction
+
+		- Box2D is limited to two dimensional
+		- Bullet Physics is a good 3D engine
+				- can also be used for 2D, although box2D is a better choice for 2D
+
+		- http://box2d.org/
+				- Download > Box2D on GitHub > Releases tab > v2.3.1 > source code (zip)
+							- (not Clone or download) 
+							- Note: for the tutorial 2.3.0 was downloaded, in future use 2.3.1
+				- Extract zip file
+						- Box2D > Build (not BoxD > Box2D)
+						- vs2012 (visual studio 2012)
+						- build solution in debug mode and release mode
+								- note: debug mode has W4 on and should be set to W3 if there are build			errors treated as warnings
+		
+		
+		- Setup deps directory:
+				- In the lib folder, seperate by debug and release directory
+						- so make a debug folder
+						- make a relase folder
+							- make sure to duplicate all the .lib files into both
+				- now copy and paste both the debug and release folder from the Box2D build vs2012 bin into the lib directory so it will merge with the newly created debug and release folder
+						- make sure capitalization of the directory is the same for merging
+
+		- now when setting up the properties will have to do debug and release differently
+
+		- also will have to change all the properties of the projects for the library directories
+				from: $(SolutionDir)deps/lib 
+				to: $(SolutionDir)deps/lib/debug 
+					& 
+					$(SolutionDir)deps/lib/release
+
+		- ALSO! Do not forget to Linker > Input > additional dependencies
+						 Box2D.lib
+								- to both the release and debug
+
+		- LASTLY! Do not forget to copy the include files, so above the build directory copy and paste the Box2D directory (which will see directories and a Box2D.h in it) to the include directory in deps
+
+
+		ABOUT BOX2D:
+___________________________________________________________________________________________________________
+
+		- the physics world is known as a b2 world, everything in the box2D.lib starts with a b2
+		- box2D
+			- spatial partitoning
+			- continuous collision detection
+		- has own vector class like glm
+
+		Definitions:
+			- Bodies (or Rigid bodies)
+					- single object, that is strong, like a solid box that does not flex
+			- Shape
+					- 2D geometrical object
+					- shape of the body
+			- Fixture
+					- What actually binds the shape to a rigid body
+					- what the body looks like
+					- can have several fixtures on a single rigid body
+
+		- need to create body first for any physics objects
+
+		- all units in Box2D are in meters
+
+		- the scale is pixels per meter
+				m_camera.setScale(32.0); // 32 pixels per meter
+			- screen size is in pixels 
+				m_window.create("Default", 1476, 876, 0);
+
+
+
+
+		

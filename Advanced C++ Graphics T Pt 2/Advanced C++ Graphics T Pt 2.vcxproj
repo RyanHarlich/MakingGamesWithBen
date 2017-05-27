@@ -71,11 +71,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)deps/include;$(SolutionDir)deps/WindowsKits10/include;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps/lib;$(SolutionDir)deps/WindowsKits10/lib;$(SolutionDir)debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)deps/lib/debug;$(SolutionDir)deps/WindowsKits10/lib;$(SolutionDir)debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)deps/include;$(SolutionDir)deps/WindowsKits10/include;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps/lib;$(SolutionDir)deps/WindowsKits10/lib;$(SolutionDir)release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)deps/lib/release;$(SolutionDir)deps/WindowsKits10/lib;$(SolutionDir)release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
