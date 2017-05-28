@@ -21,7 +21,6 @@ void App::onInit() {
 
 void App::addScreens() {
 
-	/* NEW: added an argument address */
 	m_gameplayScreen = std::make_unique<GameplayScreen>(&m_window);
 
 	m_screenList->addScreen(m_gameplayScreen.get());

@@ -124,18 +124,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Tutorial 46 - Box2D Physics.txt" />
+    <Text Include="Tutorial 47 - Platformer Player Control.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="GameplayScreen.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="GameplayScreen.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -33,6 +33,9 @@ namespace Bengine {
 
 		const float getFps() const { return m_fps; }
 
+		/* NEW: public variables are usually bad */
+		InputManager inputManager;
+
 	protected:
 		// Custom update function
 		virtual void update();
@@ -48,7 +51,9 @@ namespace Bengine {
 		bool m_isRunning = false;
 		float m_fps = 0.0f;
 		Window m_window;
-		InputManager m_inputManager;
+
+		/* NEW: moved to become a public variable */
+		//InputManager inputManager;
 
 	};
 

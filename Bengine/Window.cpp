@@ -21,7 +21,6 @@ namespace Bengine {
 
 	int Window::create(std::string windowName, int screenWidth, int screenHeight, unsigned int currentFlags) {
 
-		/* NEW */
 		m_screenWidth = screenWidth;
 		m_screenHeight = screenHeight;
 
