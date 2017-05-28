@@ -38,11 +38,14 @@ namespace Bengine {
 			// Call the custom update and draw method
 			inputManager.update();
 			update();
-			
-			draw();
 
-			m_fps = limiter.end();
-			m_window.swapBuffer();
+			/* NEW: check to see if m_isRunning still after the update to avoid crashing when the next three functions are called (functions are not new) */
+			if (m_isRunning) {
+				draw();
+
+				m_fps = limiter.end();
+				m_window.swapBuffer();
+			} /* NEW: new closing brace encloses the functions ends here */
 		}
 
 	}
@@ -116,9 +119,7 @@ namespace Bengine {
 	void IMainGame::onSDLEvent(SDL_Event & evnt) {
 		switch (evnt.type) {
 		case SDL_QUIT:
-			/* NEW: trying to destroy a screen that has already been freed (in screenlist.cpp destroy function), the screen does not live in screenlist, there is a pointer to it in screenlist, but the screens memory is stored in the app, and app is getting destoryed before calling the destructor for screen list. Instead call exitGame which will do the destruction and set m_isRunning to false. It seems   */
 			exitGame();
-			//m_isRunning = false;
 			break;
 		case SDL_MOUSEMOTION:
 			inputManager.setMouseCoords((float)evnt.motion.x, (float)evnt.motion.y);

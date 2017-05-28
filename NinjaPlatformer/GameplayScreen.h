@@ -4,8 +4,6 @@
 #include <vector>
 
 #include "Box.h"
-
-/* NEW */
 #include "Player.h"
 
 #include <Bengine/IGameScreen.h>
@@ -14,8 +12,10 @@
 #include <Bengine/Camera2D.h>
 #include <Bengine/GLTexture.h>
 #include <Bengine/Window.h>
-
 #include <Box2D/Box2D.h>
+
+/* NEW */
+#include <Bengine/DebugRenderer.h>
 
 
 class GameplayScreen : public Bengine::IGameScreen
@@ -52,8 +52,11 @@ private:
 	Bengine::Window* m_window;
 
 	/* NEW */
-	Player m_player;
+	Bengine::DebugRenderer m_debugRenderer;
+	bool m_renderDebug = true;
 
+
+	Player m_player;
 	std::unique_ptr<b2World> m_world;
 	std::vector<Box> m_boxes;
 	

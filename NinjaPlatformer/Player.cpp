@@ -53,6 +53,8 @@ void Player::update(Bengine::InputManager& inputManager) {
 
 	}
 
+
+
 	static const float MAX_SPEED = 10.0f;
 	if (body->GetLinearVelocity().x < -MAX_SPEED) {
 		body->SetLinearVelocity(b2Vec2(-MAX_SPEED, body->GetLinearVelocity().y));
@@ -60,10 +62,8 @@ void Player::update(Bengine::InputManager& inputManager) {
 	else if (body->GetLinearVelocity().x > MAX_SPEED){
 		body->SetLinearVelocity(b2Vec2(MAX_SPEED, body->GetLinearVelocity().y));
 	}
-	else if (body->GetLinearVelocity().y < -MAX_SPEED) {
-		body->SetLinearVelocity(b2Vec2(MAX_SPEED, body->GetLinearVelocity().y - 100));
-	}
 	
+
 
 	// Loop through all the contact points
 	// contact edge, get contact list is a linked list that needs a special type of iteration

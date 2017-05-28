@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Bengine/Vertex.h>
-
-/* NEW */
 #include <Bengine/GLTexture.h>
 #include <Bengine/SpriteBatch.h>
 
@@ -15,7 +13,6 @@ public:
 	Box();
 	~Box();
 
-	/* NEW: argement fixedRotation, texture, UV */
 	void init(b2World* world, 
 		const glm::vec2 position, 
 		const glm::vec2 dimensions, 
@@ -24,7 +21,7 @@ public:
 		bool fixedRotation, 
 		glm::vec4 uvRect = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
-	/* NEW */
+
 	void draw(Bengine::SpriteBatch& spriteBatch);
 
 	// Getter
@@ -34,16 +31,11 @@ public:
 	const Bengine::ColorRGBA8& getColor() const { return m_color; }
 
 private:
-
-	/* NEW */
 	glm::vec4 m_uvRect;
-
 	b2Body* m_body = nullptr;
 	b2Fixture* m_fixture = nullptr;
 	glm::vec2 m_dimensions;
 	Bengine::ColorRGBA8 m_color;
-
-	/* NEW */
 	Bengine::GLTexture m_texture;
 };
 

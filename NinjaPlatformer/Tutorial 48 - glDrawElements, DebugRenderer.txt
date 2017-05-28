@@ -1,0 +1,91 @@
+Updated Files:
+		-	Added to Bengine Project new class: DebugRenderer
+		-	GLSLProgram.cpp
+		-	GLSLProgram.h
+		-	IOManager.h
+		-	IOManager.cpp
+		-	GameplayScreen.h
+		-	GameplayScreen.cpp
+				- two options when debug drawing (both are enabled)
+		-	IMainGame.cpp
+				- error with exiting the game (uniform P not found)
+
+
+
+___________________________________________________________________________________
+Notes:
+		- DebugRenderer: create a bounding box of all physcis objects, can also render circle
+				- draw various shapes in a wire frame mode (so can see outlines of physics objects such as player or objects player can collide with)
+
+		- GLSLProgram
+				- will be updated to provide in line soruce code
+				- it only expects files right now
+
+
+		- glDrawElements vs. glDrawArrays
+
+
+		- Vertices and indices
+
+		GlDrawArrays have to duplicate verticies
+				- passing 8 verticies to the GPU instead of 4 to make a square
+				- twice as much drawing
+
+		GLDrawElements is a second buffer that is passed in that is smaller than the 4 wasted verticies because each vertex usually contains at least two floats while GLDrawElement is only integer(s)
+		GLDrawElement instead takes the index of each vertex and tells the path to draw with pairs of numbers, to only use 4 verticies instead of 8, picture is attached for more information
+
+		ibo = indices buffer object  (index buffer object)
+			- always use unsigned variables
+
+		vao encloses the vbo and vertex pointers
+
+
+
+		GL_ELEMENT_ARRAY_BUFFER is used for index drawing
+
+
+
+		GLSL was hard coded to only be able to load programs from files
+		now, do not want users to provide thier own files (in game engine), instead want to pass the source code
+
+
+
+		string.c_str() gives a const char*
+		a const char* is a c string
+
+
+
+
+		to make inline shader code:
+				CANNOT do the following becuase the string would have to be all on one line, could do a hacky method with + operators:
+						const char* VERT_SRC = "";
+				instead do the following which is called a 'raw string':
+						const char* VERT_SRC = R"(/* file copy and paste into here */)";
+
+
+				note: enclose in a empty namespace to avoid collision
+
+ex:
+namespace{
+	const char* VERT_SRC = R"(#version 130
+
+in vec2 vertexPosition;
+in vec4 vertexColor;
+
+out vec4 volor;
+
+void main(){
+	color = fragmentColor;
+})";
+}
+
+
+		
+
+		- shown, but removed because want to toggle instead
+
+		#define DEBUG_RENDER
+
+		#ifdef DEBUG_RENDER
+			/* CODE GOES HERE (ONLY RUNS IF DEFINED) */
+		#endif

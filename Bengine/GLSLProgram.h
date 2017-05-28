@@ -17,6 +17,9 @@ namespace Bengine {
 
 		void compileShaders(const std::string &vertexShaderFilePath, const std::string &fragmentShaderFilePath);
 
+		/* NEW */
+		void compileShadersFromSource(const char* vertexSource, const char* fragmentSource);
+
 		void linkShaders();
 
 		GLuint getUniformLocation(const std::string& uniformName);
@@ -26,8 +29,15 @@ namespace Bengine {
 		void unuse();
 
 
+		/* NEW */
+		void dispose();
+
+
 	private:
-		void compileShader(const std::string filePath, GLint shaderID);
+
+		/* NEW: changed parameter, and add a name paramter for error checking */
+		//void compileShader(const std::string filePath, GLint shaderID);
+		void compileShader(const char* source, const std::string& name, GLint shaderID);
 
 
 		GLuint m_programID;

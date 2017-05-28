@@ -49,8 +49,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 47 - Platformer Player Control.txt">
+    <Text Include="Tutorial 48 - glDrawElements, DebugRenderer.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Tutorial 48 - Indicies (GLDrawElements).png">
+      <Filter>Tutorial Notes</Filter>
+    </Image>
   </ItemGroup>
 </Project>

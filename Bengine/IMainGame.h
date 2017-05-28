@@ -33,7 +33,7 @@ namespace Bengine {
 
 		const float getFps() const { return m_fps; }
 
-		/* NEW: public variables are usually bad */
+
 		InputManager inputManager;
 
 	protected:
@@ -52,8 +52,7 @@ namespace Bengine {
 		float m_fps = 0.0f;
 		Window m_window;
 
-		/* NEW: moved to become a public variable */
-		//InputManager inputManager;
+
 
 	};
 

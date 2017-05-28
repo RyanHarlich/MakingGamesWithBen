@@ -11,6 +11,7 @@
 
 
 
+
 GameplayScreen::GameplayScreen(Bengine::Window* window) : m_window(window)
 {
 }
@@ -43,13 +44,19 @@ void GameplayScreen::destroy() {
 
 void GameplayScreen::onEntry() {
 
-	/* NEW: gravity was to low, so increased to a guessed number */
+
 	//b2Vec2 gravity(0.0f, -9.81f); // gravity of earth m/s^2
 	b2Vec2 gravity(0.0f, -25.00f); // gravity of earth m/s^2
 
 
 
 	m_world = std::make_unique<b2World>(gravity);
+
+
+	/* NEW */
+	m_debugRenderer.init();
+
+
 
 	// Make the ground
 	b2BodyDef groundBodyDef; // body definition for the specific body
@@ -61,7 +68,6 @@ void GameplayScreen::onEntry() {
 	groundBody->CreateFixture(&groundBox, 0.0f); // create the fixture of the groundBody with the newly created groundBox definition
 
 
-	/* NEW: moved above before creating the boxes */
 	m_texture = Bengine::ResourceManager::getTexture("Textures/Box.png");
 
 	// Make a bunch of boxes
@@ -77,7 +83,7 @@ void GameplayScreen::onEntry() {
 		Box newBox;
 		float s = size(randGenerator);
 
-		/* NEW: added a fixed rotation argument */
+
 		newBox.init(m_world.get(), glm::vec2(xPos(randGenerator), yPos(randGenerator)), glm::vec2(s, s), m_texture,Bengine::ColorRGBA8(color(randGenerator), color(randGenerator), color(randGenerator), 255), false);
 
 		m_boxes.push_back(newBox);
@@ -91,14 +97,12 @@ void GameplayScreen::onEntry() {
 	m_textureProgram.addAttribute("vertexUV");
 	m_textureProgram.linkShaders();
 
-	/* NEW: moved above before creating the boxes */
-	//m_texture = Bengine::ResourceManager::getTexture("Textures/Box.png");
+
 
 	m_camera.init(m_window->getScreenWidth(), m_window->getScreenHeight());
 	m_camera.setScale(32.0); // 32 pixels per meter
 
 
-	/* NEW */
 	// Init player
 	m_player.init(m_world.get(), glm::vec2(0.0f, 30.0f), glm::vec2(1.0f, 2.0f), Bengine::ColorRGBA8(255,255,255,255), true);
 
@@ -108,6 +112,8 @@ void GameplayScreen::onEntry() {
 
 
 void GameplayScreen::onExit() {
+	/* NEW */
+	m_debugRenderer.dispose();
 }
 
 
@@ -118,7 +124,7 @@ void GameplayScreen::update() {
 
 	checkInput();
 
-	/* NEW */
+
 	m_player.update(m_game->inputManager);
 
 	// update the physics simulation
@@ -149,22 +155,11 @@ void GameplayScreen::draw() {
 
 	// Draw all the boxes
 	for (auto& b : m_boxes) {
-		/* NEW */
+
 		b.draw(m_spriteBatch);
-
-		/* NEW: removed and moved to new Box draw function */
-		//glm::vec4 destRect;
-
-		//// The position of the box is actually the center of the box not the corner of the box
-		//destRect.x = b.getBody()->GetPosition().x - (b.getDimensions().x / 2.0f);
-		//destRect.y = b.getBody()->GetPosition().y - (b.getDimensions().y / 2.0f);
-
-		//destRect.z = b.getDimensions().x;
-		//destRect.w = b.getDimensions().y;
-		//m_spriteBatch.draw(destRect, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), m_texture.id, 0.0f, b.getColor(), b.getBody()->GetAngle());
 	}
 	
-	/* NEW */
+
 	// Draw the player
 	m_player.draw(m_spriteBatch);
 
@@ -174,6 +169,36 @@ void GameplayScreen::draw() {
 	m_spriteBatch.renderBatch();
 
 	m_textureProgram.unuse();
+
+
+	/* NEW */
+	// Debug renderer
+	if (m_renderDebug) {
+		glm::vec4 destRect;
+		for (auto& b : m_boxes) {
+
+			/* NEW: option 1 */
+			destRect.x = b.getBody()->GetPosition().x - b.getDimensions().x / 2.0f;
+			destRect.y = b.getBody()->GetPosition().y - b.getDimensions().y / 2.0f;
+			destRect.z = b.getDimensions().x;
+			destRect.w = b.getDimensions().y;
+			m_debugRenderer.drawBox(destRect, Bengine::ColorRGBA8(255,255,255,255), b.getBody()->GetAngle());
+
+			/* NEW: option 2 */
+			m_debugRenderer.drawCircle(glm::vec2(b.getBody()->GetPosition().x, b.getBody()->GetPosition().y), Bengine::ColorRGBA8(255, 255, 255, 255), b.getDimensions().x / 2.0f);
+		}
+		// Render player
+		auto b = m_player.getBox();
+		destRect.x = b.getBody()->GetPosition().x - b.getDimensions().x / 2.0f;
+		destRect.y = b.getBody()->GetPosition().y - b.getDimensions().y / 2.0f;
+		destRect.z = b.getDimensions().x;
+		destRect.w = b.getDimensions().y;
+		m_debugRenderer.drawBox(destRect, Bengine::ColorRGBA8(255, 255, 255, 255), b.getBody()->GetAngle());
+
+		m_debugRenderer.end();
+		m_debugRenderer.render(projectionMatrix, 2.0f);
+	}
+	/* NEW: end of new */
 
 }
 

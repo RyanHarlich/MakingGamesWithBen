@@ -12,7 +12,6 @@ Box::~Box()
 }
 
 
-/* NEW: argement fixedRotation, texture, UV */
 void Box::init(b2World* world, 
 	const glm::vec2 position, 
 	const glm::vec2 dimensions, 
@@ -23,8 +22,6 @@ void Box::init(b2World* world,
 
 	m_dimensions = dimensions;
 	m_color = color;
-
-	/* NEW */
 	m_texture = texture;
 	m_uvRect = uvRect;
 
@@ -32,8 +29,6 @@ void Box::init(b2World* world,
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position.Set(position.x, position.y);
-
-	/* NEW */
 	bodyDef.fixedRotation = fixedRotation;
 
 	m_body = world->CreateBody(&bodyDef);
@@ -54,7 +49,7 @@ void Box::init(b2World* world,
 }
 
 
-/* NEW */
+
 void Box::draw(Bengine::SpriteBatch& spriteBatch) {
 
 	glm::vec4 destRect;
@@ -67,7 +62,6 @@ void Box::draw(Bengine::SpriteBatch& spriteBatch) {
 	destRect.w = m_dimensions.y;
 
 
-	/* NEW: changed to customizable uvRect argument */
 	spriteBatch.draw(destRect, m_uvRect, m_texture.id, 0.0f, m_color, m_body->GetAngle());
 
 }

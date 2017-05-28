@@ -124,7 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Tutorial 47 - Platformer Player Control.txt" />
+    <Text Include="Tutorial 48 - glDrawElements, DebugRenderer.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -138,6 +138,9 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="GameplayScreen.h" />
     <ClInclude Include="Player.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Tutorial 48 - Indicies (GLDrawElements).png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

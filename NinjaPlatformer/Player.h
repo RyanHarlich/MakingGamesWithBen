@@ -4,8 +4,6 @@
 
 #include <Bengine/SpriteBatch.h>
 #include <Bengine/GLTexture.h>
-
-/* NEW */
 #include <Bengine/InputManager.h>
 
 class Player {
