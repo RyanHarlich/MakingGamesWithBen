@@ -76,16 +76,15 @@ void GameplayScreen::onEntry() {
 	std::uniform_real_distribution<float> yPos(-10.0f, 15.0f);
 	std::uniform_real_distribution<float> size(0.5f, 2.5f);
 	std::uniform_int_distribution<int> color(0, 255);
-	const int NUM_BOXES = 50;
-	
+
+	/* NEW: changed from 100 to 10 */
+	//const int NUM_BOXES = 100;
+	const int NUM_BOXES = 10;
+
 
 	for (int i = 0; i < NUM_BOXES; ++i) {	
 		Box newBox;
 
-		/* NEW: removed */
-		//float s = size(randGenerator);
-
-		/* NEW: did random sizes instead of squares */
 		newBox.init(m_world.get(), glm::vec2(xPos(randGenerator), yPos(randGenerator)), glm::vec2(size(randGenerator), size(randGenerator)), m_texture,Bengine::ColorRGBA8(color(randGenerator), color(randGenerator), color(randGenerator), 255), false);
 
 		m_boxes.push_back(newBox);
@@ -106,7 +105,6 @@ void GameplayScreen::onEntry() {
 
 
 	// Init player
-	/* NEW: added new draw dimensions and collision dimensions, since the collision box is a 1x2 and the sprite is a square, the image was getting distored by stretching the image until now */
 	m_player.init(m_world.get(), glm::vec2(0.0f, 30.0f), glm::vec2(2.0f), glm::vec2(1.0f, 1.8f), Bengine::ColorRGBA8(255,255,255,255), true);
 
 
@@ -184,16 +182,7 @@ void GameplayScreen::draw() {
 			m_debugRenderer.drawBox(destRect, Bengine::ColorRGBA8(255,255,255,255), b.getBody()->GetAngle());
 		}
 		// Render player
-		/* NEW: switched to drawDebug function of player*/
 		m_player.drawDebug(m_debugRenderer);
-		/*auto b = m_player.getBox();
-		destRect.x = b.getBody()->GetPosition().x - b.getDimensions().x / 2.0f;
-		destRect.y = b.getBody()->GetPosition().y - b.getDimensions().y / 2.0f;
-		destRect.z = b.getDimensions().x;
-		destRect.w = b.getDimensions().y;
-		m_debugRenderer.drawBox(destRect, Bengine::ColorRGBA8(255, 255, 255, 255), b.getBody()->GetAngle());*/
-
-
 
 		m_debugRenderer.end();
 		m_debugRenderer.render(projectionMatrix, 2.0f);

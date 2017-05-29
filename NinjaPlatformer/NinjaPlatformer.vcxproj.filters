@@ -55,12 +55,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 49 - Capsule Collision.txt">
+    <Text Include="Tutorial 50 - 2D Animation.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Tutorial 49 - Capsule Collision.png">
+    <Image Include="Tutorial 50 - Capsule Collision.png">
       <Filter>Tutorial Notes</Filter>
     </Image>
   </ItemGroup>

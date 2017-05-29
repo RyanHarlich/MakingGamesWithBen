@@ -49,10 +49,7 @@ private:
 	Bengine::GLTexture m_texture;
 	Bengine::Window* m_window;
 	Bengine::DebugRenderer m_debugRenderer;
-
-	/* NEW: changed this to false */
 	bool m_renderDebug = false;
-
 	Player m_player;
 	std::unique_ptr<b2World> m_world;
 	std::vector<Box> m_boxes;

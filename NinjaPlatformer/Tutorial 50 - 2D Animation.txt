@@ -1,0 +1,46 @@
+Updated Files:
+		-	Add to Bengine Project: TileSheet.h
+		-	Player.h
+		-	Player.cpp
+		-	GameplayScreen.cpp
+
+___________________________________________________________________________________
+Notes:
+		-	Sprite sheet
+				- numbered
+					- 0-9 on the bottom (left to right)
+					- 10-19 on the top (left to right)
+				- positions:
+					- Standing Still: 0
+					- Jumping: (16-17)
+							rising 16
+							falling 17
+					- Running: (10-15)
+							- note: deltaTime would make this better but ignoring for now
+					- On Ground: 0-15, 19
+
+
+		- Direction
+			- left -1
+			- right is 1
+ex.
+	if (m_direction == LEFT) {
+		uvRect.x += 1.0f / m_texture.dims.x; // this will add one tile over
+		uvRect.z *= -1; // reverese the direction of the uv coordinates, (z is width), in the shader it will be a negative number for the demensions which will cause to go back one tile but backwards
+	}
+
+
+
+
+
+
+	if (abs(velocity.x) > 1.0f) { // absolute of velocity says to ignore direction
+
+
+
+	// Apply animation
+	tileIndex = tileIndex + (int)m_anumTime % numTiles; // starts at tile index and gives remainder of the number of tiles
+
+
+
+	animSpeed = abs(velocity.x) * 0.025f; // this will cause legs to slow down when velocity slows down

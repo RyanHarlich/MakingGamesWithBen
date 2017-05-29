@@ -1,18 +1,30 @@
 #pragma once
 
 #include "Box.h"
-
-/* NEW */
 #include "Capsule.h"
 
 #include <Bengine/SpriteBatch.h>
-#include <Bengine/GLTexture.h>
 #include <Bengine/InputManager.h>
+
+/* NEW */
+#include <Bengine/TileSheet.h>
+
+/* NEW: removed */
+//#include <Bengine/GLTexture.h>
+
+/* NEW */
+enum class PlayerMoveState { STANDING, RUNNING, PUNCHING, IN_AIR };
+
+
+/* NEW */
+#define RIGHT 1
+#define LEFT -1
+
 
 class Player {
 public:
 
-	/* NEW: removed dimensions and added collision dimensions and draw dimensions */
+
 	void init(b2World* world, 
 		const glm::vec2 position, 
 		const glm::vec2 drawDims, 
@@ -22,25 +34,30 @@ public:
 
 	void draw(Bengine::SpriteBatch& spriteBatch);
 
-	/* NEW */
 	void drawDebug(Bengine::DebugRenderer& debugRenderer);
 
 	void update(Bengine::InputManager& inputManager);
 
 	//Getter
-	/* NEW: change to get capsule instead of box for player */
-	//const Box& getBox() const { return m_collisionBox; }
 	const Capsule& getCapsule() const { return m_capsule; }
 
 
 private:
-	/* NEW */
 	glm::vec2 m_drawDims;
 	Bengine::ColorRGBA8 m_color;
-	Bengine::GLTexture m_texture;
 
-	/* NEW: replace with a capsule for the player */
-	//Box m_collisionBox;
+	/* NEW: removed */
+	//Bengine::GLTexture m_texture;
+	/* NEW */
+	Bengine::TileSheet m_texture;
+
 	Capsule m_capsule;
+
+	/* NEW */
+	PlayerMoveState m_moveState = PlayerMoveState::STANDING;
+	float m_animTime = 0.0f;
+	int m_direction = RIGHT;
+	bool m_onGround = false;
+	bool m_isPunching = false; // this is for kicking or punching
 
 };

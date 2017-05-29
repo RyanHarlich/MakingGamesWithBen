@@ -5,7 +5,7 @@
 #include <SDL/SDL.h>
 
 
-/* NEW: removed dimensions and added collision dimensions and draw dimensions */
+
 void Player::init(b2World * world, 
 	const glm::vec2 position, 
 	const glm::vec2 drawDims,
@@ -13,18 +13,17 @@ void Player::init(b2World * world,
 	Bengine::ColorRGBA8 color, 
 	bool fixedRotation) {
 
-	/* NEW: changed to m_texture */
-	//Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
-	m_texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
+	/* NEW: changed to tile sheet header */
+	//m_texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
+	Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
 
-	/* NEW */
 	m_color = color;
 	m_drawDims = drawDims;
 
-
-	/* NEW: changed to capsule instead of a box for player */
-	//m_collisionBox.init(world, position, dimensions, texture, color, fixedRotation, glm::vec4(0.0f, 0.0f, 0.1f, 0.5f));
 	m_capsule.init(world, position, collisionDims, 1.0f, 0.1f, fixedRotation);
+
+	/* NEW */
+	m_texture.init(texture, glm::ivec2(10, 2));
 }
 
 
@@ -34,10 +33,6 @@ void Player::init(b2World * world,
 
 void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 
-	/* NEW: removed */
-	//m_collisionBox.draw(spriteBatch);
-	
-	/* NEW: added draw code */
 	glm::vec4 destRect;
 	b2Body* body = m_capsule.getBody();
 	// The position of the box is actually the center of the box not the corner of the box
@@ -45,9 +40,107 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 	destRect.y = body->GetPosition().y - (m_capsule.getDimensions().y / 2.0f); // this should be m_capsule get dimensions so the sprites feet are perfectly aligned with the bottom of the collision box
 	destRect.z = m_drawDims.x;
 	destRect.w = m_drawDims.y;
-	spriteBatch.draw(destRect, glm::vec4(0.0f, 0.0f, 0.1f, 0.5f), m_texture.id, 0.0f, m_color, body->GetAngle());
-	/* NEW: end of new */
 
+
+	/* NEW */
+	int tileIndex;
+	int numTiles;
+
+	float animSpeed = 0.2f; // animation speed
+	glm::vec2 velocity;
+	velocity.x = body->GetLinearVelocity().x;
+	velocity.y = body->GetLinearVelocity().y;
+
+	// Calculate animation
+	if (m_onGround) {
+
+		if (m_isPunching) {
+			// Punching
+			numTiles = 4;
+			tileIndex = 1;
+
+			if (m_moveState != PlayerMoveState::PUNCHING) {
+				m_moveState = PlayerMoveState::PUNCHING;
+				m_animTime = 0.0f;
+			}
+
+
+		} else if (abs(velocity.x) > 1.0f && ((velocity.x > 0 && m_direction == RIGHT) || (velocity.x < 0 && m_direction == LEFT))) { // absolute of velocity says to ignore direction
+			// Running
+			numTiles = 6;
+			tileIndex = 10;
+			animSpeed = abs(velocity.x) * 0.025f; // this will cause legs to slow down when velocity slows down
+			if (m_moveState != PlayerMoveState::RUNNING) {
+				m_moveState = PlayerMoveState::RUNNING;
+				m_animTime = 0.0f;
+			}
+		}
+		else { // Standing still
+			numTiles = 1;
+			tileIndex = 0;
+			m_moveState = PlayerMoveState::STANDING;
+		}
+	}
+	else {
+		// In the air
+		if (m_isPunching) {
+			// Kicking
+			numTiles = 1;
+			tileIndex = 18;
+			animSpeed *= 0.25;
+			if (m_moveState != PlayerMoveState::PUNCHING) {
+				m_moveState = PlayerMoveState::PUNCHING;
+				m_animTime = 0.0f;
+			}
+		}
+		else if (abs(velocity.x) > 10.0f) {
+			numTiles = 1;
+			tileIndex = 10;
+			m_moveState = PlayerMoveState::IN_AIR;
+		}
+		else if (velocity.y <= 0.0f) {
+			// Falling
+			numTiles = 1;
+			tileIndex = 17;
+			m_moveState = PlayerMoveState::IN_AIR;
+		}
+		else {
+			// Rising
+			numTiles = 1;
+			tileIndex = 16;
+			m_moveState = PlayerMoveState::IN_AIR;
+		}
+	}
+
+	// Increment animation time
+	m_animTime += animSpeed;
+
+	// Check for punch end
+	if (m_animTime > numTiles) {
+		m_isPunching = false;
+	}
+
+	// Apply animation
+	tileIndex = tileIndex + (int)m_animTime % numTiles; // starts at tile index and gives remainder of the number of tiles
+
+
+	// Get the uv coordinates from the tile index
+	glm::vec4 uvRect = m_texture.getUVs(tileIndex);
+
+	// Check direction
+	if (m_direction == LEFT) {
+		uvRect.x += 1.0f / m_texture.dims.x; // this will add one tile over
+		uvRect.z *= -1; // reverese the direction of the uv coordinates, (z is width), in the shader it will be a negative number for the demensions which will cause to go back one tile but backwards
+	}
+
+	/* END OF NEW */
+
+
+
+
+	/* NEW: changed the UV argument with new TileSheet.h and the texture argument */
+	// draw the sprite
+	spriteBatch.draw(destRect, uvRect, m_texture.texture.id, 0.0f, m_color, body->GetAngle());
 }
 
 
@@ -70,24 +163,40 @@ void Player::drawDebug(Bengine::DebugRenderer& debugRenderer){
 void Player::update(Bengine::InputManager& inputManager) {
 
 	// Get body of player
-	/* NEW: changed to capsule instead of box for player */
-	//b2Body* body = m_collisionBox.getBody();
 	b2Body* body = m_capsule.getBody();
 
 
 	if (inputManager.isKeyDown(SDLK_a) || inputManager.isKeyDown(SDLK_LEFT)) {
 		// apply force to object, wake up object (objects can go to sleep)
 		body->ApplyForceToCenter(b2Vec2(-100.0f, 0.0f), true);
+
+		/* NEW */
+		m_direction = LEFT;
+
 	}
 	else if (inputManager.isKeyDown(SDLK_d) || inputManager.isKeyDown(SDLK_RIGHT)) {
 		body->ApplyForceToCenter(b2Vec2(100.0f, 0.0f), true);
+
+		/* NEW */
+		m_direction = RIGHT;
+
 	}
 	else {
 		// Apply damping: slow down velocity kind of like friction
 		// reduce velocity, to avoid floating, by 5% (only keep 95% of the x velocity) in the x directions
 		body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x * 0.95f, body->GetLinearVelocity().y));
-
 	}
+
+
+
+
+	/* NEW */
+	// check for punch
+	if (inputManager.isKeyPressed(SDLK_SPACE)) {
+		m_isPunching = true;
+	}
+
+
 
 
 
@@ -100,6 +209,8 @@ void Player::update(Bengine::InputManager& inputManager) {
 	}
 	
 
+	/* NEW */
+	m_onGround = false;
 
 	// Loop through all the contact points
 	// contact edge, get contact list is a linked list that needs a special type of iteration
@@ -121,9 +232,9 @@ void Player::update(Bengine::InputManager& inputManager) {
 			for (int i = 0; i < b2_maxManifoldPoints; ++i) {
 				// if monifold points y is less than the center of the player minus half its y dimension
 
-				/* NEW: changed to capsule instead of box for player, also changed the .01 to half the capsules width (this is explained in tutorial 50 so not sure if there is a typo somewhere else because in the video there was not a jumping problem */
-				//if (manifold.points[i].y < body->GetPosition().y - (m_collisionBox.getDimensions().y / 2.0f) + 0.01f) {
-				if (manifold.points[i].y < body->GetPosition().y - m_capsule.getDimensions().y / 2.0f + m_capsule.getDimensions().x / 2.0f) {
+
+				/* NEW: added to the .01, half the capsules bottom circle dimensions, picture is attached for explanation */
+				if (manifold.points[i].y < body->GetPosition().y - m_capsule.getDimensions().y / 2.0f + m_capsule.getDimensions().x / 2.0f + 0.01f) {
 
 					below = true;
 
@@ -132,8 +243,12 @@ void Player::update(Bengine::InputManager& inputManager) {
 				}
 			}
 			if (below) {
+
+				/* NEW */
+				m_onGround = true;
+
 				// Play can jump
-				if (inputManager.isKeyPressed(SDLK_w) || inputManager.isKeyPressed(SDLK_UP) || inputManager.isKeyPressed(SDLK_SPACE)) {
+				if (inputManager.isKeyPressed(SDLK_w) || inputManager.isKeyPressed(SDLK_UP)) {
 					// apply force to object, wake up object (objects can go to sleep)
 					// 2nd argument does not matter, asking for point of center
 					body->ApplyLinearImpulse(b2Vec2(0.0f, 30.0f), b2Vec2(0.0f, 0.0f), true);
