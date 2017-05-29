@@ -3,8 +3,6 @@
 
 #include "GLSLProgram.h"
 #include "BengineErrors.h"
-
-/* NEW */
 #include "IOManager.h"
 
 
@@ -34,50 +32,20 @@ namespace Bengine {
 
 	void GLSLProgram::compileShaders(const std::string &vertexShaderFilePath, const std::string &fragmentShaderFilePath) {
 
-
-		/* NEW */
 		std::string vertSource;
 		std::string fragSource;
 		
-		/* NEW */
 		IOManager::readFileToBuffer(vertexShaderFilePath, vertSource);
 		IOManager::readFileToBuffer(fragmentShaderFilePath, fragSource);
 
-
-		/* NEW: to replace the code below */
 		compileShadersFromSource(vertSource.c_str(), fragSource.c_str());
-
-
-		/* New: Moved to compileShadersFromSource to avoid duplicate code
-		m_programID = glCreateProgram();
-		if (m_programID == GL_FALSE) {
-			fatalError("Program ID was not created!");
-
-		}
-
-		m_vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-		if (m_vertexShaderID == GL_FALSE) {
-			fatalError("Vertex Shader ID was not created!");
-		}
-
-		m_fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-		if (m_fragmentShaderID == GL_FALSE) {
-			fatalError("Fragment Shader ID was not created!");
-		}
-
-
-		/* NEW: pass in source code rather than load file to read, also, passing in file path name for error checking
-		//compileShader(vertexShaderFilePath, m_vertexShaderID);
-		//compileShader(fragmentShaderFilePath, m_fragmentShaderID);
-		compileShader(vertSource.c_str(), vertexShaderFilePath, m_vertexShaderID);
-		compileShader(fragSource.c_str(), fragmentShaderFilePath, m_fragmentShaderID);
-		*/
 	}
 
 
 
 
-	/* NEW */
+
+
 	void GLSLProgram::compileShadersFromSource(const char * vertexSource, const char * fragmentSource) {
 		m_programID = glCreateProgram();
 		if (m_programID == GL_FALSE) {
@@ -180,7 +148,7 @@ namespace Bengine {
 
 
 
-	/* NEW */
+
 	void GLSLProgram::dispose() {
 		if (m_programID) glDeleteProgram(m_programID);
 	}
@@ -190,29 +158,10 @@ namespace Bengine {
 
 
 
-	/* NEW: changed parameter, and add a name paramter for error checking */
-	//void GLSLProgram::compileShader(const std::string filePath, GLint shaderID) {
+
 	void GLSLProgram::compileShader(const char* source, const std::string& name, GLint shaderID) {
 
-		/* NEW: removed since now passing in the file source rather than the file path to read
-		std::ifstream shaderFile(filePath);
-		if (shaderFile.fail()) {
-			perror(filePath.c_str());
-			fatalError("Failed to open " + filePath);
-		}
-		std::string fileContents = "";
-		std::string line;
 
-		while (std::getline(shaderFile, line)) {
-			fileContents += line + "\n";
-		}
-		shaderFile.close();
-		const char* fileContent = fileContents.c_str();
-		*/
-
-
-		/* NEW: now using source (that is passed in) instead of file path's file content */
-		//glShaderSource(shaderID, 1, &fileContent, nullptr);
 		glShaderSource(shaderID, 1, &source, nullptr);
 
 
@@ -232,9 +181,6 @@ namespace Bengine {
 
 			printf("%s\n", &errorLog[0]);
 
-
-			/* NEW: changed to name instead of filePath (ex. Vertex Shader, Fragment Shader) */
-			//fatalError("Failed to compile " + filePath);
 			fatalError("Failed to compile " + name);
 		}
 	}

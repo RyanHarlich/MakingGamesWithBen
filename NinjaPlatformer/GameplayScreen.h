@@ -13,8 +13,6 @@
 #include <Bengine/GLTexture.h>
 #include <Bengine/Window.h>
 #include <Box2D/Box2D.h>
-
-/* NEW */
 #include <Bengine/DebugRenderer.h>
 
 
@@ -50,11 +48,10 @@ private:
 	Bengine::Camera2D m_camera;
 	Bengine::GLTexture m_texture;
 	Bengine::Window* m_window;
-
-	/* NEW */
 	Bengine::DebugRenderer m_debugRenderer;
-	bool m_renderDebug = true;
 
+	/* NEW: changed this to false */
+	bool m_renderDebug = false;
 
 	Player m_player;
 	std::unique_ptr<b2World> m_world;

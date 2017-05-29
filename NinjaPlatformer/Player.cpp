@@ -5,38 +5,74 @@
 #include <SDL/SDL.h>
 
 
-Player::Player() {
+/* NEW: removed dimensions and added collision dimensions and draw dimensions */
+void Player::init(b2World * world, 
+	const glm::vec2 position, 
+	const glm::vec2 drawDims,
+	const glm::vec2 collisionDims, 
+	Bengine::ColorRGBA8 color, 
+	bool fixedRotation) {
 
+	/* NEW: changed to m_texture */
+	//Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
+	m_texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
+
+	/* NEW */
+	m_color = color;
+	m_drawDims = drawDims;
+
+
+	/* NEW: changed to capsule instead of a box for player */
+	//m_collisionBox.init(world, position, dimensions, texture, color, fixedRotation, glm::vec4(0.0f, 0.0f, 0.1f, 0.5f));
+	m_capsule.init(world, position, collisionDims, 1.0f, 0.1f, fixedRotation);
 }
 
 
 
-Player::~Player() {
-
-}
-
-
-
-
-void Player::init(b2World * world, const glm::vec2 position, const glm::vec2 dimensions, Bengine::ColorRGBA8 color, bool fixedRotation) {
-
-	Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
-
-	m_collisionBox.init(world, position, dimensions, texture, color, fixedRotation, glm::vec4(0.0f, 0.0f, 0.1f, 0.5f));
-}
 
 
 
 void Player::draw(Bengine::SpriteBatch& spriteBatch) {
-	m_collisionBox.draw(spriteBatch);
+
+	/* NEW: removed */
+	//m_collisionBox.draw(spriteBatch);
+	
+	/* NEW: added draw code */
+	glm::vec4 destRect;
+	b2Body* body = m_capsule.getBody();
+	// The position of the box is actually the center of the box not the corner of the box
+	destRect.x = body->GetPosition().x - (m_drawDims.x / 2.0f);
+	destRect.y = body->GetPosition().y - (m_capsule.getDimensions().y / 2.0f); // this should be m_capsule get dimensions so the sprites feet are perfectly aligned with the bottom of the collision box
+	destRect.z = m_drawDims.x;
+	destRect.w = m_drawDims.y;
+	spriteBatch.draw(destRect, glm::vec4(0.0f, 0.0f, 0.1f, 0.5f), m_texture.id, 0.0f, m_color, body->GetAngle());
+	/* NEW: end of new */
+
 }
+
+
+
+
+
+
+
+
+void Player::drawDebug(Bengine::DebugRenderer& debugRenderer){
+	m_capsule.drawDebug(debugRenderer);
+}
+
+
+
+
 
 
 
 void Player::update(Bengine::InputManager& inputManager) {
 
 	// Get body of player
-	b2Body* body = m_collisionBox.getBody();
+	/* NEW: changed to capsule instead of box for player */
+	//b2Body* body = m_collisionBox.getBody();
+	b2Body* body = m_capsule.getBody();
 
 
 	if (inputManager.isKeyDown(SDLK_a) || inputManager.isKeyDown(SDLK_LEFT)) {
@@ -84,7 +120,11 @@ void Player::update(Bengine::InputManager& inputManager) {
 			//maxManifoldPoints is two contact points for all convex shapes
 			for (int i = 0; i < b2_maxManifoldPoints; ++i) {
 				// if monifold points y is less than the center of the player minus half its y dimension
-				if (manifold.points[i].y < body->GetPosition().y - (m_collisionBox.getDimensions().y / 2.0f) + 0.01f) {
+
+				/* NEW: changed to capsule instead of box for player, also changed the .01 to half the capsules width (this is explained in tutorial 50 so not sure if there is a typo somewhere else because in the video there was not a jumping problem */
+				//if (manifold.points[i].y < body->GetPosition().y - (m_collisionBox.getDimensions().y / 2.0f) + 0.01f) {
+				if (manifold.points[i].y < body->GetPosition().y - m_capsule.getDimensions().y / 2.0f + m_capsule.getDimensions().x / 2.0f) {
+
 					below = true;
 
 					// this break will break out of the loop since only needs to be touching once to jump

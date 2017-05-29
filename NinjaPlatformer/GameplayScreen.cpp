@@ -53,7 +53,7 @@ void GameplayScreen::onEntry() {
 	m_world = std::make_unique<b2World>(gravity);
 
 
-	/* NEW */
+
 	m_debugRenderer.init();
 
 
@@ -81,10 +81,12 @@ void GameplayScreen::onEntry() {
 
 	for (int i = 0; i < NUM_BOXES; ++i) {	
 		Box newBox;
-		float s = size(randGenerator);
 
+		/* NEW: removed */
+		//float s = size(randGenerator);
 
-		newBox.init(m_world.get(), glm::vec2(xPos(randGenerator), yPos(randGenerator)), glm::vec2(s, s), m_texture,Bengine::ColorRGBA8(color(randGenerator), color(randGenerator), color(randGenerator), 255), false);
+		/* NEW: did random sizes instead of squares */
+		newBox.init(m_world.get(), glm::vec2(xPos(randGenerator), yPos(randGenerator)), glm::vec2(size(randGenerator), size(randGenerator)), m_texture,Bengine::ColorRGBA8(color(randGenerator), color(randGenerator), color(randGenerator), 255), false);
 
 		m_boxes.push_back(newBox);
 	}
@@ -104,7 +106,8 @@ void GameplayScreen::onEntry() {
 
 
 	// Init player
-	m_player.init(m_world.get(), glm::vec2(0.0f, 30.0f), glm::vec2(1.0f, 2.0f), Bengine::ColorRGBA8(255,255,255,255), true);
+	/* NEW: added new draw dimensions and collision dimensions, since the collision box is a 1x2 and the sprite is a square, the image was getting distored by stretching the image until now */
+	m_player.init(m_world.get(), glm::vec2(0.0f, 30.0f), glm::vec2(2.0f), glm::vec2(1.0f, 1.8f), Bengine::ColorRGBA8(255,255,255,255), true);
 
 
 }
@@ -112,7 +115,6 @@ void GameplayScreen::onEntry() {
 
 
 void GameplayScreen::onExit() {
-	/* NEW */
 	m_debugRenderer.dispose();
 }
 
@@ -155,7 +157,6 @@ void GameplayScreen::draw() {
 
 	// Draw all the boxes
 	for (auto& b : m_boxes) {
-
 		b.draw(m_spriteBatch);
 	}
 	
@@ -171,34 +172,33 @@ void GameplayScreen::draw() {
 	m_textureProgram.unuse();
 
 
-	/* NEW */
+
 	// Debug renderer
 	if (m_renderDebug) {
 		glm::vec4 destRect;
 		for (auto& b : m_boxes) {
-
-			/* NEW: option 1 */
 			destRect.x = b.getBody()->GetPosition().x - b.getDimensions().x / 2.0f;
 			destRect.y = b.getBody()->GetPosition().y - b.getDimensions().y / 2.0f;
 			destRect.z = b.getDimensions().x;
 			destRect.w = b.getDimensions().y;
 			m_debugRenderer.drawBox(destRect, Bengine::ColorRGBA8(255,255,255,255), b.getBody()->GetAngle());
-
-			/* NEW: option 2 */
-			m_debugRenderer.drawCircle(glm::vec2(b.getBody()->GetPosition().x, b.getBody()->GetPosition().y), Bengine::ColorRGBA8(255, 255, 255, 255), b.getDimensions().x / 2.0f);
 		}
 		// Render player
-		auto b = m_player.getBox();
+		/* NEW: switched to drawDebug function of player*/
+		m_player.drawDebug(m_debugRenderer);
+		/*auto b = m_player.getBox();
 		destRect.x = b.getBody()->GetPosition().x - b.getDimensions().x / 2.0f;
 		destRect.y = b.getBody()->GetPosition().y - b.getDimensions().y / 2.0f;
 		destRect.z = b.getDimensions().x;
 		destRect.w = b.getDimensions().y;
-		m_debugRenderer.drawBox(destRect, Bengine::ColorRGBA8(255, 255, 255, 255), b.getBody()->GetAngle());
+		m_debugRenderer.drawBox(destRect, Bengine::ColorRGBA8(255, 255, 255, 255), b.getBody()->GetAngle());*/
+
+
 
 		m_debugRenderer.end();
 		m_debugRenderer.render(projectionMatrix, 2.0f);
 	}
-	/* NEW: end of new */
+
 
 }
 

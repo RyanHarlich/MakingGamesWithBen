@@ -17,7 +17,6 @@ namespace Bengine {
 
 		void compileShaders(const std::string &vertexShaderFilePath, const std::string &fragmentShaderFilePath);
 
-		/* NEW */
 		void compileShadersFromSource(const char* vertexSource, const char* fragmentSource);
 
 		void linkShaders();
@@ -28,15 +27,10 @@ namespace Bengine {
 
 		void unuse();
 
-
-		/* NEW */
 		void dispose();
 
 
 	private:
-
-		/* NEW: changed parameter, and add a name paramter for error checking */
-		//void compileShader(const std::string filePath, GLint shaderID);
 		void compileShader(const char* source, const std::string& name, GLint shaderID);
 
 

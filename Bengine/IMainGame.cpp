@@ -39,13 +39,13 @@ namespace Bengine {
 			inputManager.update();
 			update();
 
-			/* NEW: check to see if m_isRunning still after the update to avoid crashing when the next three functions are called (functions are not new) */
+
 			if (m_isRunning) {
 				draw();
 
 				m_fps = limiter.end();
 				m_window.swapBuffer();
-			} /* NEW: new closing brace encloses the functions ends here */
+			}
 		}
 
 	}

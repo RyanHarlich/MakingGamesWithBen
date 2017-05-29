@@ -1,0 +1,11 @@
+Updated Files:
+		-	Added to NinjaPlatformer project class: Capsule
+		-	Player.h
+		-	Player.cpp
+		-	GameplayScreen.cpp
+		-	GameplayScreen.h
+					- change the m_renderDebug to true to see the capsule collision
+
+___________________________________________________________________________________
+Notes:
+		-	

@@ -124,11 +124,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Tutorial 48 - glDrawElements, DebugRenderer.txt" />
+    <Text Include="Tutorial 49 - Capsule Collision.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Capsule.cpp" />
     <ClCompile Include="GameplayScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -136,11 +137,12 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="Capsule.h" />
     <ClInclude Include="GameplayScreen.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Tutorial 48 - Indicies (GLDrawElements).png" />
+    <Image Include="Tutorial 49 - Capsule Collision.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -31,7 +31,10 @@ namespace Bengine {
 	}
 
 	
-	/* NEW: overloaded */
+
+
+
+
 	bool IOManager::readFileToBuffer(std::string filePath, std::string& buffer) {
 		
 		std::ifstream file(filePath, std::ios::binary);
