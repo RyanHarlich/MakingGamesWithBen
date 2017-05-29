@@ -124,7 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Tutorial 50 - 2D Animation.txt" />
+    <Text Include="Tutorial 51 - Basic 2D Lighting, Additive Blending.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -139,10 +139,13 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="Capsule.h" />
     <ClInclude Include="GameplayScreen.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Tutorial 50 - Capsule Collision.png" />
+    <Image Include="Tutorial 51 - Lighting.png" />
+    <Image Include="Tutorial 51 - Linear Lighting Graphical View.png" />
+    <Image Include="Tutorial 51 - Realistic Lighting Graph Graphical View.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

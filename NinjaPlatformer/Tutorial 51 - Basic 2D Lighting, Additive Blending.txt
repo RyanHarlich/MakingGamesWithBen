@@ -1,0 +1,42 @@
+Updated Files:
+		- Add to NinjaPlatformer project: Light.h
+		- GameplayScreen.h
+		- GameplayScreen.cpp
+		- Player.h
+
+___________________________________________________________________________________
+Notes:
+		- basic 2D lighting
+				- this is not going to be true lighting, it is a hacky way
+						- complex lightening: shadow mapping, funct shading, and specular shading
+								- will be saved for 3D series
+
+		- not real lighting, it is a fake lighting effect
+
+
+		- it is ok to bind the texture and not use it for a hacky lighting shader
+				- but do not get the uniform location, since it does not exist for the lighting shader
+
+		- the light add on is not done properly only for show
+
+
+		- Standard Blending
+				- Here is standard alpha blending that has been used throughout the recent tutorials for alpha:
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// first parameter is source factor, it is currently going to multiply the soruce factor by 1
+	// second parameter is the destination factor, so if source is 1 will get 0
+	// will get full color from the source, and no color at the destination
+
+
+
+		- Additive Blending
+				- adds color to character instead of taking away color hence the name additive blending
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+						//here the source alpha will be multiplied by one and the destination alpha will always be one
+
+
+
+		- Real lighting vs. Linear lighting
+				- update is in the lightShading.frag
+				- pictures for graphical view are attached (where x is distance)
+	

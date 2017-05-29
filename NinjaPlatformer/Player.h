@@ -5,18 +5,13 @@
 
 #include <Bengine/SpriteBatch.h>
 #include <Bengine/InputManager.h>
-
-/* NEW */
 #include <Bengine/TileSheet.h>
 
-/* NEW: removed */
-//#include <Bengine/GLTexture.h>
 
-/* NEW */
+
 enum class PlayerMoveState { STANDING, RUNNING, PUNCHING, IN_AIR };
 
 
-/* NEW */
 #define RIGHT 1
 #define LEFT -1
 
@@ -41,19 +36,17 @@ public:
 	//Getter
 	const Capsule& getCapsule() const { return m_capsule; }
 
+	/* NEW */
+	glm::vec2 getPosition() const { 
+		return glm::vec2(m_capsule.getBody()->GetPosition().x, m_capsule.getBody()->GetPosition().y); 
+	}
+
 
 private:
 	glm::vec2 m_drawDims;
 	Bengine::ColorRGBA8 m_color;
-
-	/* NEW: removed */
-	//Bengine::GLTexture m_texture;
-	/* NEW */
 	Bengine::TileSheet m_texture;
-
 	Capsule m_capsule;
-
-	/* NEW */
 	PlayerMoveState m_moveState = PlayerMoveState::STANDING;
 	float m_animTime = 0.0f;
 	int m_direction = RIGHT;

@@ -13,8 +13,7 @@ void Player::init(b2World * world,
 	Bengine::ColorRGBA8 color, 
 	bool fixedRotation) {
 
-	/* NEW: changed to tile sheet header */
-	//m_texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
+
 	Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
 
 	m_color = color;
@@ -22,7 +21,7 @@ void Player::init(b2World * world,
 
 	m_capsule.init(world, position, collisionDims, 1.0f, 0.1f, fixedRotation);
 
-	/* NEW */
+
 	m_texture.init(texture, glm::ivec2(10, 2));
 }
 
@@ -42,7 +41,7 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 	destRect.w = m_drawDims.y;
 
 
-	/* NEW */
+
 	int tileIndex;
 	int numTiles;
 
@@ -133,12 +132,9 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 		uvRect.z *= -1; // reverese the direction of the uv coordinates, (z is width), in the shader it will be a negative number for the demensions which will cause to go back one tile but backwards
 	}
 
-	/* END OF NEW */
 
 
 
-
-	/* NEW: changed the UV argument with new TileSheet.h and the texture argument */
 	// draw the sprite
 	spriteBatch.draw(destRect, uvRect, m_texture.texture.id, 0.0f, m_color, body->GetAngle());
 }
@@ -169,17 +165,11 @@ void Player::update(Bengine::InputManager& inputManager) {
 	if (inputManager.isKeyDown(SDLK_a) || inputManager.isKeyDown(SDLK_LEFT)) {
 		// apply force to object, wake up object (objects can go to sleep)
 		body->ApplyForceToCenter(b2Vec2(-100.0f, 0.0f), true);
-
-		/* NEW */
 		m_direction = LEFT;
-
 	}
 	else if (inputManager.isKeyDown(SDLK_d) || inputManager.isKeyDown(SDLK_RIGHT)) {
 		body->ApplyForceToCenter(b2Vec2(100.0f, 0.0f), true);
-
-		/* NEW */
 		m_direction = RIGHT;
-
 	}
 	else {
 		// Apply damping: slow down velocity kind of like friction
@@ -188,16 +178,10 @@ void Player::update(Bengine::InputManager& inputManager) {
 	}
 
 
-
-
-	/* NEW */
 	// check for punch
 	if (inputManager.isKeyPressed(SDLK_SPACE)) {
 		m_isPunching = true;
 	}
-
-
-
 
 
 	static const float MAX_SPEED = 10.0f;
@@ -209,7 +193,6 @@ void Player::update(Bengine::InputManager& inputManager) {
 	}
 	
 
-	/* NEW */
 	m_onGround = false;
 
 	// Loop through all the contact points
@@ -233,7 +216,6 @@ void Player::update(Bengine::InputManager& inputManager) {
 				// if monifold points y is less than the center of the player minus half its y dimension
 
 
-				/* NEW: added to the .01, half the capsules bottom circle dimensions, picture is attached for explanation */
 				if (manifold.points[i].y < body->GetPosition().y - m_capsule.getDimensions().y / 2.0f + m_capsule.getDimensions().x / 2.0f + 0.01f) {
 
 					below = true;
@@ -244,7 +226,6 @@ void Player::update(Bengine::InputManager& inputManager) {
 			}
 			if (below) {
 
-				/* NEW */
 				m_onGround = true;
 
 				// Play can jump

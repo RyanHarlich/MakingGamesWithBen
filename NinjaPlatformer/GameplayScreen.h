@@ -45,6 +45,10 @@ private:
 
 	Bengine::SpriteBatch m_spriteBatch;
 	Bengine::GLSLProgram m_textureProgram;
+
+	/* NEW */
+	Bengine::GLSLProgram m_lightProgram;
+
 	Bengine::Camera2D m_camera;
 	Bengine::GLTexture m_texture;
 	Bengine::Window* m_window;

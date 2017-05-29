@@ -3,6 +3,9 @@
 
 #include "GameplayScreen.h"
 
+/* NEW */
+#include "Light.h"
+
 #include <Bengine/IMainGame.h>
 #include <Bengine/ResourceManager.h>
 
@@ -77,8 +80,7 @@ void GameplayScreen::onEntry() {
 	std::uniform_real_distribution<float> size(0.5f, 2.5f);
 	std::uniform_int_distribution<int> color(0, 255);
 
-	/* NEW: changed from 100 to 10 */
-	//const int NUM_BOXES = 100;
+
 	const int NUM_BOXES = 10;
 
 
@@ -100,14 +102,22 @@ void GameplayScreen::onEntry() {
 
 
 
+	/* NEW */
+	m_lightProgram.compileShaders("Shaders/lightShading.vert", "Shaders/lightShading.frag");
+	m_lightProgram.addAttribute("vertexPosition");
+	m_lightProgram.addAttribute("vertexColor");
+	m_lightProgram.addAttribute("vertexUV");
+	m_lightProgram.linkShaders();
+	/* NEW: end of new */
+
+
+
 	m_camera.init(m_window->getScreenWidth(), m_window->getScreenHeight());
 	m_camera.setScale(32.0); // 32 pixels per meter
 
 
 	// Init player
 	m_player.init(m_world.get(), glm::vec2(0.0f, 30.0f), glm::vec2(2.0f), glm::vec2(1.0f, 1.8f), Bengine::ColorRGBA8(255,255,255,255), true);
-
-
 }
 
 
@@ -188,6 +198,41 @@ void GameplayScreen::draw() {
 		m_debugRenderer.render(projectionMatrix, 2.0f);
 	}
 
+
+
+
+	/* NEW */
+	// Render some test lights
+	// TODO: Do not hard code this
+	Light playerLight;
+	playerLight.color = Bengine::ColorRGBA8(255, 255, 255, 128);
+	playerLight.position = m_player.getPosition();
+	playerLight.size = 30.0f;
+
+	// Should use a vector for all the lights, but this is for showing and is hacky
+	Light mouseLight;
+	mouseLight.color = Bengine::ColorRGBA8(255, 0, 255, 128);
+	glm::vec2 mousePos = m_camera.convertScreenToWorld(m_game->inputManager.getMouseCoords());
+	mouseLight.position = mousePos;
+	mouseLight.size = 45.0f;
+
+
+	m_lightProgram.use();
+	glUniformMatrix4fv(m_textureProgram.getUniformLocation("P"), 1, GL_FALSE, &projectionMatrix[0][0]);
+
+	// Additive blending
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	m_spriteBatch.begin();
+	playerLight.draw(m_spriteBatch);
+	mouseLight.draw(m_spriteBatch);
+	m_spriteBatch.end();
+	m_spriteBatch.renderBatch();
+	m_lightProgram.unuse();
+
+	// reset to regular alpha blending 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	/* NEW: end of new */
 
 }
 

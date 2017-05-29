@@ -53,14 +53,23 @@
     <ClInclude Include="Capsule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 50 - 2D Animation.txt">
+    <Text Include="Tutorial 51 - Basic 2D Lighting, Additive Blending.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Tutorial 50 - Capsule Collision.png">
+    <Image Include="Tutorial 51 - Lighting.png">
+      <Filter>Tutorial Notes</Filter>
+    </Image>
+    <Image Include="Tutorial 51 - Linear Lighting Graphical View.png">
+      <Filter>Tutorial Notes</Filter>
+    </Image>
+    <Image Include="Tutorial 51 - Realistic Lighting Graph Graphical View.png">
       <Filter>Tutorial Notes</Filter>
     </Image>
   </ItemGroup>
