@@ -83,9 +83,13 @@ Notes:
 						- copy and paste by merging the CEGUI with the other one in the deps > include
 
 			14. - it seems with the new version of CEGUI 0.8.7 also need the (which can be found in the cegui-0.8.7\build\bin)
-						CEGUIExpatParser.dll & CEGUISILLYImageCodec.dll
+						CEGUIExpatParser.dll
+						CEGUISILLYImageCodec.dll
+						CEGUICoreWindowRendererSet.dll
 								- make sure to copy into the solutions release directory (not the projects release directory)
-						CEGUIExpatParser_d.dll & CEGUISILLYImageCodec_d.dll
+						CEGUIExpatParser_d.dll
+						CEGUISILLYImageCodec_d.dll
+						CEGUICoreWindowRendererSet_d.dll
 								*note the _d is for debug
 								- make sure to copy into the solutions debug directory (not the projects debug directory)
 
@@ -107,9 +111,13 @@ Notes:
 			- copy and paste by merging the CEGUI with the other one in the deps > include
 
 	- it seems with the new version of CEGUI 0.8.7 also need the (which can be found in the cegui-0.8.7\build\bin)
-			CEGUIExpatParser.dll & CEGUISILLYImageCodec.dll
+			CEGUIExpatParser.dll
+			CEGUISILLYImageCodec.dll
+			CEGUICoreWindowRendererSet.dll
 					- make sure to copy into the solutions release directory (not the projects release directory)
-			CEGUIExpatParser_d.dll & CEGUISILLYImageCodec_d.dll
+			CEGUIExpatParser_d.dll
+			CEGUISILLYImageCodec_d.dll
+			CEGUICoreWindowRendererSet_d.dll
 					*note the _d is for debug
 					- make sure to copy into the solutions debug directory (not the projects debug directory)
 
