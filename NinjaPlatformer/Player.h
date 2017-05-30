@@ -36,7 +36,6 @@ public:
 	//Getter
 	const Capsule& getCapsule() const { return m_capsule; }
 
-	/* NEW */
 	glm::vec2 getPosition() const { 
 		return glm::vec2(m_capsule.getBody()->GetPosition().x, m_capsule.getBody()->GetPosition().y); 
 	}

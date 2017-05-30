@@ -1,0 +1,119 @@
+Updated Files:
+		- Cmake .exe was installed
+		- CEGUI-Dependencies was cmake, built, and copied to CEGUI to do the same
+		- CEGUI was cmake, built
+		- libs, includes, .dlls were made for both debug and release directories
+
+
+		* if compilier complains in (check both in release in debug mode) the command prompt when starting without debugging about any .dll find them and copy and paste them into the approriate release or debug (debug would have a _d postfix)
+				- note: it should only say something (what .dll is missing) in the command prompt when starting without debugging in release mode
+___________________________________________________________________________________
+Notes:
+		- 	CEGUI (Crazy Eddie's Graphical User Interface)
+				http://cegui.org.uk/
+
+		-	CEGUI Install Steps:
+			0. Install cmake
+					- cmake allows to build for any platform (Visual Studio) so CEGUI only needs to provide non-specific source code
+					- https://cmake.org/ > downloads > Windows win32-x86 Installer or Windows win64-x64 Installer (most recent build), 32bit x86 was used for tutorial
+					- Add CMake to system PATH for user(s) (which is ability to run from command prompt)
+							commande prompt: cmake-gui .
+									- this opens cmake
+			1. http://cegui.org.uk/ > Download latest build (need source files and dependencies)
+						-	Source Package Downloads (.zip file)
+						-	Dependencies (Windows / Apple OS X Only) (.zip file)
+								- make sure to extract both of these
+			2. Build depedencies project with cmake (not the source directory, which will be done next after getting the dependencies build copied over, but the dependencies directory)
+					- any time see cmakelist.txt know it is configured to run with cmake
+							- copy and paste the root path to this location in cmake (commande prompt: cmake-gui .)
+					- paste into
+							- where is the source code:
+							- where to build the binaries: (but add a /build at the end to add a directory to not make a mess)
+					- click configure
+					- select default and visual studio most recent
+					- errors will appear, ignore and dismiss and press generate
+							- might have to do from desktop for error "file path to long"
+					- generate
+					- open in the new build directory: ALL_BUILD.vcxproj
+							- (make sure ALL_BUILD is the default project)
+					- build both in debug and release mode
+			3. Now there is a new "dependencies" directory in the build directory
+					- copy the dependencies directory and paste it into the main folder (where the cmakelist.txt is) that says cegui-0.8.7 (the extracted Source Package Downloads (.zip file) not the cegui-dependencies directory)
+			4. Now build the CEGUI directory that the dependencies directory was copied and pasted into the same way as the cegui-dependencies extrated zip directory
+					- from the cmakelists.txt location in the folder copy that path into the cmake and do the same for where to build but add the /build at the end so all files will go in that directory
+							- might have to do from the desktop because of the "file path to long" error
+					- configure
+							- with visual stuido standard most recent and default compiler
+					- before generating, make sure that these two items are checked
+							- CEGUI_BUILD_RENDERER_OPENGL
+							- CEGUI_BUILD_RENDERER_OPENGL3
+					- generate
+					- now go into the new build directory
+							- open ALL_BUILD.vcxproj 
+								- (make sure ALL_BUILD is the default project)
+									- build in debug mode
+									- build in release mode
+										- do not worry if demos fail (which this time they did not)
+			5. So in the CEGUI-0.8.7 in the build directory
+					- need the lib, bin, and (one directory backed out need out side of build directory (not the one in build directory there are two of them)) datafiles directory
+							- datafiles has pre-build layouts so do not have to build from hand
+			6. The data files that is not in the build directory but one directory out, copy everything in that directory except the cmakelist.txt (so all the directories) and pasted into the NinjaPlatformer directory/project in a newly created directory called "GUI"
+			7. in the build directory in the lib directory copy over to the deps > lib > release directory:
+					 CEGUIBase-0.lib
+					 CEGUIOpenGLRenderer-0.lib
+			8. in the build directory in the lib directory copy over to the deps > lib > debug directory:
+					 CEGUIBase-0_d.lib
+					 CEGUIOpenGLRenderer-0_d.lib
+							*note the _d is for debug
+			9. in the build directory in the bin directory copy over to the solutions release bin (not the projects release bin):
+					 CEGUIBase_0.dll
+					 CEGUIOpenGLRenderer-0.dll
+			10. in the build directory in the bin directory copy over to the solutions debug bin (not the projects debug bin):
+					 CEGUIBase_0_d.dll
+					 CEGUIOpenGLRenderer-0_d.dll
+						*note the _d is for debug
+			11. now in the dependencies directory that was copied over bin (cegui-0.8.7\dependencies\bin) instead of (cegui-0.8.7\build\bin) where the .dlls were copied over from
+						probably do not need a bunch of these so could wait tell the compiler complains in future tutorials and add them later but to not worry about them later
+					copy all .dll files without the postfix _d into the solutions release directory (not the projects release directory) and
+					copy all .dll files with the postfix _d into the solutions debug directory (not the projects debug directory)
+
+			12. in the cegui-0.8.7\cegui\include directory there is a directory called "CEGUI" copy and paste it into the deps > include directory
+
+			13. - Base.h is also missing two header files that needed to be copied over that were in cegui-0.8.7\build\cegui\include
+						- copy and paste by merging the CEGUI with the other one in the deps > include
+
+			14. - it seems with the new version of CEGUI 0.8.7 also need the (which can be found in the cegui-0.8.7\build\bin)
+						CEGUIExpatParser.dll & CEGUISILLYImageCodec.dll
+								- make sure to copy into the solutions release directory (not the projects release directory)
+						CEGUIExpatParser_d.dll & CEGUISILLYImageCodec_d.dll
+								*note the _d is for debug
+								- make sure to copy into the solutions debug directory (not the projects debug directory)
+
+		***	DONE! ***
+
+			last step is to set the NinjaPlatformer's properties up
+
+			Linker > Input > Additional Dependencies
+					Add for Release:
+							CEGUIBase-0.lib
+							CEGUIOpenGLRenderer-0.lib
+					Add for Debug
+							CEGUIBase-0_d.lib
+							CEGUIOpenGLRenderer-0_d.lib
+
+
+
+	- Base.h is also missing two header files that needed to be copied over that were in cegui-0.8.7\build\cegui\include
+			- copy and paste by merging the CEGUI with the other one in the deps > include
+
+	- it seems with the new version of CEGUI 0.8.7 also need the (which can be found in the cegui-0.8.7\build\bin)
+			CEGUIExpatParser.dll & CEGUISILLYImageCodec.dll
+					- make sure to copy into the solutions release directory (not the projects release directory)
+			CEGUIExpatParser_d.dll & CEGUISILLYImageCodec_d.dll
+					*note the _d is for debug
+					- make sure to copy into the solutions debug directory (not the projects debug directory)
+
+
+
+* if compilier complains in (check both in release in debug mode) the command prompt when starting without debugging about any .dll find them and copy and paste them into the approriate release or debug (debug would have a _d postfix)
+			- note: it should only say something (what .dll is missing) in the command prompt when starting without debugging in release mode

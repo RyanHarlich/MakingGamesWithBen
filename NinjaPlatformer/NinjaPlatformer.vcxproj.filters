@@ -58,19 +58,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 51 - Basic 2D Lighting, Additive Blending.txt">
+    <Text Include="Tutorial 52 - Installing CEGUI %28Windows%29.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Tutorial 51 - Lighting.png">
-      <Filter>Tutorial Notes</Filter>
-    </Image>
-    <Image Include="Tutorial 51 - Linear Lighting Graphical View.png">
-      <Filter>Tutorial Notes</Filter>
-    </Image>
-    <Image Include="Tutorial 51 - Realistic Lighting Graph Graphical View.png">
-      <Filter>Tutorial Notes</Filter>
-    </Image>
   </ItemGroup>
 </Project>

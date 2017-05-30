@@ -2,8 +2,6 @@
 #include <ctime>
 
 #include "GameplayScreen.h"
-
-/* NEW */
 #include "Light.h"
 
 #include <Bengine/IMainGame.h>
@@ -11,7 +9,10 @@
 
 #include <SDL/SDL.h>
 
-
+/* NEW: temporary UI */
+#include <CEGUI/CEGUI.h>
+/* NEW: temporary UI */
+#include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
 
 
 
@@ -102,13 +103,13 @@ void GameplayScreen::onEntry() {
 
 
 
-	/* NEW */
+
 	m_lightProgram.compileShaders("Shaders/lightShading.vert", "Shaders/lightShading.frag");
 	m_lightProgram.addAttribute("vertexPosition");
 	m_lightProgram.addAttribute("vertexColor");
 	m_lightProgram.addAttribute("vertexUV");
 	m_lightProgram.linkShaders();
-	/* NEW: end of new */
+
 
 
 
@@ -118,6 +119,14 @@ void GameplayScreen::onEntry() {
 
 	// Init player
 	m_player.init(m_world.get(), glm::vec2(0.0f, 30.0f), glm::vec2(2.0f), glm::vec2(1.0f, 1.8f), Bengine::ColorRGBA8(255,255,255,255), true);
+
+
+
+	/* NEW: temporary UI */
+	// boot strap gives a renderer and also initializes all of CEGUI, basically it creates the system
+	// THIS NEEDS TO BE CALLED AFTER GLEW HAS BEEN INITIALIZED AND OpenGL CONTEXT HAS BEEN CREATED BECAUSE IT IS GOING TO USE THE CURRENT OpenGL CONTEXT FOR ITS RENDERERING
+	CEGUI::OpenGL3Renderer& myRenderer = CEGUI::OpenGL3Renderer::bootstrapSystem();
+	/* NEW: end of new */
 }
 
 
@@ -201,7 +210,6 @@ void GameplayScreen::draw() {
 
 
 
-	/* NEW */
 	// Render some test lights
 	// TODO: Do not hard code this
 	Light playerLight;
@@ -232,7 +240,7 @@ void GameplayScreen::draw() {
 
 	// reset to regular alpha blending 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	/* NEW: end of new */
+
 
 }
 
