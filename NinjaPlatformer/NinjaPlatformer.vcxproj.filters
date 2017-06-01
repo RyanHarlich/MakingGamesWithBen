@@ -58,7 +58,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 52 - Installing CEGUI %28Windows%29.txt">
+    <Text Include="Tutorial 53 - GUI class and static_cast.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>

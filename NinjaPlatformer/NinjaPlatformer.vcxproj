@@ -71,11 +71,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)deps/include;$(SolutionDir)deps/WindowsKits10/include;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps/lib/debug;$(SolutionDir)deps/WindowsKits10/lib;$(SolutionDir)debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)deps/include;$(SolutionDir)deps/WindowsKits10/include;$(SolutionDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps/lib/release;$(SolutionDir)deps/WindowsKits10/lib;$(SolutionDir)Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -88,7 +88,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;Bengine.lib;SDL2_ttf.lib;SDL2_mixer.lib;Box2D.lib;CEGUIBase-0.lib;CEGUIOpenGLRenderer-0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Bengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -99,7 +99,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;Bengine.lib;SDL2_ttf.lib;SDL2_mixer.lib;Box2D.lib;CEGUIBase-0_d.lib;CEGUIOpenGLRenderer-0_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Bengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -124,7 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Tutorial 52 - Installing CEGUI %28Windows%29.txt" />
+    <Text Include="Tutorial 53 - GUI class and static_cast.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />

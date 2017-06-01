@@ -9,11 +9,6 @@
 
 #include <SDL/SDL.h>
 
-/* NEW: temporary UI */
-#include <CEGUI/CEGUI.h>
-/* NEW: temporary UI */
-#include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
-
 
 
 GameplayScreen::GameplayScreen(Bengine::Window* window) : m_window(window)
@@ -47,7 +42,6 @@ void GameplayScreen::destroy() {
 
 
 void GameplayScreen::onEntry() {
-
 
 	//b2Vec2 gravity(0.0f, -9.81f); // gravity of earth m/s^2
 	b2Vec2 gravity(0.0f, -25.00f); // gravity of earth m/s^2
@@ -122,11 +116,19 @@ void GameplayScreen::onEntry() {
 
 
 
-	/* NEW: temporary UI */
-	// boot strap gives a renderer and also initializes all of CEGUI, basically it creates the system
-	// THIS NEEDS TO BE CALLED AFTER GLEW HAS BEEN INITIALIZED AND OpenGL CONTEXT HAS BEEN CREATED BECAUSE IT IS GOING TO USE THE CURRENT OpenGL CONTEXT FOR ITS RENDERERING
-	CEGUI::OpenGL3Renderer& myRenderer = CEGUI::OpenGL3Renderer::bootstrapSystem();
+
+	/* NEW: make sure to call this after initializing all the openGL stuff and glew and rendering context(rendering context? GUI.cpp?) */
+	// Init the UI
+	m_gui.init("GUI");
+	/* NEW */
+	m_gui.loadScheme("TaharezLook.scheme");
+	m_gui.loadScheme("AlfiskoSkin.scheme");
+	m_gui.setFont("DejaVuSans-10"); // do not include the .font for font
+	// Change between the AlfiskoSkin and the TaharezLook by changing the part in front of ".../Button"
+	CEGUI::PushButton* testButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("AlfiskoSkin/Button", glm::vec4(0.5f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "TestButton")); // 50%x 50%y is in the middle, then the dimensions follow
+	testButton->setText("Hello World!");
 	/* NEW: end of new */
+
 }
 
 
@@ -241,6 +243,11 @@ void GameplayScreen::draw() {
 	// reset to regular alpha blending 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+
+
+	/* NEW: want to draw widget last */
+	m_gui.draw();
 
 }
 

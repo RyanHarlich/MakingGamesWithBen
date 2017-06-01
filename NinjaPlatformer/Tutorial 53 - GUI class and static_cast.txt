@@ -1,0 +1,50 @@
+Updated Files:
+		- Added to Bengine project class: GUI
+		- GameplayScreen.cpp
+					- can change between schemes because two schemes are loaded, search for loadScheme and read comment a little below
+		- GameplayScreen.h
+
+
+___________________________________________________________________________________
+Notes:
+								*** For both release and debug mode ***
+		-  From Projects that use Bengine:
+					Linker > Input > Additional Dependencies
+							- note: leave the Bengine.lib in there
+					Configuration Properties > VC++ Directories > Library Directories
+							- note: leave the path for the Bengine.lib $(Solution)debug and release
+		   To Bengine:
+					Librarian > General >
+							Additional Dependencies
+										- paste over the .lib
+							Additional Library Directories
+										- paste over the library paths
+
+
+	- This is an unsafe type cast, because if you can not do the typecast the compiler is not going to give you a warning
+	
+	CEGUI::DefaultResourceProvider* rp = (CEGUI::DefaultResourceProvider*)CEGUI::System::getSingleton().getResourceProvider();
+
+			looks like
+
+			type name = (castType)returnToBeCasted;
+
+
+	- This is a safe type cast 
+			CEGUI::DefaultResourceProvider* rp = static_cast<CEGUI::DefaultResourceProvider*>(CEGUI::System::getSingleton().getResourceProvider()); 
+
+			looks like
+
+			type name = static_cast<castType>(returnToBeCasted);
+
+			the difference besides the static_cast and angle brackets is the parenthesis is not around the castType but what is to be casted
+
+
+			this is better because the compiler will complain if it cannot be casted instead of doing it at runtime and crashing and having no idea why
+
+
+
+
+
+			//Widgets are all windows, they all inherit from the Windows class
+			// look at the schemas that is choosen/loaded from the GUI directory for information such as type casting (can also change the schema)
