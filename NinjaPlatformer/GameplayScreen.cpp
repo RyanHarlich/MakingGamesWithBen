@@ -117,17 +117,30 @@ void GameplayScreen::onEntry() {
 
 
 
-	/* NEW: make sure to call this after initializing all the openGL stuff and glew and rendering context(rendering context? GUI.cpp?) */
-	// Init the UI
+
+	// Init the UI, call this after initializing all the openGL stuff and glew 
 	m_gui.init("GUI");
-	/* NEW */
 	m_gui.loadScheme("TaharezLook.scheme");
 	m_gui.loadScheme("AlfiskoSkin.scheme");
 	m_gui.setFont("DejaVuSans-10"); // do not include the .font for font
 	// Change between the AlfiskoSkin and the TaharezLook by changing the part in front of ".../Button"
-	CEGUI::PushButton* testButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("AlfiskoSkin/Button", glm::vec4(0.5f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "TestButton")); // 50%x 50%y is in the middle, then the dimensions follow
+	CEGUI::PushButton* testButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.5f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "TestButton")); // 50%x 50%y is in the middle, then the dimensions follow
 	testButton->setText("Hello World!");
-	/* NEW: end of new */
+
+
+
+
+	/* NEW */
+	CEGUI::Combobox* testCombobox = static_cast<CEGUI::Combobox*>(m_gui.createWidget("TaharezLook/Combobox", glm::vec4(0.2f, 0.2f, 0.1f, 0.05f), glm::vec4(0.0f), "TestCombobox"));
+	/* NEW */
+	m_gui.setMouseCursor("TaharezLook/MouseArrow");
+	/* NEW */
+	// need to injectMousePosition to show, which is done in GUI.cpp onSDLEvent which allows for GUIs to become interactive
+	m_gui.showMouseCursor();
+	/* NEW */
+	// disables the default mouse cursor so only see the CEGUI mouse cursor, 1 means to show the cursor and 0 means to not show the cursor
+	SDL_ShowCursor(0);
+
 
 }
 
@@ -246,7 +259,7 @@ void GameplayScreen::draw() {
 
 
 
-	/* NEW: want to draw widget last */
+	// want to draw widget last
 	m_gui.draw();
 
 }
@@ -257,6 +270,10 @@ void GameplayScreen::checkInput() {
 	SDL_Event evnt;
 	while (SDL_PollEvent(&evnt)) {
 		m_game->onSDLEvent(evnt);
+
+		/* NEW */
+		m_gui.onSDLEvent(evnt);
+
 	}
 }
 

@@ -6,6 +6,9 @@
 #include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
 #include <glm/glm.hpp>
 
+/* NEW */
+#include <SDL/SDL_events.h> // could include SDL.h but to improve compile time only include what is needed
+
 
 namespace Bengine {
 
@@ -18,6 +21,23 @@ namespace Bengine {
 		void destroy();
 
 		void draw();
+
+		/* NEW */
+		void update();
+
+
+
+		/* NEW */
+		void setMouseCursor(const std::string& imageFile);
+		/* NEW */
+		void showMouseCursor();
+		/* NEW */
+		void hideMouseCursor();
+
+		/* NEW */
+		void onSDLEvent(SDL_Event& evnt);
+
+
 
 		void loadScheme(const std::string& schemeFile);
 
@@ -38,6 +58,11 @@ namespace Bengine {
 		static CEGUI::OpenGL3Renderer* m_renderer; // cannot do a header initialization because it is static
 		CEGUI::GUIContext* m_context = nullptr;
 		CEGUI::Window* m_root = nullptr;
+
+		/* NEW */
+		unsigned int m_lastTime = 0;
+
+
 	};
 
 }

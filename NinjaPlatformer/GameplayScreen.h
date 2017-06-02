@@ -14,8 +14,6 @@
 #include <Bengine/Window.h>
 #include <Box2D/Box2D.h>
 #include <Bengine/DebugRenderer.h>
-
-/* NEW */
 #include <Bengine/GUI.h>
 
 
@@ -53,10 +51,7 @@ private:
 	Bengine::GLTexture m_texture;
 	Bengine::Window* m_window;
 	Bengine::DebugRenderer m_debugRenderer;
-
-	/* NEW */
 	Bengine::GUI m_gui;
-
 	bool m_renderDebug = false;
 	Player m_player;
 	std::unique_ptr<b2World> m_world;

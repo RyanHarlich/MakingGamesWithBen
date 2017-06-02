@@ -124,7 +124,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Tutorial 53 - GUI class and static_cast.txt" />
+    <Text Include="Tutorial 54 - Bit Shifting.txt" />
+    <Text Include="Tutorial 54 - CEGUI Input Injection %28SDL%29, Bit Shifting, Unicode.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />

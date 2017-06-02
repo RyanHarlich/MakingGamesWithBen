@@ -1,0 +1,54 @@
+
+0000 0001 = 1
+
+1 << 1                    this is the bitwise left shift or the left bit shift
+0000 0010                 shifts bit over one
+
+____________________________________________________________________________________
+
+0000 0001 = 1
+
+1 << 2                    this is the bitwise left shift or the left bit shift
+0000 0100                 shifts bit over by two places
+
+
+____________________________________________________________________________________
+
+0000 0001 = 1
+
+1 >> 1                    this is the bitwise right shift or the right bit shift
+0000 0000                 shifts bit over one to the right
+____________________________________________________________________________________
+
+any time left shift by one that is the same thing as multiplying number by 2
+
+any time right shift by one that is the same thing as dividing number by 2
+
+
+compilers will optimize divisions and multiplications by two or by powers of two by bit shifting
+
+____________________________________________________________________________________
+
+utf-32   (Unicode Transformation Format 32 bits) 0000 0000 0000 0000 0000 0000 0000 0000
+
+____________________________________________________________________________________
+
+For some crazy character that takes up more than one byte bit shifting can become useful
+
+0000 0000 0000 0000
+
+two chars is 16 bytes
+
+lets say 97 is A (it might not be, only for example)
+
+0000 0000 1101 0101
+
+so if want to store another character, will bit shift by 8 bits to to get the room for this character
+
+0000 0000 1101 0101
+ variableName << 8
+1101 0101 0000 0000
+
+ it seems in this example it does it the other way where the new value is bit shifted so the original byte keeps its place well the new byte is bit shifted by 8 bits to hold the new byte
+			- which does not make sense since the code will be out of order and represent a different value
+
