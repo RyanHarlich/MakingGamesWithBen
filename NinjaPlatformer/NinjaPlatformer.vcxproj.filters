@@ -36,6 +36,9 @@
     <ClCompile Include="Capsule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MainMenuScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -56,12 +59,15 @@
     <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MainMenuScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenIndices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 54 - CEGUI Input Injection %28SDL%29, Bit Shifting, Unicode.txt">
-      <Filter>Tutorial Notes</Filter>
-    </Text>
-    <Text Include="Tutorial 54 - Bit Shifting.txt">
+    <Text Include="Tutorial 55 - CEGUI Event Handling, Basic Main Menu.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>

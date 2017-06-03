@@ -1,0 +1,50 @@
+Updated Files:
+		-	Added some utf-8 deps
+				- from: utfcpp.soruceforge.net
+		-	GUI.cpp
+		-	GameplayScreen.cpp
+		-	GameplayScreen.h
+		-	Add to NinjaPlatformer project class: MainMenuScreen
+		-	Add to NinjaPlatformer project: ScreenIndices.h
+		-	App.cpp
+		-	App.h
+
+
+___________________________________________________________________________________
+Notes:
+		-	give prefix 'on' for event handling
+				ex. onExitClicked()
+						- event for clicking the exit button
+
+
+		- CEGUI::PushButton::EventInputCaptureGained
+				whenever input is captured with button event method executes
+
+		type of function that can be used as an event (the function that the function pointer is pointing at) is a
+				std::function<bool(const CEGUI::EventArgs&)>
+
+				argument: information about where it is clicked, specific to say EventClick, EventArgs can differ between Events
+
+
+	// although this is in the init function, it subscribes the event permanently
+	testButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&GameplayScreen::onExitClicked, this));
+
+
+
+
+
+
+
+	*** If protected member is defined in base class cannot use it in the initialization list in the constructor of the subclass, instead have to set it equal to in the constructors block statement ***
+
+
+
+	TODO: 
+	mainmenuscreen.cpp function checkInput
+	Debug this and find out why there is no m_game
+			/* NEW: There is no m_game for MainMenuScreen */
+		//m_game->onSDLEvent(evnt);
+
+
+	Why does this make sense?
+	.1 / .2 is .5 so .45 will center correctly for taking the button .1 x demension and dividing it by 2 to get .05 and backing the button up by .05 from 50% of screen to 45% of screen to get it centered

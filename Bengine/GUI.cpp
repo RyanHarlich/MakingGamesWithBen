@@ -1,7 +1,9 @@
 #include "GUI.h"
 
-/* NEW */
 #include <SDL/SDL_timer.h>
+
+/* NEW */
+#include <utf8/utf8.h>
 
 
 namespace Bengine {
@@ -81,7 +83,7 @@ namespace Bengine {
 
 
 
-	/* NEW */
+
 	// this is for if there is anything is CEGUI that cares about time it will work properly
 	void GUI::update() {
 		unsigned int elapsed;
@@ -103,7 +105,7 @@ namespace Bengine {
 
 
 
-	/* NEW */
+
 	void GUI::setMouseCursor(const std::string & imageFile) {
 		// Load image file in and set it for default mouse cursor
 		m_context->getMouseCursor().setDefaultImage(imageFile);
@@ -113,7 +115,7 @@ namespace Bengine {
 
 
 
-	/* NEW */
+
 	void GUI::showMouseCursor() {
 		// show mouse cursor
 		m_context->getMouseCursor().show();
@@ -123,7 +125,7 @@ namespace Bengine {
 
 
 
-	/* NEW */
+
 	void GUI::hideMouseCursor() {
 		// hide mouse cursor
 		m_context->getMouseCursor().hide();
@@ -133,8 +135,7 @@ namespace Bengine {
 
 
 
-
-	/* NEW: helper function not a member function */
+	// keyboard conversion table
 	CEGUI::Key::Scan SDLKeyToCEGUIKey(SDL_Keycode key)
 	{
 		using namespace CEGUI;
@@ -241,7 +242,7 @@ namespace Bengine {
 
 
 
-	/* NEW: another conversion table helper function that is not a member function */
+	// mouse conversion table
 	CEGUI::MouseButton SDLButtonToCEGUIButton(Uint8 sdlButton) {
 		switch (sdlButton) {
 		case SDL_BUTTON_LEFT: return CEGUI::MouseButton::LeftButton;
@@ -258,15 +259,20 @@ namespace Bengine {
 
 
 
-	/* NEW */
+
 	void GUI::onSDLEvent(SDL_Event& evnt) {
 
 		CEGUI::utf32 codePoint;
 
+		/* NEW */
+		std::string evntText = std::string(evnt.text.text);
+		std::vector<int> utf32result;
+
+
 		switch (evnt.type) {
 		case SDL_MOUSEMOTION:
 			// this shows new uploaded mouse cursor which allows for GUIs to become interactive
-			m_context->injectMousePosition(evnt.motion.x, evnt.motion.y);
+			m_context->injectMousePosition((float)evnt.motion.x, (float)evnt.motion.y);
 			break;
 		case SDL_KEYDOWN:
 			// cannot guareentee that SDL scan codes are the same as the scan codes for CEGUI, so a conversion table has been provided
@@ -280,11 +286,20 @@ namespace Bengine {
 			codePoint = 0; // cannot declare variables in here
 			// '\0' is the null character can also put 0
 			// this is only for it the character is something crazy and needs the extra byte
-			for (int i = 0; evnt.text.text[i] != '\0'; ++i) {
+
+			/* NEW: handles unicode characters instead of only ascii characters */
+			// handles unicode characters instead of only ascii characters
+			utf8::utf8to32(evnt.text.text, evnt.text.text + evntText.size(), std::back_inserter(utf32result));
+			codePoint = (CEGUI::utf32)utf32result[0];
+			m_context->injectChar(codePoint);
+
+			/* NEW: updated, and removed to the code above, also not sure if this bit shift would not get the unicode character backwards, depends on how injectChar reads the argument, note explanation on Git online */
+			/*for (int i = 0; evnt.text.text[i] != '\0'; ++i) {
 				// use bitwise or here to set values/flags
-				codePoint |= (((CEGUI::utf32)evnt.text.text[i]) << (i * 8)); // have to cast because the text is a char so if shift it by more than eight bits than going to shift it off the end
+				codePoint |= (((CEGUI::utf32)*(unsigned char*)&evnt.text.text[i]) << (i * 8)); // have to cast because the text is a char so if shift it by more than eight bits than going to shift it off the end
 			}
 			m_context->injectChar(codePoint);
+			*/
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			m_context->injectMouseButtonDown(SDLButtonToCEGUIButton(evnt.button.button));

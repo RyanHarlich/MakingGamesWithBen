@@ -1,28 +1,16 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
-#include "Box.h"
-#include "Player.h"
-
 #include <Bengine/IGameScreen.h>
-#include <Bengine/SpriteBatch.h>
-#include <Bengine/GLSLProgram.h>
-#include <Bengine/Camera2D.h>
-#include <Bengine/GLTexture.h>
 #include <Bengine/Window.h>
-#include <Box2D/Box2D.h>
-#include <Bengine/DebugRenderer.h>
 #include <Bengine/GUI.h>
+#include <Bengine/Camera2D.h>
 
-
-class GameplayScreen : public Bengine::IGameScreen
+class MainMenuScreen : public Bengine::IGameScreen
 {
 public:
-	GameplayScreen(Bengine::Window* window);
+	MainMenuScreen(Bengine::Window* window);
 
-	~GameplayScreen();
+	~MainMenuScreen();
 
 	// Return the index of the next or previous screen when changing screens
 	virtual int getNextScreenIndex() const override;
@@ -41,31 +29,15 @@ public:
 	virtual void draw() override;
 
 private:
-
-	/* NEW */
 	void initUI();
-
 	void checkInput();
-
-	/* NEW: give prefix 'on' for event handling  */
+	// type of function for function pointer is a std::function<bool(const CEGUI::EventArgs&)>
+	bool onNewGameClicked(const CEGUI::EventArgs& e);
 	// type of function for function pointer is a std::function<bool(const CEGUI::EventArgs&)>
 	bool onExitClicked(const CEGUI::EventArgs& e);
 
 
-	Bengine::SpriteBatch m_spriteBatch;
-	Bengine::GLSLProgram m_textureProgram;
-	Bengine::GLSLProgram m_lightProgram;
 	Bengine::Camera2D m_camera;
-	Bengine::GLTexture m_texture;
 	Bengine::Window* m_window;
-	Bengine::DebugRenderer m_debugRenderer;
 	Bengine::GUI m_gui;
-	bool m_renderDebug = false;
-	Player m_player;
-	std::unique_ptr<b2World> m_world;
-	std::vector<Box> m_boxes;
-	
-
-
 };
-
