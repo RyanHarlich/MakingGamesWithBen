@@ -39,6 +39,9 @@
     <ClCompile Include="MainMenuScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EditorScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -65,9 +68,12 @@
     <ClInclude Include="ScreenIndices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EditorScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 55 - CEGUI Event Handling, Basic Main Menu.txt">
+    <Text Include="Tutorial 56 - CEGUI Event Handling review, new widgets..txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>

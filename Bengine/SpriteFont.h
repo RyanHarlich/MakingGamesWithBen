@@ -75,7 +75,7 @@ namespace Bengine {
 		static std::vector<int>* createRows(glm::ivec4* rects, int rectsLength, int r, int padding, int& w);
 
 		int _regStart, _regLength;
-		CharGlyph* m_glyphs;
+		CharGlyph* _glyphs;
 		int _fontHeight;
 
 		unsigned int _texID;

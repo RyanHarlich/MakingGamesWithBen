@@ -1,0 +1,48 @@
+Updated Files:
+		-	MainMenuScreen.cpp
+		-	MainMenuScreen.h
+		-	Add to NinjaPlatformer project class: EditorScreen
+		-	App.cpp
+
+
+		Minor Change (from tutorial)
+		-	GameplayScreen.cpp
+
+		Minor Change (not relevant to this tutorial other than a bug)
+		-	Player.cpp
+		-	Player.h
+				- redefinition of LEFT,RIGHT made a serious bug with SpriteFont, turned into a enum class
+
+
+___________________________________________________________________________________
+Notes:
+		-	Add new Editor Screen
+
+
+
+		- Remember: destRectPerc in GUI.cpp for creating widgets is a percentage of the screen, not the actual x and y position
+
+
+
+		Could use only  m_rSlider->getCurrentValue(); instead of private variables and use no event handlers, but will for this tutorial
+
+
+		destRect.y = m_bSlider->getYPosition().d_scale * m_window->getScreenHeight();
+					- note: multiply by screen width/height to get actual window coordinates, multiply .50 by 100 and get 50
+
+
+		When the scale is set to 1, that means for every 1 pixel of the screen size the dimensions is 1 pixel per size unit
+
+
+		The destRectPixels seems to be the number of pixels to take up on the screen for the widgets. So if if the screen was set to 768 and the pixel size was set to 1 it would take up 1 pixel of the the 768 screen size.
+		The destRectPercentage is the percentage of the screen size so 1% of 768 would make the sprite 7.68 pixels in size.
+
+
+
+
+		m_rigidRadioButton->getXPosition().d_scale
+				- uses the window scale of the destRectPercentage
+
+
+		m_rigidRadioButton->getWidth().d_offset
+				- d_offset uses the destRectPixels instead of the destRectPercentage like d_scale

@@ -3,8 +3,6 @@
 
 #include "GameplayScreen.h"
 #include "Light.h"
-
-/* NEW */
 #include "ScreenIndices.h"
 
 #include <Bengine/IMainGame.h>
@@ -15,11 +13,8 @@
 
 
 GameplayScreen::GameplayScreen(Bengine::Window* window) : m_window(window)
-	/* NEW */
-	//*** If protected member is defined in base class cannot use it in the initialization list in the constructor of the subclass, instead have to set it equal to in the constructors block statement ***
-	//m_screenIndex(Screen_INDEX_GAMEPLAY)
 {
-		/* NEW */
+
 		m_screenIndex = SCREEN_INDEX_GAMEPLAY;
 }
 
@@ -35,9 +30,6 @@ int GameplayScreen::getNextScreenIndex() const {
 
 
 int GameplayScreen::getPreviousScreenIndex() const {
-
-	/* NEW: previous screen enabled */
-	//return SCREEN_INDEX_NO_SCREEN;
 	return SCREEN_INDEX_MAINMENU;
 }
 
@@ -126,28 +118,7 @@ void GameplayScreen::onEntry() {
 	m_player.init(m_world.get(), glm::vec2(0.0f, 30.0f), glm::vec2(2.0f), glm::vec2(1.0f, 1.8f), Bengine::ColorRGBA8(255,255,255,255), true);
 
 
-
-
-	/* NEW */
 	initUI();
-
-	/* NEW: removed and moved to new method initUI() */
-	/*
-		// Init the UI, call this after initializing all the openGL stuff and glew 
-	m_gui.init("GUI");
-	m_gui.loadScheme("TaharezLook.scheme");
-	m_gui.loadScheme("AlfiskoSkin.scheme");
-	m_gui.setFont("DejaVuSans-10"); // do not include the .font for font
-									// Change between the AlfiskoSkin and the TaharezLook by changing the part in front of ".../Button"
-	CEGUI::PushButton* testButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.5f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "TestButton")); // 50%x 50%y is in the middle, then the dimensions follow
-	testButton->setText("Hello World!");
-	CEGUI::Combobox* testCombobox = static_cast<CEGUI::Combobox*>(m_gui.createWidget("TaharezLook/Combobox", glm::vec4(0.2f, 0.2f, 0.1f, 0.05f), glm::vec4(0.0f), "TestCombobox"));
-	m_gui.setMouseCursor("TaharezLook/MouseArrow");
-	// need to injectMousePosition to show, which is done in GUI.cpp onSDLEvent which allows for GUIs to become interactive
-	m_gui.showMouseCursor();
-	// disables the default mouse cursor so only see the CEGUI mouse cursor, 1 means to show the cursor and 0 means to not show the cursor
-	SDL_ShowCursor(0);
-	*/
 }
 
 
@@ -274,25 +245,24 @@ void GameplayScreen::draw() {
 
 
 
-/* NEW */
 void GameplayScreen::initUI() {
 
 	// Init the UI, call this after initializing all the openGL stuff and glew 
 	m_gui.init("GUI");
 	m_gui.loadScheme("TaharezLook.scheme");
-	m_gui.loadScheme("AlfiskoSkin.scheme");
+
+	/* NEW: forgot to remove this */
+	//m_gui.loadScheme("AlfiskoSkin.scheme");
+
+
 	m_gui.setFont("DejaVuSans-10"); // do not include the .font for font
 									// Change between the AlfiskoSkin and the TaharezLook by changing the part in front of ".../Button"
 	CEGUI::PushButton* testButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.5f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "TestButton")); // 50%x 50%y is in the middle, then the dimensions follow
 
 
-
-
-	/* NEW: changed text */
-	//testButton->setText("Hello World!");
 	testButton->setText("Exit Game!");
 
-	/* NEW */
+
 	// although this is in the init function, it subscribes the event permanently
 	// Set the event to be called when we click, event and subscriber which is the function to point at and object to point at such as this for current object
 	// type of function for function pointer is a std::function<bool(const CEGUI::EventArgs&)>
@@ -323,6 +293,16 @@ void GameplayScreen::checkInput() {
 
 		m_gui.onSDLEvent(evnt);
 
+
+		/* NEW */
+		switch (evnt.type) {
+		case SDL_QUIT:
+			onExitClicked(CEGUI::EventArgs());
+			break;
+		}
+		/* NEW: end of new */
+
+
 	}
 }
 
@@ -332,7 +312,7 @@ void GameplayScreen::checkInput() {
 
 
 
-/* NEW: give prefix 'on' for event handling  */
+// give prefix 'on' for event handling 
 // type of function for function pointer is a std::function<bool(const CEGUI::EventArgs&)>
 bool GameplayScreen::onExitClicked(const CEGUI::EventArgs& e) {
 	m_currentState = Bengine::ScreenState::EXIT_APPLICATION;

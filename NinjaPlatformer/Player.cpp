@@ -64,7 +64,7 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 			}
 
 
-		} else if (abs(velocity.x) > 1.0f && ((velocity.x > 0 && m_direction == RIGHT) || (velocity.x < 0 && m_direction == LEFT))) { // absolute of velocity says to ignore direction
+		} else if (abs(velocity.x) > 1.0f && ((velocity.x > 0 && m_direction == Direction::RIGHT) || (velocity.x < 0 && m_direction == Direction::LEFT))) { // absolute of velocity says to ignore direction
 			// Running
 			numTiles = 6;
 			tileIndex = 10;
@@ -127,7 +127,7 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 	glm::vec4 uvRect = m_texture.getUVs(tileIndex);
 
 	// Check direction
-	if (m_direction == LEFT) {
+	if (m_direction == Direction::LEFT) {
 		uvRect.x += 1.0f / m_texture.dims.x; // this will add one tile over
 		uvRect.z *= -1; // reverese the direction of the uv coordinates, (z is width), in the shader it will be a negative number for the demensions which will cause to go back one tile but backwards
 	}
@@ -165,11 +165,11 @@ void Player::update(Bengine::InputManager& inputManager) {
 	if (inputManager.isKeyDown(SDLK_a) || inputManager.isKeyDown(SDLK_LEFT)) {
 		// apply force to object, wake up object (objects can go to sleep)
 		body->ApplyForceToCenter(b2Vec2(-100.0f, 0.0f), true);
-		m_direction = LEFT;
+		m_direction = Direction::LEFT;
 	}
 	else if (inputManager.isKeyDown(SDLK_d) || inputManager.isKeyDown(SDLK_RIGHT)) {
 		body->ApplyForceToCenter(b2Vec2(100.0f, 0.0f), true);
-		m_direction = RIGHT;
+		m_direction = Direction::RIGHT;
 	}
 	else {
 		// Apply damping: slow down velocity kind of like friction

@@ -11,9 +11,7 @@
 
 enum class PlayerMoveState { STANDING, RUNNING, PUNCHING, IN_AIR };
 
-
-#define RIGHT 1
-#define LEFT -1
+enum class Direction { LEFT, RIGHT };
 
 
 class Player {
@@ -48,7 +46,7 @@ private:
 	Capsule m_capsule;
 	PlayerMoveState m_moveState = PlayerMoveState::STANDING;
 	float m_animTime = 0.0f;
-	int m_direction = RIGHT;
+	Direction m_direction = Direction::RIGHT;
 	bool m_onGround = false;
 	bool m_isPunching = false; // this is for kicking or punching
 

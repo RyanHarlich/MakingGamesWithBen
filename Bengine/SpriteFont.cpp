@@ -47,7 +47,7 @@ namespace Bengine {
 		}
 
 		// Find best partitioning of glyphs
-		int rows = 1, w, h, bestWidth = 0, bestHeight = 0, area = 4096 * 4096, bestRows = 0;
+		int rows = 1, w, h, bestWidth = 0, bestHeight = 0, area = MAX_TEXTURE_RES * MAX_TEXTURE_RES, bestRows = 0;
 		std::vector<int>* bestPartition = nullptr;
 		while (rows <= _regLength) {
 			h = rows * (padding + _fontHeight) + padding;
@@ -58,7 +58,7 @@ namespace Bengine {
 			h = closestPow2(h);
 
 			// A texture must be feasible
-			if (w > 4096 || h > 4096) {
+			if (w > MAX_TEXTURE_RES || h > MAX_TEXTURE_RES) {
 				rows++;
 				delete[] gr;
 				continue;
@@ -137,20 +137,20 @@ namespace Bengine {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 		// Create spriteBatch glyphs
-		m_glyphs = new CharGlyph[_regLength + 1];
+		_glyphs = new CharGlyph[_regLength + 1];
 		for (int i = 0; i < _regLength; i++) {
-			m_glyphs[i].character = (char)(cs + i);
-			m_glyphs[i].size = glm::vec2(glyphRects[i].z, glyphRects[i].w);
-			m_glyphs[i].uvRect = glm::vec4(
+			_glyphs[i].character = (char)(cs + i);
+			_glyphs[i].size = glm::vec2(glyphRects[i].z, glyphRects[i].w);
+			_glyphs[i].uvRect = glm::vec4(
 				(float)glyphRects[i].x / (float)bestWidth,
 				(float)glyphRects[i].y / (float)bestHeight,
 				(float)glyphRects[i].z / (float)bestWidth,
 				(float)glyphRects[i].w / (float)bestHeight
 			);
 		}
-		m_glyphs[_regLength].character = ' ';
-		m_glyphs[_regLength].size = m_glyphs[0].size;
-		m_glyphs[_regLength].uvRect = glm::vec4(0, 0, (float)rs / (float)bestWidth, (float)rs / (float)bestHeight);
+		_glyphs[_regLength].character = ' ';
+		_glyphs[_regLength].size = _glyphs[0].size;
+		_glyphs[_regLength].uvRect = glm::vec4(0, 0, (float)rs / (float)bestWidth, (float)rs / (float)bestHeight);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		delete[] glyphRects;
@@ -162,9 +162,9 @@ namespace Bengine {
 			glDeleteTextures(1, &_texID);
 			_texID = 0;
 		}
-		if (m_glyphs) {
-			delete[] m_glyphs;
-			m_glyphs = nullptr;
+		if (_glyphs) {
+			delete[] _glyphs;
+			_glyphs = nullptr;
 		}
 	}
 
@@ -214,7 +214,7 @@ namespace Bengine {
 				int gi = c - _regStart;
 				if (gi < 0 || gi >= _regLength)
 					gi = _regLength;
-				cw += m_glyphs[gi].size.x;
+				cw += _glyphs[gi].size.x;
 			}
 		}
 		if (size.x < cw)
@@ -241,9 +241,9 @@ namespace Bengine {
 				int gi = c - _regStart;
 				if (gi < 0 || gi >= _regLength)
 					gi = _regLength;
-				glm::vec4 destRect(tp, m_glyphs[gi].size * scaling);
-				batch.draw(destRect, m_glyphs[gi].uvRect, _texID, depth, tint);
-				tp.x += m_glyphs[gi].size.x * scaling.x;
+				glm::vec4 destRect(tp, _glyphs[gi].size * scaling);
+				batch.draw(destRect, _glyphs[gi].uvRect, _texID, depth, tint);
+				tp.x += _glyphs[gi].size.x * scaling.x;
 			}
 		}
 	}

@@ -2,7 +2,6 @@
 
 #include <SDL/SDL_timer.h>
 
-/* NEW */
 #include <utf8/utf8.h>
 
 
@@ -264,7 +263,6 @@ namespace Bengine {
 
 		CEGUI::utf32 codePoint;
 
-		/* NEW */
 		std::string evntText = std::string(evnt.text.text);
 		std::vector<int> utf32result;
 
@@ -284,22 +282,10 @@ namespace Bengine {
 			break;
 		case SDL_TEXTINPUT: // for unicode text input
 			codePoint = 0; // cannot declare variables in here
-			// '\0' is the null character can also put 0
-			// this is only for it the character is something crazy and needs the extra byte
-
-			/* NEW: handles unicode characters instead of only ascii characters */
 			// handles unicode characters instead of only ascii characters
 			utf8::utf8to32(evnt.text.text, evnt.text.text + evntText.size(), std::back_inserter(utf32result));
 			codePoint = (CEGUI::utf32)utf32result[0];
 			m_context->injectChar(codePoint);
-
-			/* NEW: updated, and removed to the code above, also not sure if this bit shift would not get the unicode character backwards, depends on how injectChar reads the argument, note explanation on Git online */
-			/*for (int i = 0; evnt.text.text[i] != '\0'; ++i) {
-				// use bitwise or here to set values/flags
-				codePoint |= (((CEGUI::utf32)*(unsigned char*)&evnt.text.text[i]) << (i * 8)); // have to cast because the text is a char so if shift it by more than eight bits than going to shift it off the end
-			}
-			m_context->injectChar(codePoint);
-			*/
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			m_context->injectMouseButtonDown(SDLButtonToCEGUIButton(evnt.button.button));
