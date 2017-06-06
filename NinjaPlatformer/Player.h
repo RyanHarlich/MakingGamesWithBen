@@ -25,6 +25,12 @@ public:
 		Bengine::ColorRGBA8 color, 
 		bool fixedRotation);
 
+
+	/* NEW */
+	void destory(b2World* world);
+
+
+
 	void draw(Bengine::SpriteBatch& spriteBatch);
 
 	void drawDebug(Bengine::DebugRenderer& debugRenderer);

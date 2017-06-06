@@ -1,6 +1,5 @@
 #pragma once
 
-/* NEW */
 #include "ScreenIndices.h"
 
 #include <Bengine/IGameScreen.h>
@@ -36,8 +35,6 @@ private:
 	void checkInput();
 	// type of function for function pointer is a std::function<bool(const CEGUI::EventArgs&)>
 	bool onNewGameClicked(const CEGUI::EventArgs& e);
-
-	/* NEW */
 	// type of function for function pointer is a std::function<bool(const CEGUI::EventArgs&)>
 	bool MainMenuScreen::onEditorClicked(const CEGUI::EventArgs & e);
 
@@ -45,7 +42,6 @@ private:
 	bool onExitClicked(const CEGUI::EventArgs& e);
 
 
-	/* NEW */
 	int m_nextScreenIndex = SCREEN_INDEX_GAMEPLAY;
 
 	Bengine::Camera2D m_camera;

@@ -1,8 +1,5 @@
 #include "MainMenuScreen.h"
 
-/* NEW: moved to header file */
-//#include "ScreenIndices.h"
-
 MainMenuScreen::MainMenuScreen(Bengine::Window * window) : m_window(window) {
 	m_screenIndex = SCREEN_INDEX_MAINMENU;
 }
@@ -52,12 +49,6 @@ void MainMenuScreen::initUI() {
 	// Init the UI, call this after initializing all the openGL stuff and glew 
 	m_gui.init("GUI");
 	m_gui.loadScheme("TaharezLook.scheme");
-
-
-	/* NEW: forgot to remove this */
-	//m_gui.loadScheme("AlfiskoSkin.scheme");
-
-
 	m_gui.setFont("DejaVuSans-10");
 	
 
@@ -71,14 +62,12 @@ void MainMenuScreen::initUI() {
 
 
 
-
-	/* NEW */
 	// Editor Button
 	CEGUI::PushButton* editorButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.45f, 0.56f, 0.1f, 0.05f), glm::vec4(0.0f), "EditorButton")); // .1 / .2 is .5 so .45 will center correctly, look at notes for details
 	editorButton->setText("Level Editor");
 	// Set up event to be called when we click
 	editorButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&MainMenuScreen::onEditorClicked, this));
-	/* NEW: end of new */
+
 
 
 
@@ -108,13 +97,13 @@ void MainMenuScreen::checkInput() {
 	while (SDL_PollEvent(&evnt)) {
 		m_gui.onSDLEvent(evnt);
 
-		/* NEW */
+
 		switch (evnt.type) {
 		case SDL_QUIT:
 			onExitClicked(CEGUI::EventArgs());
 			break;
 		}
-		/* NEW: end of new */
+
 
 
 	}
@@ -124,17 +113,14 @@ void MainMenuScreen::checkInput() {
 
 // type of function for function pointer is a std::function<bool(const CEGUI::EventArgs&)>
 bool MainMenuScreen::onNewGameClicked(const CEGUI::EventArgs & e) {
-
-	/* NEW */
 	m_nextScreenIndex = SCREEN_INDEX_GAMEPLAY;
-
 	m_currentState = Bengine::ScreenState::CHANGE_NEXT;
 	return true;
 }
 
 
 
-/* NEW */
+
 // type of function for function pointer is a std::function<bool(const CEGUI::EventArgs&)>
 bool MainMenuScreen::onEditorClicked(const CEGUI::EventArgs & e) {
 	m_nextScreenIndex = SCREEN_INDEX_EDITOR;

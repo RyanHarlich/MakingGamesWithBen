@@ -337,6 +337,19 @@ namespace Bengine {
 
 
 
+	/* NEW */
+	CEGUI::Window * GUI::createWidget(CEGUI::Window * parent, const std::string & type, const glm::vec4 & destRectPerc, const glm::vec4 & destRectPix, const std::string & name) {
+		// Create the new Widget
+		CEGUI::Window * newWindow = CEGUI::WindowManager::getSingleton().createWindow(type, name);
+		// Add new widget to parent window
+		parent->addChild(newWindow);
+		setWidgetDestRect(newWindow, destRectPerc, destRectPix);
+		// Return new Window widget
+		return newWindow;
+	}
+
+
+
 
 	// Sets as a percentage of the root window rather than actual dimensions
 	void GUI::setWidgetDestRect(CEGUI::Window * widget, const glm::vec4 & destRectPerc, const glm::vec4 & destRectPix) {

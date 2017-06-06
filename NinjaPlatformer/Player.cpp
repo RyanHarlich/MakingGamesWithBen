@@ -28,6 +28,14 @@ void Player::init(b2World * world,
 
 
 
+/* NEW */
+void Player::destory(b2World * world){
+	m_capsule.destroy(world);
+}
+
+
+
+
 
 
 void Player::draw(Bengine::SpriteBatch& spriteBatch) {

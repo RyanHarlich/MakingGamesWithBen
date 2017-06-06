@@ -15,6 +15,13 @@ public:
 		float friction,
 		bool fixedRotation);
 
+
+
+	/* NEW */
+	void destroy(b2World* world);
+
+
+
 	// usually this would go in a seperate render class like the ball game
 	void drawDebug(Bengine::DebugRenderer& debugRenderer);
 

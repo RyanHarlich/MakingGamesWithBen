@@ -73,7 +73,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Tutorial 56 - CEGUI Event Handling review, new widgets..txt">
+    <Text Include="Tutorial 57 - Level Editor.txt">
       <Filter>Tutorial Notes</Filter>
     </Text>
   </ItemGroup>

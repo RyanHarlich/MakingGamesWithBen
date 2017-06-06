@@ -12,12 +12,15 @@ Box::~Box()
 }
 
 
+/* NEW: update added isDynamic and angle */
 void Box::init(b2World* world, 
 	const glm::vec2 position, 
 	const glm::vec2 dimensions, 
 	Bengine::GLTexture texture, 
 	Bengine::ColorRGBA8 color, 
-	bool fixedRotation, 
+	bool fixedRotation,
+	bool isDynamic,
+	float angle, /* = 0.0f */	
 	glm::vec4 uvRect /* = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)*/) {
 
 	m_dimensions = dimensions;
@@ -27,9 +30,26 @@ void Box::init(b2World* world,
 
 	// Make the body
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
+
+
+	/* NEW */
+	//bodyDef.type = b2_dynamicBody;
+	if (isDynamic) {
+		bodyDef.type = b2_dynamicBody;
+	}
+	else {
+		bodyDef.type = b2_staticBody;
+	}
+	/* NEW: end of new */
+
+
 	bodyDef.position.Set(position.x, position.y);
 	bodyDef.fixedRotation = fixedRotation;
+
+
+	/* NEW */
+	bodyDef.angle = angle;
+
 
 	m_body = world->CreateBody(&bodyDef);
 
@@ -47,6 +67,18 @@ void Box::init(b2World* world,
 
 
 }
+
+
+
+
+/* NEW */
+void Box::destroy(b2World * world) {
+	world->DestroyBody(m_body);
+}
+
+
+
+
 
 
 

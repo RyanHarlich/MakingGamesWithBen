@@ -78,6 +78,9 @@ void GameplayScreen::onEntry() {
 	std::uniform_real_distribution<float> size(0.5f, 2.5f);
 	std::uniform_int_distribution<int> color(0, 255);
 
+	/* NEW */
+	std::uniform_real_distribution<float> angle(0.0f, M_PI / 2.0f);
+
 
 	const int NUM_BOXES = 10;
 
@@ -85,7 +88,8 @@ void GameplayScreen::onEntry() {
 	for (int i = 0; i < NUM_BOXES; ++i) {	
 		Box newBox;
 
-		newBox.init(m_world.get(), glm::vec2(xPos(randGenerator), yPos(randGenerator)), glm::vec2(size(randGenerator), size(randGenerator)), m_texture,Bengine::ColorRGBA8(color(randGenerator), color(randGenerator), color(randGenerator), 255), false);
+		/* NEW: updated to include the new isDynamic and angle (which has a default parameter but is not used here) */
+		newBox.init(m_world.get(), glm::vec2(xPos(randGenerator), yPos(randGenerator)), glm::vec2(size(randGenerator), size(randGenerator)), m_texture,Bengine::ColorRGBA8(color(randGenerator), color(randGenerator), color(randGenerator), 255), false, true, angle(randGenerator));
 
 		m_boxes.push_back(newBox);
 	}
@@ -250,11 +254,6 @@ void GameplayScreen::initUI() {
 	// Init the UI, call this after initializing all the openGL stuff and glew 
 	m_gui.init("GUI");
 	m_gui.loadScheme("TaharezLook.scheme");
-
-	/* NEW: forgot to remove this */
-	//m_gui.loadScheme("AlfiskoSkin.scheme");
-
-
 	m_gui.setFont("DejaVuSans-10"); // do not include the .font for font
 									// Change between the AlfiskoSkin and the TaharezLook by changing the part in front of ".../Button"
 	CEGUI::PushButton* testButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.5f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "TestButton")); // 50%x 50%y is in the middle, then the dimensions follow
@@ -294,13 +293,11 @@ void GameplayScreen::checkInput() {
 		m_gui.onSDLEvent(evnt);
 
 
-		/* NEW */
 		switch (evnt.type) {
 		case SDL_QUIT:
 			onExitClicked(CEGUI::EventArgs());
 			break;
 		}
-		/* NEW: end of new */
 
 
 	}
