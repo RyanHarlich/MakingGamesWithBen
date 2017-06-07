@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Box.h"
+
+/* NEW */
+//#include "Box.h"
+
 #include "Capsule.h"
 
 #include <Bengine/SpriteBatch.h>
@@ -26,7 +29,7 @@ public:
 		bool fixedRotation);
 
 
-	/* NEW */
+
 	void destory(b2World* world);
 
 
@@ -44,6 +47,12 @@ public:
 		return glm::vec2(m_capsule.getBody()->GetPosition().x, m_capsule.getBody()->GetPosition().y); 
 	}
 
+	/* NEW: accessors */
+	const glm::vec2				getCollisionDims()	const { return m_collisionDims; }
+	const glm::vec2				getDrawDims()		const { return m_drawDims; }
+	const Bengine::ColorRGBA8	getColor()			const { return m_color; }
+	/* NEW: end of new */
+
 
 private:
 	glm::vec2 m_drawDims;
@@ -55,5 +64,9 @@ private:
 	Direction m_direction = Direction::RIGHT;
 	bool m_onGround = false;
 	bool m_isPunching = false; // this is for kicking or punching
+
+	
+	/* NEW */
+	glm::vec2 m_collisionDims;
 
 };

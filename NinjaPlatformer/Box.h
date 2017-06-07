@@ -13,7 +13,7 @@ public:
 	Box();
 	~Box();
 
-	/* NEW: update added isDynamic and angle */
+
 	void init(b2World* world, 
 		const glm::vec2 position, 
 		const glm::vec2 dimensions, 
@@ -25,33 +25,32 @@ public:
 		glm::vec4 uvRect = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
 
-	/* NEW */
 	void destroy(b2World* world);
-
 
 	void draw(Bengine::SpriteBatch& spriteBatch);
 
-
-	/* NEW */
 	bool isDynamic() const { return m_body->GetType() == b2_dynamicBody; }
 
-	/* NEW */
 	// test if a point is inside the box such as clicking
 	bool testPoint(float x, float y) const { return m_fixture->TestPoint(b2Vec2(x, y)); }
-
 
 
 	// Getter
 	b2Body* getBody() const { return m_body; }
 	b2Fixture* getFixture() const  { return m_fixture; }
 	const glm::vec2& getDimensions() const { return m_dimensions; }
-
-
-	/* NEW */
 	glm::vec2 getPosition() const { return glm::vec2(m_body->GetPosition().x, m_body->GetPosition().y); }
-
-
 	const Bengine::ColorRGBA8& getColor() const { return m_color; }
+
+
+	/* NEW: accessors */
+	glm::vec4					getUvRect()				const { return m_uvRect; }
+	float						getAngle()				const { return m_body->GetAngle(); }
+	const Bengine::GLTexture&	getTexture()			const { return m_texture; }
+	const bool&					getFixesRotation()		const { return m_fixedRotation; }
+	const bool&					getIsDynamic()			const { return m_isDynamic; }
+	/* NEW: end of new */
+
 
 private:
 	glm::vec4 m_uvRect;
@@ -60,5 +59,12 @@ private:
 	glm::vec2 m_dimensions;
 	Bengine::ColorRGBA8 m_color;
 	Bengine::GLTexture m_texture;
+
+
+	/* NEW */
+	bool m_fixedRotation;
+	bool m_isDynamic;
+	/* NEW: end of new */
+
 };
 

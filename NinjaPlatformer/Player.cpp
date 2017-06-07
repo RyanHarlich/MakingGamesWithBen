@@ -19,6 +19,9 @@ void Player::init(b2World * world,
 	m_color = color;
 	m_drawDims = drawDims;
 
+	/* NEW */
+	m_collisionDims = collisionDims;
+
 	m_capsule.init(world, position, collisionDims, 1.0f, 0.1f, fixedRotation);
 
 
@@ -28,7 +31,7 @@ void Player::init(b2World * world,
 
 
 
-/* NEW */
+
 void Player::destory(b2World * world){
 	m_capsule.destroy(world);
 }

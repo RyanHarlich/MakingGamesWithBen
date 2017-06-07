@@ -39,7 +39,6 @@ namespace Bengine {
 		CEGUI::Window* createWidget(const std::string& type, const glm::vec4& destRectPerc, const glm::vec4& destRectPix, const std::string& name = ""); // good idea to give it a name in case want to look it up later, but do not have to
 
 
-		/* NEW */
 		CEGUI::Window* createWidget(CEGUI::Window* parent, const std::string& type, const glm::vec4& destRectPerc, const glm::vec4& destRectPix, const std::string& name = "");
 
 

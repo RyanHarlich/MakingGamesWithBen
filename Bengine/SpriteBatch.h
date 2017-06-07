@@ -70,6 +70,10 @@ namespace Bengine {
 
 		void init();
 
+		/* NEW */
+		void dispose();
+
+
 		void begin(GlyphSortType sortType = GlyphSortType::TEXTURE);
 
 		void end();

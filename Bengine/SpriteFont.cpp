@@ -157,6 +157,163 @@ namespace Bengine {
 		delete[] bestPartition;
 		TTF_CloseFont(f);
 	}
+
+
+
+	/* NEW */
+	void SpriteFont::init(const char * font, int size) {
+		init(font, size, FIRST_PRINTABLE_CHAR, LAST_PRINTABLE_CHAR);
+	}
+
+
+
+	/* NEW */
+	void SpriteFont::init(const char * font, int size, char cs, char ce) {
+		// Initialize SDL_ttf
+		if (!TTF_WasInit()) {
+			TTF_Init();
+		}
+		TTF_Font* f = TTF_OpenFont(font, size);
+		if (f == nullptr) {
+			fprintf(stderr, "Failed to open TTF font %s\n", font);
+			fflush(stderr);
+			throw 281;
+		}
+		_fontHeight = TTF_FontHeight(f);
+		_regStart = cs;
+		_regLength = ce - cs + 1;
+		int padding = size / 8;
+
+		// First measure all the regions
+		glm::ivec4* glyphRects = new glm::ivec4[_regLength];
+		int i = 0, advance;
+		for (char c = cs; c <= ce; c++) {
+			TTF_GlyphMetrics(f, c, &glyphRects[i].x, &glyphRects[i].z, &glyphRects[i].y, &glyphRects[i].w, &advance);
+			glyphRects[i].z -= glyphRects[i].x;
+			glyphRects[i].x = 0;
+			glyphRects[i].w -= glyphRects[i].y;
+			glyphRects[i].y = 0;
+			++i;
+		}
+
+		// Find best partitioning of glyphs
+		int rows = 1, w, h, bestWidth = 0, bestHeight = 0, area = MAX_TEXTURE_RES * MAX_TEXTURE_RES, bestRows = 0;
+		std::vector<int>* bestPartition = nullptr;
+		while (rows <= _regLength) {
+			h = rows * (padding + _fontHeight) + padding;
+			auto gr = createRows(glyphRects, _regLength, rows, padding, w);
+
+			// Desire a power of 2 texture
+			w = closestPow2(w);
+			h = closestPow2(h);
+
+			// A texture must be feasible
+			if (w > MAX_TEXTURE_RES || h > MAX_TEXTURE_RES) {
+				rows++;
+				delete[] gr;
+				continue;
+			}
+
+			// Check for minimal area
+			if (area >= w * h) {
+				if (bestPartition) delete[] bestPartition;
+				bestPartition = gr;
+				bestWidth = w;
+				bestHeight = h;
+				bestRows = rows;
+				area = bestWidth * bestHeight;
+				rows++;
+			}
+			else {
+				delete[] gr;
+				break;
+			}
+		}
+
+		// Can a bitmap font be made?
+		if (!bestPartition) return;
+
+		// Create the texture
+		glGenTextures(1, &_texID);
+		glBindTexture(GL_TEXTURE_2D, _texID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bestWidth, bestHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+		// Now draw all the glyphs
+		SDL_Color fg = { 255, 255, 255, 255 };
+		int ly = padding;
+		for (int ri = 0; ri < bestRows; ri++) {
+			int lx = padding;
+			for (size_t ci = 0; ci < bestPartition[ri].size(); ci++) {
+				int gi = bestPartition[ri][ci];
+
+				SDL_Surface* glyphSurface = TTF_RenderGlyph_Blended(f, (char)(cs + gi), fg);
+
+				// Pre-multiplication occurs here
+				unsigned char* sp = (unsigned char*)glyphSurface->pixels;
+				int cp = glyphSurface->w * glyphSurface->h * 4;
+				for (int i = 0; i < cp; i += 4) {
+					float a = sp[i + 3] / 255.0f;
+					sp[i] *= (unsigned char)a;
+					sp[i + 1] = sp[i];
+					sp[i + 2] = sp[i];
+				}
+
+				// Save glyph image and update coordinates
+				glTexSubImage2D(GL_TEXTURE_2D, 0, lx, bestHeight - ly - 1 - glyphSurface->h, glyphSurface->w, glyphSurface->h, GL_BGRA, GL_UNSIGNED_BYTE, glyphSurface->pixels);
+				glyphRects[gi].x = lx;
+				glyphRects[gi].y = ly;
+				glyphRects[gi].z = glyphSurface->w;
+				glyphRects[gi].w = glyphSurface->h;
+
+				SDL_FreeSurface(glyphSurface);
+				glyphSurface = nullptr;
+
+				lx += glyphRects[gi].z + padding;
+			}
+			ly += _fontHeight + padding;
+		}
+
+		// Draw the unsupported glyph
+		int rs = padding - 1;
+		int* pureWhiteSquare = new int[rs * rs];
+		memset(pureWhiteSquare, 0xffffffff, rs * rs * sizeof(int));
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, rs, rs, GL_RGBA, GL_UNSIGNED_BYTE, pureWhiteSquare);
+		delete[] pureWhiteSquare;
+		pureWhiteSquare = nullptr;
+
+		// Set some texture parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		// Create spriteBatch glyphs
+		_glyphs = new CharGlyph[_regLength + 1];
+		for (int i = 0; i < _regLength; i++) {
+			_glyphs[i].character = (char)(cs + i);
+			_glyphs[i].size = glm::vec2(glyphRects[i].z, glyphRects[i].w);
+			_glyphs[i].uvRect = glm::vec4(
+				(float)glyphRects[i].x / (float)bestWidth,
+				(float)glyphRects[i].y / (float)bestHeight,
+				(float)glyphRects[i].z / (float)bestWidth,
+				(float)glyphRects[i].w / (float)bestHeight
+			);
+		}
+		_glyphs[_regLength].character = ' ';
+		_glyphs[_regLength].size = _glyphs[0].size;
+		_glyphs[_regLength].uvRect = glm::vec4(0, 0, (float)rs / (float)bestWidth, (float)rs / (float)bestHeight);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		delete[] glyphRects;
+		delete[] bestPartition;
+		TTF_CloseFont(f);
+	}
+
+
+
+
+
+
 	void SpriteFont::dispose() {
 		if (_texID != 0) {
 			glDeleteTextures(1, &_texID);

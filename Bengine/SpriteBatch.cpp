@@ -100,6 +100,21 @@ namespace Bengine {
 
 
 
+	/* NEW*/
+	void SpriteBatch::dispose() {
+		if (m_vaoID != 0) {
+			glDeleteVertexArrays(1, &m_vaoID);
+			m_vaoID = 0;
+		}
+		if (m_vboID != 0) {
+			glDeleteBuffers(1, &m_vboID);
+			m_vboID = 0;
+		}
+	}
+
+
+
+
 	void SpriteBatch::begin(GlyphSortType sortType /* GlyphSortTypeT30::TEXTURE */) {
 		m_sortType = sortType;
 		m_renderBatches.clear();

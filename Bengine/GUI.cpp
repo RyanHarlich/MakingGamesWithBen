@@ -337,7 +337,6 @@ namespace Bengine {
 
 
 
-	/* NEW */
 	CEGUI::Window * GUI::createWidget(CEGUI::Window * parent, const std::string & type, const glm::vec4 & destRectPerc, const glm::vec4 & destRectPix, const std::string & name) {
 		// Create the new Widget
 		CEGUI::Window * newWindow = CEGUI::WindowManager::getSingleton().createWindow(type, name);

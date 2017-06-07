@@ -77,9 +77,7 @@ void GameplayScreen::onEntry() {
 	std::uniform_real_distribution<float> yPos(-10.0f, 15.0f);
 	std::uniform_real_distribution<float> size(0.5f, 2.5f);
 	std::uniform_int_distribution<int> color(0, 255);
-
-	/* NEW */
-	std::uniform_real_distribution<float> angle(0.0f, M_PI / 2.0f);
+	std::uniform_real_distribution<float> angle(0.0f, (float)M_PI / 2.0f);
 
 
 	const int NUM_BOXES = 10;
@@ -88,7 +86,7 @@ void GameplayScreen::onEntry() {
 	for (int i = 0; i < NUM_BOXES; ++i) {	
 		Box newBox;
 
-		/* NEW: updated to include the new isDynamic and angle (which has a default parameter but is not used here) */
+
 		newBox.init(m_world.get(), glm::vec2(xPos(randGenerator), yPos(randGenerator)), glm::vec2(size(randGenerator), size(randGenerator)), m_texture,Bengine::ColorRGBA8(color(randGenerator), color(randGenerator), color(randGenerator), 255), false, true, angle(randGenerator));
 
 		m_boxes.push_back(newBox);

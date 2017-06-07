@@ -17,7 +17,6 @@ public:
 
 
 
-	/* NEW */
 	void destroy(b2World* world);
 
 

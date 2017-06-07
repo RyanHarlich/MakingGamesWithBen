@@ -1,21 +1,25 @@
 #include "EditorScreen.h"
 #include "ScreenIndices.h"
 
+/* NEW */
+#include "LevelReaderWriter.h"
+
 #include <Bengine/ResourceManager.h>
 
-
 /* NEW */
+#include <Bengine/IOManager.h>
+
+
 const int MOUSE_LEFT = 0;
 const int MOUSE_RIGHT = 1;
 const float LIGHT_SELECT_RADIUS = 0.5f; // 0.5 meters for Box2D
-/* NEW: end of new */
 
 
-/* NEW */
+
 const b2Vec2 GRAVITY(0.0f, -25.0f);
 
 
-/* NEW */
+
 void WidgetLabel::draw(Bengine::SpriteBatch & sb, Bengine::SpriteFont & sf, Bengine::Window * w) {
 	if (!widget->isVisible()) return;
 	glm::vec2 pos;
@@ -35,8 +39,10 @@ void WidgetLabel::draw(Bengine::SpriteBatch & sb, Bengine::SpriteFont & sf, Beng
 
 
 EditorScreen::EditorScreen(Bengine::Window* window) :
-	m_window(window),
-	m_spriteFont("Fonts/framd.ttf", 32)
+	m_window(window)
+
+	/* NEW: moved and changed to init function upon entry */
+	//m_spriteFont("Fonts/framd.ttf", 32)
 {
 	m_screenIndex = SCREEN_INDEX_EDITOR;
 }
@@ -62,21 +68,23 @@ void EditorScreen::destroy() {
 void EditorScreen::onEntry() {
 
 	/* NEW */
+	m_spriteFont.init("Fonts/framd.ttf", 32);
+
+
 	m_mouseButtons[MOUSE_LEFT] = false;
 	m_mouseButtons[MOUSE_RIGHT] = false;
 
 
 	m_camera.init(m_window->getScreenWidth(), m_window->getScreenHeight());
-	/* NEW: changed to 32, since uiCamera is 1 for scale */
 	m_camera.setScale(32.0f);
 
-	/* NEW */
+
 	m_uiCamera.init(m_window->getScreenWidth(), m_window->getScreenHeight());
 	m_uiCamera.setScale(1.0f); // 1 pixel, so each pixel is only 1 pixel
-	/* NEW: end of new */
 
 
-	/* NEW */
+
+
 	m_debugRenderer.init();
 
 
@@ -84,10 +92,10 @@ void EditorScreen::onEntry() {
 	m_spriteBatch.init();
 
 
-	/* NEW */
+
 	b2Vec2 gravity(0.0f, -25.0f);
 	m_world = std::make_unique<b2World>(gravity);
-	/* NEW: end of new */
+
 
 
 	m_textureProgram.compileShaders("Shaders/textureShading.vert", "Shaders/textureShading.frag");
@@ -97,13 +105,13 @@ void EditorScreen::onEntry() {
 	m_textureProgram.linkShaders();
 
 
-	/* NEW */
+
 	m_lightProgram.compileShaders("Shaders/lightShading.vert", "Shaders/lightShading.frag");
 	m_lightProgram.addAttribute("vertexPosition");
 	m_lightProgram.addAttribute("vertexColor");
 	m_lightProgram.addAttribute("vertexUV");
 	m_lightProgram.linkShaders();
-	/* NEW: end of new */
+
 
 	m_blankTexture = Bengine::ResourceManager::getTexture("Textures/Blank.png");
 }
@@ -112,22 +120,24 @@ void EditorScreen::onExit() {
 	m_gui.destroy();
 	m_textureProgram.dispose();
 
-	/* NEW */
+
 	m_spriteFont.dispose();
 	m_widgetLabels.clear();
 	m_world.reset();
-	/* NEW: end of new */
+
 }
 
 void EditorScreen::update() {
 	m_camera.update();
 
-	/* NEW */
+
 	m_uiCamera.update();
+
 
 	checkInput();
 
-	/* NEW */
+
+
 	// Platform scaling and rotation from keypress
 	if ((m_objectMode == ObjectMode::PLATFORM && m_selectMode == SelectionMode::PLACE) || m_selectedBox != NO_BOX) {
 
@@ -197,7 +207,7 @@ void EditorScreen::update() {
 
 
 	m_gui.update();
-	/* NEW: end of new */
+
 }
 
 void EditorScreen::draw() {
@@ -217,7 +227,7 @@ void EditorScreen::draw() {
 
 
 
-/* NEW */
+
 void EditorScreen::drawUI() {
 
 	// Outlines
@@ -316,26 +326,6 @@ void EditorScreen::drawUI() {
 
 
 
-
-	/* NEW: removed and replaced with below line */
-	/*
-	{ // Draw labels for rigid and dynamic buttons
-
-		glm::vec2 pos;
-		pos.x = m_rigidRadioButton->getXPosition().d_scale * m_window->getScreenWidth() - m_window->getScreenWidth() / 2.0f + m_rigidRadioButton->getWidth().d_offset / 2.0f; // d_offset uses the destRectPixels instead of the destRectPercentage like d_scale
-		pos.y = m_window->getScreenHeight() / 2.0f - m_rigidRadioButton->getYPosition().d_scale * m_window->getScreenHeight();
-		m_spriteFont.draw(m_spriteBatch, "Rigid", pos, glm::vec2(0.46f), 0.0f, Bengine::ColorRGBA8(255, 255, 255, 255), Bengine::Justification::MIDDLE);
-
-		pos.x = m_dynamicRadioButton->getXPosition().d_scale * m_window->getScreenWidth() - m_window->getScreenWidth() / 2.0f + m_dynamicRadioButton->getHeight().d_offset / 2.0f; // d_offset uses the destRectPixels instead of the destRectPercentage like d_scale
-		pos.y = m_window->getScreenHeight() / 2.0f - m_dynamicRadioButton->getYPosition().d_scale * m_window->getScreenHeight();
-		m_spriteFont.draw(m_spriteBatch, "Dynamic", pos, glm::vec2(0.46f), 0.0f, Bengine::ColorRGBA8(255, 255, 255, 255), Bengine::Justification::MIDDLE);
-
-	}
-	*/
-
-
-
-
 	// Draw custom labels for widgets
 	for (auto& l : m_widgetLabels) l.draw(m_spriteBatch, m_spriteFont, m_window);
 
@@ -350,7 +340,7 @@ void EditorScreen::drawUI() {
 
 
 
-/* NEW */
+
 void EditorScreen::drawWorld() {
 
 
@@ -450,12 +440,12 @@ void EditorScreen::initUI() {
 	m_gui.setFont("DejaVuSans-10");
 
 
-	/* NEW */
-	m_groupBox = static_cast<CEGUI::GroupBox*>(m_gui.createWidget("TaharezLook/GroupBox", glm::vec4(0.001f, 0.0f, 0.18f, 0.67f), glm::vec4(0.0f), "GroupBox"));
+
+	m_groupBox = static_cast<CEGUI::GroupBox*>(m_gui.createWidget("TaharezLook/GroupBox", glm::vec4(0.001f, 0.0f, 0.18f, 0.72f), glm::vec4(0.0f), "GroupBox"));
 	m_groupBox->setAlwaysOnTop(false);
 	m_groupBox->moveToBack();
 	m_groupBox->disable(); // if not disabled, clicking on it will move to the foreground and it will steal events from other widgets
-	/* NEW: end of new */
+
 
 
 
@@ -463,7 +453,7 @@ void EditorScreen::initUI() {
 	// Scope this to make it a mini procedure where variables can not be used outside of the block statement scope
 	{ // Add the color picker
 
-		/* NEW */
+
 		const float X_POS = 0.01f;
 
 		const float X_DIM = 0.015f, Y_DIM = 0.1f;
@@ -492,18 +482,18 @@ void EditorScreen::initUI() {
 		m_bSlider->setClickStep(1.0f); // makes increments by one and not by .01
 
 
-		/* NEW */
+
 		// Create a alpha slider
 		m_aSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget("TaharezLook/Slider", glm::vec4(X_POS + (X_DIM + PADDING) * 2, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "AlphaSlider"));
 		m_aSlider->setMaxValue(255.0f);
 		m_aSlider->setCurrentValue(m_colorPickerAlpha); // sets the value of the slider to the following
 		m_aSlider->subscribeEvent(CEGUI::Slider::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onColorPickerAlphaChanged, this));
 		m_aSlider->setClickStep(1.0f); // makes increments by one and not by .01
-		/* NEW: end of new */
+
 	}
 
 
-	/* NEW */
+
 	{ // Add Object type radio buttons
 		const float X_POS = 0.02f;
 		const float Y_POS = 0.20f;
@@ -543,44 +533,33 @@ void EditorScreen::initUI() {
 		m_objectMode = ObjectMode::PLAYER;
 
 	}
-	/* NEW: end of new */
+
 
 	{ // Add the physics mode radio buttons as well as rotation and size spinner
 
-	  /* NEW */
-		const float X_POS = 0.02f;
 
+		const float X_POS = 0.02f;
 		const float Y_POS = 0.25f;
 		const float DIMS_PIXELS = 20.0f;
 		const float PADDING = 0.04f;
-
-		/* NEW */
 		const float TEXT_SCALE = 0.6f;
-		/* NEW */
 		const int GROUP_ID = 2;
 
 		m_rigidRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "RigidButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_rigidRadioButton->setSelected(true);
 		m_rigidRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onRigidMouseClick, this));
-
-		/* NEW */
 		m_rigidRadioButton->setGroupID(GROUP_ID);
-		/* NEW */
 		m_widgetLabels.emplace_back(m_rigidRadioButton, "Rigid", TEXT_SCALE);
 
 
 		m_dynamicRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS + PADDING, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "DynamicButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_dynamicRadioButton->setSelected(false);
 		m_dynamicRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onDynamicMouseClick, this));
-
-		/* NEW */
 		m_dynamicRadioButton->setGroupID(GROUP_ID);
-		/* NEW */
 		m_widgetLabels.emplace_back(m_dynamicRadioButton, "Dynamic", TEXT_SCALE);
 
 
 
-		/* NEW */
 		//Rotation spinner
 		m_rotationSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget("TaharezLook/Spinner", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "RotationSpinner"));
 		m_rotationSpinner->setMinimumValue(0.0f);
@@ -590,10 +569,10 @@ void EditorScreen::initUI() {
 		m_rotationSpinner->setTextInputMode(CEGUI::Spinner::FloatingPoint);
 		m_rotationSpinner->subscribeEvent(CEGUI::Spinner::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onRotationValueChange, this));
 		m_widgetLabels.emplace_back(m_rotationSpinner, "Rotation", TEXT_SCALE);
-		/* NEW: end of new */
 
 
-		/* NEW */
+
+
 		//Light size
 		m_sizeSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget("TaharezLook/Spinner", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "SizeSpinner"));
 		m_sizeSpinner->setMinimumValue(0.0f);
@@ -603,9 +582,9 @@ void EditorScreen::initUI() {
 		m_sizeSpinner->setTextInputMode(CEGUI::Spinner::FloatingPoint);
 		m_sizeSpinner->subscribeEvent(CEGUI::Spinner::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onSizeValueChange, this));
 		m_widgetLabels.emplace_back(m_sizeSpinner, "Size", TEXT_SCALE);
-		/* NEW: end of new */
 
-		/* NEW */
+
+
 		m_physicsMode = PhysicsMode::RIGID;
 	}
 
@@ -617,7 +596,7 @@ void EditorScreen::initUI() {
 		const float PADDING = 0.04f;
 		const float TEXT_SCALE = 0.6f;
 
-		m_widthSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget("TaharezLook/Spinner", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f,0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "WidthSpinner"));
+		m_widthSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget("TaharezLook/Spinner", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "WidthSpinner"));
 		m_widthSpinner->setMinimumValue(0.0f);
 		m_widthSpinner->setMaximumValue(10000.0f);
 		m_widthSpinner->setCurrentValue(m_boxDims.x);
@@ -640,7 +619,7 @@ void EditorScreen::initUI() {
 
 
 
-	/* NEW */
+
 	{ // Add selection mode radio buttons and debug render toggle
 		const float X_POS = 0.03f;
 		const float Y_POS = 0.45f;
@@ -669,26 +648,86 @@ void EditorScreen::initUI() {
 
 		m_selectMode = SelectionMode::SELECT;
 	}
-	/* NEW: end of new */
-	
+
+
+
+
+
+	{  // Add save and back buttons
+		m_saveButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "SaveButton"));
+		m_saveButton->setText("Save");
+		m_saveButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onSaveMouseClick, this));
+
+
+		/* NEW */
+		m_loadButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.57f, 0.1f, 0.05f), glm::vec4(0.0f), "LoadButton"));
+		m_loadButton->setText("Load");
+		m_loadButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onLoadMouseClick, this));
+		/* NEW: end of new */
+
+
+		m_backButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.64f, 0.1f, 0.05f), glm::vec4(0.0f), "BackButton"));
+		m_backButton->setText("Back");
+		m_backButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onBackMouseClick, this));
+	}
+
 
 
 	/* NEW */
-	{  // Add save and back buttons
-		CEGUI::PushButton* saveButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "SaveButton"));
-		saveButton->setText("Save");
-		saveButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onSaveMouseClick, this));
+	{ // Add save window widgets
 
-		CEGUI::PushButton* backButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.57f, 0.1f, 0.05f), glm::vec4(0.0f), "BackButton"));
-		backButton->setText("Back");
-		backButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onBackMouseClick, this));
+		m_saveWindow = static_cast<CEGUI::FrameWindow*>(m_gui.createWidget("TaharezLook/FrameWindow", glm::vec4(0.3f, 0.3f, 0.4f, 0.4f), glm::vec4(0.0f), "SaveWindow"));
+		m_saveWindow->subscribeEvent(CEGUI::FrameWindow::EventCloseClicked, CEGUI::Event::Subscriber(&EditorScreen::onSaveCancelClick, this));
+		m_saveWindow->setText("Save Level");
+		// Do not let user draw window around
+		m_saveWindow->setDragMovingEnabled(false);
+
+
+		// Children of saveWindow
+		m_saveWindowCombobox = static_cast<CEGUI::Combobox*>(m_gui.createWidget(m_saveWindow, "TaharezLook/Combobox", glm::vec4(0.1f, 0.1f, 0.8f, 0.4f), glm::vec4(0.0f), "SaveCombobox"));
+		m_saveWindowSaveButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_saveWindow, "TaharezLook/Button", glm::vec4(0.35f, 0.8f, 0.3f, 0.1f), glm::vec4(0.0f), "SaveCancelButton"));
+		m_saveWindowSaveButton->setText("Save");
+		m_saveWindowSaveButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onSave, this));
+
+
+		// Start disabled
+		m_saveWindow->setAlpha(0.0f);
+		m_saveWindow->disable();
 	}
 	/* NEW: end of new */
 
 
+
 	/* NEW */
+	{ // Add load window widgets
+
+		m_loadWindow = static_cast<CEGUI::FrameWindow*>(m_gui.createWidget("TaharezLook/FrameWindow", glm::vec4(0.3f, 0.3f, 0.4f, 0.4f), glm::vec4(0.0f), "LoadWindow"));
+		m_loadWindow->subscribeEvent(CEGUI::FrameWindow::EventCloseClicked, CEGUI::Event::Subscriber(&EditorScreen::onLoadCancelClick, this));
+		m_loadWindow->setText("Load Level");
+		// Do not let user draw window around
+		m_loadWindow->setDragMovingEnabled(false);
+
+
+		// Children of loadWindow
+		m_loadWindowCombobox = static_cast<CEGUI::Combobox*>(m_gui.createWidget(m_loadWindow, "TaharezLook/Combobox", glm::vec4(0.1f, 0.1f, 0.8f, 0.4f), glm::vec4(0.0f), "LoadCombobox"));
+		m_loadWindowLoadButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_loadWindow, "TaharezLook/Button", glm::vec4(0.35f, 0.8f, 0.3f, 0.1f), glm::vec4(0.0f), "LoadCancelButton"));
+		m_loadWindowLoadButton->setText("Load");
+		m_loadWindowLoadButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onLoad, this));
+
+
+		// Start disabled
+		m_loadWindow->setAlpha(0.0f);
+		m_loadWindow->disable();
+
+	}
+	/* NEW: end of new */
+
+
+
+
+
+
 	setLightWidgetVisibility(false);
-	/* NEW */
 	setPlatformWidgetVisibility(false);
 
 
@@ -702,18 +741,39 @@ void EditorScreen::initUI() {
 
 }
 
+
+
+/* NEW */
+void EditorScreen::clearLevel() {
+	m_boxes.clear();
+	m_lights.clear();
+	m_hasPlayer = false;
+	m_world.reset();
+	m_world = std::make_unique<b2World>(GRAVITY);
+}
+
+
+
 void EditorScreen::checkInput() {
+
 	SDL_Event evnt;
+
+	/* NEW: this was moved up here from previous tutorial which had the update after polling the events which would cause the new key pressed to go into the previous key, so the new key was the previous key to the previous key would never get updated. */
+	m_inputManager.update();
+
+
 	while (SDL_PollEvent(&evnt)) {
 		m_gui.onSDLEvent(evnt);
 		switch (evnt.type) {
 		case SDL_QUIT:
 			onExitClicked(CEGUI::EventArgs()); // creates some temporary args 
 			break;
-
-		/* NEW */
 		case SDL_MOUSEBUTTONDOWN:
-			updateMouseDown(evnt);
+
+			/* NEW: hacky way to disable level editor while saving and loading */
+			if (m_saveWindow->isDisabled() && m_loadWindow->isDisabled())
+				updateMouseDown(evnt);
+
 			break;
 		case SDL_MOUSEBUTTONUP:
 			updateMouseUp(evnt);
@@ -731,27 +791,30 @@ void EditorScreen::checkInput() {
 		case SDL_KEYUP:
 			m_inputManager.releaseKey(evnt.key.keysym.sym);
 			break;
-		/* NEW: end of new */
+
 
 		}
 	}
 
 
-	/* NEW */
-	m_inputManager.update();
+
+
+	/* NEW: this was moved above from previous tutorial which had the update after polling the events which would cause the new key pressed to go into the previous key, so the new key was the previous key to the previous key would never get updated. */
+	//m_inputManager.update();
 
 
 }
 
 
-/* NEW */
+
 bool inLightSelect(const Light& l, const glm::vec2& pos) {
 	return (glm::length(pos - l.position) <= LIGHT_SELECT_RADIUS);
 }
 
 
-/* NEW */
+
 void EditorScreen::updateMouseDown(const SDL_Event & evnt) {
+
 	// Texture for boxes. Its here because lazy.
 	static Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/Box.png");
 	glm::vec2 pos;
@@ -888,11 +951,9 @@ void EditorScreen::updateMouseDown(const SDL_Event & evnt) {
 		break;
 	}
 
-
-
 }
 
-/* NEW */
+
 void EditorScreen::updateMouseUp(const SDL_Event & evnt) {
 	switch (evnt.button.button) {
 	case SDL_BUTTON_LEFT:
@@ -904,12 +965,12 @@ void EditorScreen::updateMouseUp(const SDL_Event & evnt) {
 	m_isDragging = false;
 }
 
-/* NEW */
+
 void EditorScreen::updateMouseMotion(const SDL_Event & evnt) {
 	// If right button is down, drag camera
 	const float SPEED = 0.05f;
 	if (m_mouseButtons[MOUSE_RIGHT]) {
-		m_camera.offsetPosition(glm::vec2(-evnt.motion.xrel, evnt.motion.yrel * m_camera.getAspectRatio ()) * SPEED); // some info in notes on this xrel and aspect ratio
+		m_camera.offsetPosition(glm::vec2(-evnt.motion.xrel, evnt.motion.yrel * m_camera.getAspectRatio()) * SPEED); // some info in notes on this xrel and aspect ratio
 	}
 	// Dragging stuff around
 	if (m_isDragging && m_mouseButtons[MOUSE_LEFT]) {
@@ -926,13 +987,13 @@ void EditorScreen::updateMouseMotion(const SDL_Event & evnt) {
 	}
 }
 
-/* NEW */
+
 void EditorScreen::refreshSelectedBox() {
 	if (m_selectedBox == NO_BOX) return;
 	refreshSelectedBox(m_boxes[m_selectedBox].getPosition());
 }
 
-/* NEW */
+
 void EditorScreen::refreshSelectedBox(const glm::vec2 & newPosition) {
 	if (m_selectedBox == NO_BOX) return;
 	// Textures for boxes. Its here because lazy
@@ -950,13 +1011,13 @@ void EditorScreen::refreshSelectedBox(const glm::vec2 & newPosition) {
 	m_boxes[m_selectedBox] = newBox;
 }
 
-/* NEW */
+
 void EditorScreen::refreshSelectedLight() {
 	if (m_selectedLight == NO_LIGHT) return;
 	refreshSelectedLight(m_lights[m_selectedLight].position);
 }
 
-/* NEW */
+
 void EditorScreen::refreshSelectedLight(const glm::vec2 & newPosition) {
 	if (m_selectedLight == NO_LIGHT) return;
 	Light newLight;
@@ -966,7 +1027,7 @@ void EditorScreen::refreshSelectedLight(const glm::vec2 & newPosition) {
 	m_lights[m_selectedLight] = newLight;
 }
 
-/* NEW */
+
 bool EditorScreen::isMouseInUI() {
 	int x, y;
 	SDL_GetMouseState(&x, &y); // really easy way to get the mouse position
@@ -976,7 +1037,7 @@ bool EditorScreen::isMouseInUI() {
 	return (x >= m_groupBox->getXPosition().d_scale * SW && x <= m_groupBox->getXPosition().d_scale * SW + m_groupBox->getWidth().d_scale * SW && y >= m_groupBox->getYPosition().d_scale * SH && y <= m_groupBox->getYPosition().d_scale * SH + m_groupBox->getHeight().d_scale * SH);
 }
 
-/* NEW */
+
 void EditorScreen::setPlatformWidgetVisibility(bool visible) {
 	m_rigidRadioButton->setVisible(visible);
 	m_dynamicRadioButton->setVisible(visible);
@@ -985,21 +1046,21 @@ void EditorScreen::setPlatformWidgetVisibility(bool visible) {
 	m_heightSpinner->setVisible(visible);
 }
 
-/* NEW */
+
 void EditorScreen::setLightWidgetVisibility(bool visible) {
 	m_aSlider->setVisible(visible);
 	m_sizeSpinner->setVisible(visible);
 }
 
 
-/* NEW */
+
 bool EditorScreen::onExitClicked(const CEGUI::EventArgs & e) {
 	m_currentState = Bengine::ScreenState::EXIT_APPLICATION;
 	return true;
 }
 
 
-/* NEW */
+
 bool EditorScreen::onColorPickerRedChanged(const CEGUI::EventArgs & e) {
 	m_colorPickerRed = m_rSlider->getCurrentValue();
 	refreshSelectedBox();
@@ -1008,7 +1069,7 @@ bool EditorScreen::onColorPickerRedChanged(const CEGUI::EventArgs & e) {
 }
 
 
-/* NEW */
+
 bool EditorScreen::onColorPickerGreenChanged(const CEGUI::EventArgs & e) {
 	m_colorPickerGreen = m_gSlider->getCurrentValue();
 	refreshSelectedBox();
@@ -1017,7 +1078,7 @@ bool EditorScreen::onColorPickerGreenChanged(const CEGUI::EventArgs & e) {
 }
 
 
-/* NEW */
+
 bool EditorScreen::onColorPickerBlueChanged(const CEGUI::EventArgs & e) {
 	m_colorPickerBlue = m_bSlider->getCurrentValue();
 	refreshSelectedBox();
@@ -1026,7 +1087,7 @@ bool EditorScreen::onColorPickerBlueChanged(const CEGUI::EventArgs & e) {
 }
 
 
-/* NEW */
+
 bool EditorScreen::onRigidMouseClick(const CEGUI::EventArgs & e) {
 	m_physicsMode = PhysicsMode::RIGID;
 	refreshSelectedBox();
@@ -1034,7 +1095,7 @@ bool EditorScreen::onRigidMouseClick(const CEGUI::EventArgs & e) {
 }
 
 
-/* NEW */
+
 bool EditorScreen::onDynamicMouseClick(const CEGUI::EventArgs & e) {
 	m_physicsMode = PhysicsMode::DYNAMIC;
 	refreshSelectedBox();
@@ -1042,15 +1103,15 @@ bool EditorScreen::onDynamicMouseClick(const CEGUI::EventArgs & e) {
 }
 
 
-/* NEW */
-bool EditorScreen::onColorPickerAlphaChanged(const CEGUI::EventArgs & e){
+
+bool EditorScreen::onColorPickerAlphaChanged(const CEGUI::EventArgs & e) {
 	m_colorPickerAlpha = m_aSlider->getCurrentValue();
 	refreshSelectedBox();
 	refreshSelectedLight();
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onPlayerMouseClick(const CEGUI::EventArgs & e) {
 	m_objectMode = ObjectMode::PLAYER;
 	setPlatformWidgetVisibility(false);
@@ -1059,7 +1120,7 @@ bool EditorScreen::onPlayerMouseClick(const CEGUI::EventArgs & e) {
 }
 
 
-/* NEW */
+
 bool EditorScreen::onPlatformMouseClick(const CEGUI::EventArgs & e) {
 	m_objectMode = ObjectMode::PLATFORM;
 	setPlatformWidgetVisibility(true);
@@ -1069,7 +1130,7 @@ bool EditorScreen::onPlatformMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-/* NEW */
+
 bool EditorScreen::onFinishMouseClick(const CEGUI::EventArgs & e) {
 	m_objectMode = ObjectMode::FINISH;
 	setPlatformWidgetVisibility(false);
@@ -1079,7 +1140,7 @@ bool EditorScreen::onFinishMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-/* NEW */
+
 bool EditorScreen::onLightMouseClick(const CEGUI::EventArgs & e) {
 	m_objectMode = ObjectMode::LIGHT;
 	setPlatformWidgetVisibility(false);
@@ -1087,13 +1148,13 @@ bool EditorScreen::onLightMouseClick(const CEGUI::EventArgs & e) {
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onSelectMouseClick(const CEGUI::EventArgs & e) {
 	m_selectMode = SelectionMode::SELECT;
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onPlaceMouseClick(const CEGUI::EventArgs & e) {
 	m_selectMode = SelectionMode::PLACE;
 	m_selectedBox = NO_BOX;
@@ -1109,52 +1170,190 @@ bool EditorScreen::onPlaceMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-/* NEW */
+
 bool EditorScreen::onSaveMouseClick(const CEGUI::EventArgs & e) {
-	// TODO: 
+
+
+	/* NEW */
+	Bengine::IOManager::makeDirectory("Levels");
+
+	m_saveWindowCombobox->clearAllSelections();
+
+	// Remove all items
+	for (auto& item : m_saveListBoxItems) {
+		// Do not have to call delete since removeItem does it already
+		m_saveWindowCombobox->removeItem(item);
+	}
+	m_saveListBoxItems.clear();
+
+
+	// Get all directory entries
+	std::vector<Bengine::DirEntry> entries;
+	Bengine::IOManager::getDirectoryEntries("Levels", entries);
+
+
+	// Add all files to list box
+	for (auto& e : entries) {
+		// Do not add directories
+		if (!e.isDirectory) {
+			// Remove "Levels/" substring
+			e.path.erase(0, std::string("Levels/").size());
+			m_saveListBoxItems.push_back(new CEGUI::ListboxTextItem(e.path));
+			m_saveWindowCombobox->addItem(m_saveListBoxItems.back());
+		}
+	}
+
+
+
+	m_saveWindow->enable();
+	m_saveWindow->setAlpha(1.0f);
+	m_loadWindow->disable();
+	m_loadWindow->setAlpha(0.0f);
+	/* NEW: end of new */
 	return true;
 }
 
 
 
-/* NEW */
+
 bool EditorScreen::onBackMouseClick(const CEGUI::EventArgs & e) {
 	m_currentState = Bengine::ScreenState::CHANGE_PREVIOUS;
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onRotationValueChange(const CEGUI::EventArgs & e) {
 	m_rotation = (float)m_rotationSpinner->getCurrentValue();
 	refreshSelectedBox();
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onSizeValueChange(const CEGUI::EventArgs & e) {
 	m_lightSize = (float)m_sizeSpinner->getCurrentValue();
 	refreshSelectedLight();
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onWidthValueChange(const CEGUI::EventArgs & e) {
 	m_boxDims.x = (float)m_widthSpinner->getCurrentValue();
 	refreshSelectedBox();
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onHeightValueChange(const CEGUI::EventArgs & e) {
 	m_boxDims.y = (float)m_heightSpinner->getCurrentValue();
 	refreshSelectedBox();
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onDebugToggleClick(const CEGUI::EventArgs & e) {
 	m_debugRender = m_debugToggle->isSelected();
 	return true;
 }
+
+/* NEW */
+bool EditorScreen::onSave(const CEGUI::EventArgs & e) {
+	if (!m_hasPlayer) {
+		puts("Must create player before saving.");
+		return true;
+	}
+
+	puts("Saving game...");
+	// Make sure levels dir exists again, for good measure.
+	Bengine::IOManager::makeDirectory("Levels");
+
+	// Save in text
+	std::string filePath = "Levels/" + std::string(m_saveWindowCombobox->getText().c_str());
+	if (LevelReaderWriter::saveAsText(filePath, m_player, m_boxes, m_lights)) {
+		m_saveWindow->disable();
+		m_saveWindow->setAlpha(0.0f);
+		puts("File successfully saved.");
+	}
+	else {
+		puts("Failed to save file.");
+	}
+
+	return true;
+}
+
+
+
+/* NEW */
+bool EditorScreen::onSaveCancelClick(const CEGUI::EventArgs & e) {
+	m_saveWindow->disable();
+	m_saveWindow->setAlpha(0.0f);
+	return true;
+}
+
+
+
+/* NEW */
+bool EditorScreen::onLoadCancelClick(const CEGUI::EventArgs & e) {
+	m_loadWindow->disable();
+	m_loadWindow->setAlpha(0.0f);
+	return true;
+}
+
+
+
+/* NEW */
+bool EditorScreen::onLoadMouseClick(const CEGUI::EventArgs & e) {
+
+	m_loadWindowCombobox->clearAllSelections();
+
+	// Remove all items
+	for (auto& item : m_loadListBoxItems) {
+		// Do not have to call delete since removeItem does it already
+		m_loadWindowCombobox->removeItem(item);
+	}
+	m_loadListBoxItems.clear();
+
+	// Get all directory entries
+	std::vector<Bengine::DirEntry> entries;
+	Bengine::IOManager::getDirectoryEntries("Levels", entries);
+
+
+	// Add all files to list box
+	for (auto& e : entries) {
+		// Do not add directories
+		if (!e.isDirectory) {
+			// Remove "Levels/" substring
+			e.path.erase(0, std::string("Levels/").size());
+			m_loadListBoxItems.push_back(new CEGUI::ListboxTextItem(e.path));
+			m_loadWindowCombobox->addItem(m_loadListBoxItems.back());
+		}
+	}
+
+
+
+	m_loadWindow->enable();
+	m_loadWindow->setAlpha(1.0f);
+	m_saveWindow->disable();
+	m_saveWindow->setAlpha(0.0f);
+	return true;
+}
+
+
+/* NEW */
+bool EditorScreen::onLoad(const CEGUI::EventArgs & e) {
+	puts("Loading game...");
+	std::string path = "Levels/" + std::string(m_loadWindowCombobox->getText().c_str());
+
+	clearLevel();
+
+	if (LevelReaderWriter::loadAsText(path, m_world.get(), m_player, m_boxes, m_lights)) {
+		m_hasPlayer = true;
+	}
+	// TODO: Binary file loading/saving
+
+	m_loadWindow->disable();
+	m_loadWindow->setAlpha(0.0f);
+	return true;
+}
+
 
 

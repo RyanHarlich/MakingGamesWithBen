@@ -53,7 +53,7 @@ void Capsule::init(b2World* world,
 
 
 
-/* NEW */
+
 void Capsule::destroy(b2World * world) {
 	if (m_body) {
 		world->DestroyBody(m_body);

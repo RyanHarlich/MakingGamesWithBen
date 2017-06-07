@@ -1,13 +1,11 @@
 #pragma once
 
-/* NEW */
 #include <memory>
 
-/* NEW */
 #include "Player.h"
 #include "Box.h"
 #include "Light.h"
-/* NEW: end of new */
+
 
 #include <Bengine/IGameScreen.h>
 #include <Bengine/Window.h>
@@ -19,7 +17,6 @@
 #include <Bengine/SpriteFont.h>
 
 
-/* NEW */
 #include <Box2D/Box2D.h>
 
 
@@ -35,7 +32,7 @@ enum class PhysicsMode {
 
 
 
-/* NEW */
+
 enum class ObjectMode {
 	PLAYER,
 	PLATFORM,
@@ -43,19 +40,19 @@ enum class ObjectMode {
 	FINISH
 };
 
-/* NEW */
+
 enum class SelectionMode {
 	SELECT,
 	PLACE
 };
 
 
-/* NEW */
+
 const int NO_BOX = -1;
 const int NO_LIGHT = -1;
 
 
-/* NEW */
+
 class WidgetLabel {
 public:
 	WidgetLabel() {};
@@ -97,17 +94,22 @@ public:
 
 private:
 
-	/* NEW */
+
 	void drawUI();
-	/* NEW */
+
 	void drawWorld();
 
 
 	void initUI();
-	void checkInput();
 
 
 	/* NEW */
+	void clearLevel();
+
+
+	void checkInput();
+
+
 	void updateMouseDown(const SDL_Event& evnt);
 	void updateMouseUp(const SDL_Event& evnt);
 	void updateMouseMotion(const SDL_Event& evnt);
@@ -116,12 +118,9 @@ private:
 	void refreshSelectedLight();
 	void refreshSelectedLight(const glm::vec2& newPosition);
 	bool isMouseInUI();
-	/* NEW: end of new */
 
 
-	/* NEW */
 	void setPlatformWidgetVisibility(bool visible);
-	/* NEW */
 	void setLightWidgetVisibility(bool visible);
 
 
@@ -139,9 +138,6 @@ private:
 	bool onColorPickerBlueChanged(const CEGUI::EventArgs& e);
 	bool onRigidMouseClick(const CEGUI::EventArgs& e);
 	bool onDynamicMouseClick(const CEGUI::EventArgs& e);
-
-	
-	/* NEW */
 	bool onColorPickerAlphaChanged(const CEGUI::EventArgs& e);
 	bool onPlayerMouseClick(const CEGUI::EventArgs& e);
 	bool onPlatformMouseClick(const CEGUI::EventArgs& e);
@@ -156,9 +152,14 @@ private:
 	bool onWidthValueChange(const CEGUI::EventArgs& e);
 	bool onHeightValueChange(const CEGUI::EventArgs& e);
 	bool onDebugToggleClick(const CEGUI::EventArgs& e);
+
+	/* NEW */
+	bool onSave(const CEGUI::EventArgs& e);
+	bool onSaveCancelClick(const CEGUI::EventArgs& e);
+	bool onLoadCancelClick(const CEGUI::EventArgs& e);
+	bool onLoadMouseClick(const CEGUI::EventArgs& e);
+	bool onLoad(const CEGUI::EventArgs& e);
 	/* NEW: end of new */
-
-
 
 
 	/***************************************************************************/
@@ -167,34 +168,22 @@ private:
 	float m_colorPickerRed = 255.0f;
 	float m_colorPickerGreen = 255.0f;
 	float m_colorPickerBlue = 255.0f;
-
-
-	/* NEW */
 	float m_colorPickerAlpha = 255.0f;
 	float m_rotation = 0.0f;
 	float m_lightSize = 10.0f;
 	glm::vec2 m_boxDims = glm::vec2(1.0f);
 	bool m_mouseButtons[2];
 	bool m_debugRender = false;
-	/* NEW: end of new */
 
 
-	/* NEW */
+
 	CEGUI::GroupBox* m_groupBox;
-
-
 	CEGUI::Slider* m_rSlider = nullptr;
 	CEGUI::Slider* m_gSlider = nullptr;
 	CEGUI::Slider* m_bSlider = nullptr;
-
-	/* NEW */
 	CEGUI::Slider* m_aSlider = nullptr;
-
 	CEGUI::RadioButton* m_rigidRadioButton = nullptr;
 	CEGUI::RadioButton* m_dynamicRadioButton = nullptr;
-
-	
-	/* NEW */
 	CEGUI::RadioButton* m_playerRadioButton = nullptr;
 	CEGUI::RadioButton* m_platformRadioButton = nullptr;
 	CEGUI::RadioButton* m_finishRadioButton = nullptr;
@@ -207,6 +196,21 @@ private:
 	CEGUI::Spinner* m_widthSpinner = nullptr;
 	CEGUI::Spinner* m_heightSpinner = nullptr;
 	std::vector<WidgetLabel> m_widgetLabels;
+
+
+
+	/* NEW */
+	CEGUI::PushButton* m_loadButton = nullptr;
+	CEGUI::PushButton* m_saveButton = nullptr;
+	CEGUI::PushButton* m_backButton = nullptr;
+	std::vector<CEGUI::ListboxTextItem*> m_saveListBoxItems;
+	CEGUI::FrameWindow* m_saveWindow = nullptr;
+	CEGUI::PushButton* m_saveWindowSaveButton = nullptr;
+	CEGUI::Combobox* m_saveWindowCombobox = nullptr;
+	std::vector<CEGUI::ListboxTextItem*> m_loadListBoxItems;
+	CEGUI::FrameWindow* m_loadWindow = nullptr;
+	CEGUI::PushButton* m_loadWindowLoadButton = nullptr;
+	CEGUI::Combobox* m_loadWindowCombobox = nullptr;	
 	/* NEW: end of new */
 
 
@@ -214,23 +218,18 @@ private:
 	Bengine::GLTexture m_blankTexture;
 
 	PhysicsMode m_physicsMode = PhysicsMode::RIGID;
-
-	/* NEW */
 	ObjectMode m_objectMode = ObjectMode::PLAYER;
 	SelectionMode m_selectMode = SelectionMode::SELECT;
-	/* NEW: end of new */
 
 
 	Bengine::SpriteBatch m_spriteBatch;
 	Bengine::SpriteFont m_spriteFont;
 	Bengine::GLSLProgram m_textureProgram;
-
-	/* NEW */
 	Bengine::GLSLProgram m_lightProgram;
 	Bengine::DebugRenderer m_debugRenderer;
-	/* NEW: end of new */
 
-	/* NEW */
+
+
 	bool m_hasPlayer = false;
 	Player m_player;
 	std::vector<Box> m_boxes;
@@ -239,21 +238,16 @@ private:
 	int m_selectedLight = NO_LIGHT;
 	bool m_isDragging = false;
 	glm::vec2 m_selectOffset;
-	/* NEW: end of new */
 
-	/* NEW */
+
+
 	Bengine::Camera2D m_uiCamera;
-	/* NEW */
 	Bengine::InputManager m_inputManager;
-
-
 	Bengine::Camera2D m_camera;
 	Bengine::Window* m_window;
 	Bengine::GUI m_gui;
 
 
-
-	/* NEW */
 	std::unique_ptr<b2World> m_world;
 	
 };

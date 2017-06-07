@@ -47,6 +47,10 @@ namespace Bengine {
 		texture.width = width;
 		texture.height = height;
 
+		/* NEW */
+		texture.filePath = filePath;
+
+
 		return texture;
 	}
 

@@ -18,7 +18,7 @@ namespace Bengine {
 		void init();
 		void end();
 
-		/* NEW */
+
 		void drawLine(const glm::vec2& a, const glm::vec2& b, const ColorRGBA8& color);
 
 		void drawBox(const glm::vec4 destRect, const ColorRGBA8& color, float angle);

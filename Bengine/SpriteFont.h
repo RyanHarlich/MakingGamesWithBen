@@ -54,10 +54,24 @@ namespace Bengine {
 
 	class SpriteFont {
 	public:
+
+		/* NEW */
+		SpriteFont() {};
+
 		SpriteFont(const char* font, int size, char cs, char ce);
 		SpriteFont(const char* font, int size) :
 			SpriteFont(font, size, FIRST_PRINTABLE_CHAR, LAST_PRINTABLE_CHAR) {
 		}
+
+
+
+		/* NEW */
+		void init(const char* font, int size);
+		/* NEW */
+		void init(const char* font, int size, char cs, char ce);
+
+
+
 		/// Destroys the font resources
 		void dispose();
 
