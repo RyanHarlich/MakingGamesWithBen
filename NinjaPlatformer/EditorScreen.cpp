@@ -10,17 +10,49 @@ const int MOUSE_LEFT = 0;
 const int MOUSE_RIGHT = 1;
 const float LIGHT_SELECT_RADIUS = 0.5f; // 0.5 meters for Box2D
 
-
+const int FONT_SIZE = 32;
 
 const b2Vec2 GRAVITY(0.0f, -25.0f);
 
 
-
-void WidgetLabel::draw(Bengine::SpriteBatch & sb, Bengine::SpriteFont & sf, Bengine::Window * w) {
+void WidgetLabel::draw(Bengine::SpriteBatch & sb, Bengine::SpriteFont & sf, Bengine::Window* window, const CEGUI::GroupBox * groupBox) {
 	if (!widget->isVisible()) return;
+
+	// Font centered above radiobutton in relation to group box
 	glm::vec2 pos;
-	pos.x = widget->getXPosition().d_scale * w->getScreenWidth() - w->getScreenWidth() / 2.0f + widget->getWidth().d_offset / 2.0f;
-	pos.y = w->getScreenHeight() / 2.0f - widget->getYPosition().d_scale * w->getScreenHeight();
+	
+	// Start at top left of screen rather than the orgin (which sprintFont draw is in world coords)
+	glm::vec2 worldToScreenCoords(-(window->getScreenWidth() / 2.0f), window->getScreenHeight() / 2.0f);
+
+
+
+
+	// Group box dimensions (which is a percentage of the screen coords)
+	glm::vec2 groupBoxDims((groupBox->getWidth().d_scale * window->getScreenWidth()) , (groupBox->getHeight().d_scale * window->getScreenHeight()));
+
+	// Widget position (which is a percentage of the group box dimension/coords, not the screen coords)
+	glm::vec2 widgetPos(widget->getXPosition().d_scale * groupBoxDims.x, widget->getYPosition().d_scale * groupBoxDims.y);
+
+
+
+	// Set the pos from 0,0 being the top left corner of screen (not orgin) to the widget position
+	pos.x = worldToScreenCoords.x + widgetPos.x;
+	pos.y = worldToScreenCoords.y - widgetPos.y;
+
+
+	if (!isSpinner) { // Not a spinner
+		// get the font centered at the middle of the font rather than the bottom right corner by using the fonts dimensions
+		glm::vec2 fontDims(FONT_SIZE / 2.0f, sf.getFontHeight() / 4.0f);
+		pos.x += fontDims.x;
+		pos.y -= fontDims.y;
+	}
+	else { // Is a spinner
+		// get the font centered at the middle of the font rather than the bottom right corner by using the fonts dimensions
+		glm::vec2 fontDims(FONT_SIZE + (FONT_SIZE / 2.0f), sf.getFontHeight() / 4.0f);
+		pos.x += fontDims.x;
+		pos.y -= fontDims.y;
+	}
+
 	sf.draw(sb, text.c_str(), pos, glm::vec2(scale), 0.0f, color, Bengine::Justification::MIDDLE);
 }
 
@@ -60,8 +92,7 @@ void EditorScreen::destroy() {
 
 void EditorScreen::onEntry() {
 
-
-	m_spriteFont.init("Fonts/framd.ttf", 32);
+	m_spriteFont.init("Fonts/framd.ttf", FONT_SIZE);
 
 
 	m_mouseButtons[MOUSE_LEFT] = false;
@@ -86,8 +117,7 @@ void EditorScreen::onEntry() {
 
 
 
-	b2Vec2 gravity(0.0f, -25.0f);
-	m_world = std::make_unique<b2World>(gravity);
+	m_world = std::make_unique<b2World>(GRAVITY);
 
 
 
@@ -298,8 +328,8 @@ void EditorScreen::drawUI() {
 		const float QUAD_SIZE = 75.0f;
 
 		glm::vec4 destRect;
-		destRect.x = m_aSlider->getXPosition().d_scale * m_window->getScreenWidth() + 10.0f - m_window->getScreenWidth() / 2.0f + QUAD_SIZE / 2.0f;
-		destRect.y = m_window->getScreenHeight() / 2.0f - m_aSlider->getYPosition().d_scale * m_window->getScreenHeight() - m_aSlider->getHeight().d_scale * m_window->getScreenHeight() * 0.5f - QUAD_SIZE / 4.0f;
+		destRect.x = (-(m_window->getScreenWidth() / 2.0f)) + (m_groupBox->getWidth().d_scale * m_window->getScreenWidth()) - QUAD_SIZE  * 1.8f;
+		destRect.y = ((m_window->getScreenHeight() / 2.0f)) - QUAD_SIZE * 1.7f;
 		destRect.z = QUAD_SIZE; // width
 		destRect.w = QUAD_SIZE; // height
 
@@ -318,15 +348,17 @@ void EditorScreen::drawUI() {
 
 
 
-
 	// Draw custom labels for widgets
-	for (auto& l : m_widgetLabels) l.draw(m_spriteBatch, m_spriteFont, m_window);
+	for (auto& l : m_widgetLabels) {
+		l.draw(m_spriteBatch, m_spriteFont, m_window, m_groupBox);
+	}
 
 
 	m_spriteBatch.end();
 	m_spriteBatch.renderBatch();
 	m_textureProgram.unuse();
 	m_gui.draw();
+	
 
 }
 
@@ -437,7 +469,6 @@ void EditorScreen::initUI() {
 	m_groupBox = static_cast<CEGUI::GroupBox*>(m_gui.createWidget("TaharezLook/GroupBox", glm::vec4(0.001f, 0.0f, 0.18f, 0.72f), glm::vec4(0.0f), "GroupBox"));
 	m_groupBox->setAlwaysOnTop(false);
 	m_groupBox->moveToBack();
-	m_groupBox->disable(); // if not disabled, clicking on it will move to the foreground and it will steal events from other widgets
 
 
 
@@ -447,28 +478,28 @@ void EditorScreen::initUI() {
 	{ // Add the color picker
 
 
-		const float X_POS = 0.01f;
+		const float X_POS = 0.03f;
 
-		const float X_DIM = 0.015f, Y_DIM = 0.1f;
+		const float X_DIM = 0.088f, Y_DIM = 0.15f;
 		const float Y_POS = 0.05f;
-		const float PADDING = 0.005f;
+		const float PADDING = 0.026f;
 
 		// Create a red slider
-		m_rSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget("TaharezLook/Slider", glm::vec4(X_POS, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "RedSlider"));
+		m_rSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget(m_groupBox, "TaharezLook/Slider", glm::vec4(X_POS, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "RedSlider"));
 		m_rSlider->setMaxValue(255.0f);
 		m_rSlider->setCurrentValue(m_colorPickerRed); // sets the value of the slider to the following
 		m_rSlider->subscribeEvent(CEGUI::Slider::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onColorPickerRedChanged, this));
 		m_rSlider->setClickStep(1.0f); // makes increments by one and not by .01
 
 		// Create a green slider
-		m_gSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget("TaharezLook/Slider", glm::vec4(X_POS + X_DIM + PADDING, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "GreenSlider"));
+		m_gSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget(m_groupBox, "TaharezLook/Slider", glm::vec4(X_POS + X_DIM + PADDING, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "GreenSlider"));
 		m_gSlider->setMaxValue(255.0f);
 		m_gSlider->setCurrentValue(m_colorPickerGreen); // sets the value of the slider to the following
 		m_gSlider->subscribeEvent(CEGUI::Slider::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onColorPickerGreenChanged, this));
 		m_gSlider->setClickStep(1.0f); // makes increments by one and not by .01
 
 		// Create a blue slider
-		m_bSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget("TaharezLook/Slider", glm::vec4(X_POS + (X_DIM + PADDING) * 2, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "BlueSlider"));
+		m_bSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget(m_groupBox, "TaharezLook/Slider", glm::vec4(X_POS + (X_DIM + PADDING) * 2, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "BlueSlider"));
 		m_bSlider->setMaxValue(255.0f);
 		m_bSlider->setCurrentValue(m_colorPickerBlue); // sets the value of the slider to the following
 		m_bSlider->subscribeEvent(CEGUI::Slider::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onColorPickerBlueChanged, this));
@@ -477,7 +508,7 @@ void EditorScreen::initUI() {
 
 
 		// Create a alpha slider
-		m_aSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget("TaharezLook/Slider", glm::vec4(X_POS + (X_DIM + PADDING) * 2, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "AlphaSlider"));
+		m_aSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget(m_groupBox, "TaharezLook/Slider", glm::vec4(X_POS + (X_DIM + PADDING) * 2, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "AlphaSlider"));
 		m_aSlider->setMaxValue(255.0f);
 		m_aSlider->setCurrentValue(m_colorPickerAlpha); // sets the value of the slider to the following
 		m_aSlider->subscribeEvent(CEGUI::Slider::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onColorPickerAlphaChanged, this));
@@ -488,35 +519,35 @@ void EditorScreen::initUI() {
 
 
 	{ // Add Object type radio buttons
-		const float X_POS = 0.02f;
-		const float Y_POS = 0.20f;
+		const float X_POS = 0.085f;
+		const float Y_POS = 0.26f;
 		const float DIMS_PIXELS = 20.0f;
-		const float PADDING = 0.042f;
+		const float PADDING = 0.229f;
 		const float TEXT_SCALE = 0.6f;
 		const int GROUP_ID = 1;
 
-		m_playerRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlayerButton")); // here the destRectPixels size is used instead of the destRectPercentage size
+		m_playerRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlayerButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_playerRadioButton->setSelected(true);
 		m_playerRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onPlayerMouseClick, this));
 		m_playerRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_playerRadioButton, "Player", TEXT_SCALE);
 
 
-		m_platformRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS + PADDING, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlatformButton")); // here the destRectPixels size is used instead of the destRectPercentage size
+		m_platformRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + PADDING, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlatformButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_platformRadioButton->setSelected(false);
 		m_platformRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onPlatformMouseClick, this));
 		m_platformRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_platformRadioButton, "Platform", TEXT_SCALE);
 
 
-		m_finishRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "FinishButton")); // here the destRectPixels size is used instead of the destRectPercentage size
+		m_finishRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "FinishButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_finishRadioButton->setSelected(false);
 		m_finishRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onFinishMouseClick, this));
 		m_finishRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_finishRadioButton, "Finish", TEXT_SCALE);
 
 
-		m_lightRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 3.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "LightButton")); // here the destRectPixels size is used instead of the destRectPercentage size
+		m_lightRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 3.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "LightButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_lightRadioButton->setSelected(false);
 		m_lightRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onLightMouseClick, this));
 		m_lightRadioButton->setGroupID(GROUP_ID);
@@ -531,21 +562,21 @@ void EditorScreen::initUI() {
 	{ // Add the physics mode radio buttons as well as rotation and size spinner
 
 
-		const float X_POS = 0.02f;
-		const float Y_POS = 0.25f;
+		const float X_POS = 0.085f;
+		const float Y_POS = 0.35f;
 		const float DIMS_PIXELS = 20.0f;
-		const float PADDING = 0.04f;
+		const float PADDING = 0.229f;
 		const float TEXT_SCALE = 0.6f;
 		const int GROUP_ID = 2;
 
-		m_rigidRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "RigidButton")); // here the destRectPixels size is used instead of the destRectPercentage size
+		m_rigidRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "RigidButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_rigidRadioButton->setSelected(true);
 		m_rigidRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onRigidMouseClick, this));
 		m_rigidRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_rigidRadioButton, "Rigid", TEXT_SCALE);
 
 
-		m_dynamicRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS + PADDING, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "DynamicButton")); // here the destRectPixels size is used instead of the destRectPercentage size
+		m_dynamicRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + PADDING, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "DynamicButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_dynamicRadioButton->setSelected(false);
 		m_dynamicRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onDynamicMouseClick, this));
 		m_dynamicRadioButton->setGroupID(GROUP_ID);
@@ -554,27 +585,27 @@ void EditorScreen::initUI() {
 
 
 		//Rotation spinner
-		m_rotationSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget("TaharezLook/Spinner", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "RotationSpinner"));
+		m_rotationSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget(m_groupBox, "TaharezLook/Spinner", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "RotationSpinner"));
 		m_rotationSpinner->setMinimumValue(0.0f);
 		m_rotationSpinner->setMaximumValue(M_PI * 2.0f);
 		m_rotationSpinner->setCurrentValue(m_rotation);
 		m_rotationSpinner->setStepSize(0.01f);
 		m_rotationSpinner->setTextInputMode(CEGUI::Spinner::FloatingPoint);
 		m_rotationSpinner->subscribeEvent(CEGUI::Spinner::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onRotationValueChange, this));
-		m_widgetLabels.emplace_back(m_rotationSpinner, "Rotation", TEXT_SCALE);
+		m_widgetLabels.emplace_back(m_rotationSpinner, "Rotation", TEXT_SCALE, true);
 
 
 
 
 		//Light size
-		m_sizeSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget("TaharezLook/Spinner", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "SizeSpinner"));
+		m_sizeSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget(m_groupBox, "TaharezLook/Spinner", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "SizeSpinner"));
 		m_sizeSpinner->setMinimumValue(0.0f);
 		m_sizeSpinner->setMaximumValue(100.0f);
 		m_sizeSpinner->setCurrentValue(m_lightSize);
 		m_sizeSpinner->setStepSize(0.1f);
 		m_sizeSpinner->setTextInputMode(CEGUI::Spinner::FloatingPoint);
 		m_sizeSpinner->subscribeEvent(CEGUI::Spinner::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onSizeValueChange, this));
-		m_widgetLabels.emplace_back(m_sizeSpinner, "Size", TEXT_SCALE);
+		m_widgetLabels.emplace_back(m_sizeSpinner, "Size", TEXT_SCALE, true);
 
 
 
@@ -583,57 +614,57 @@ void EditorScreen::initUI() {
 
 
 	{ // Add platform dimension spinners
-		const float X_POS = 0.02f;
-		const float Y_POS = 0.35f;
+		const float X_POS = 0.09f;
+		const float Y_POS = 0.468f;
 		const float DIMS_PIXELS = 20.0f;
-		const float PADDING = 0.04f;
+		const float PADDING = 0.229f;
 		const float TEXT_SCALE = 0.6f;
 
-		m_widthSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget("TaharezLook/Spinner", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "WidthSpinner"));
+		m_widthSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget(m_groupBox, "TaharezLook/Spinner", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "WidthSpinner"));
 		m_widthSpinner->setMinimumValue(0.0f);
 		m_widthSpinner->setMaximumValue(10000.0f);
 		m_widthSpinner->setCurrentValue(m_boxDims.x);
 		m_widthSpinner->setStepSize(0.1f);
 		m_widthSpinner->setTextInputMode(CEGUI::Spinner::FloatingPoint);
 		m_widthSpinner->subscribeEvent(CEGUI::Spinner::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onWidthValueChange, this));
-		m_widgetLabels.emplace_back(m_widthSpinner, "Width", TEXT_SCALE);
+		m_widgetLabels.emplace_back(m_widthSpinner, "Width", TEXT_SCALE, true);
 
 
 
-		m_heightSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget("TaharezLook/Spinner", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "HeightSpinner"));
+		m_heightSpinner = static_cast<CEGUI::Spinner*>(m_gui.createWidget(m_groupBox, "TaharezLook/Spinner", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS * 5.0f, DIMS_PIXELS * 2.0f), "HeightSpinner"));
 		m_heightSpinner->setMinimumValue(0.0f);
 		m_heightSpinner->setMaximumValue(10000.0f);
 		m_heightSpinner->setCurrentValue(m_boxDims.y);
 		m_heightSpinner->setStepSize(0.1f);
 		m_heightSpinner->setTextInputMode(CEGUI::Spinner::FloatingPoint);
 		m_heightSpinner->subscribeEvent(CEGUI::Spinner::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onHeightValueChange, this));
-		m_widgetLabels.emplace_back(m_heightSpinner, "Height", TEXT_SCALE);
+		m_widgetLabels.emplace_back(m_heightSpinner, "Height", TEXT_SCALE, true);
 	}
 
 
 
 
 	{ // Add selection mode radio buttons and debug render toggle
-		const float X_POS = 0.03f;
-		const float Y_POS = 0.45f;
+		const float X_POS = 0.1f;
+		const float Y_POS = 0.60f;
 		const float DIMS_PIXELS = 20.0f;
-		const float PADDING = 0.04f;
+		const float PADDING = 0.229f;
 		const float TEXT_SCALE = 0.6f;
 		const int GROUP_ID = 3;
 
-		m_selectRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "SelectButton"));
+		m_selectRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "SelectButton"));
 		m_selectRadioButton->setSelected(true);
 		m_selectRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onSelectMouseClick, this));
 		m_selectRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_selectRadioButton, "Select", TEXT_SCALE);
 
-		m_placeRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget("TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlaceButton"));
+		m_placeRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlaceButton"));
 		m_placeRadioButton->setSelected(false);
 		m_placeRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onPlaceMouseClick, this));
 		m_placeRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_placeRadioButton, "Place", TEXT_SCALE);
 
-		m_debugToggle = static_cast<CEGUI::ToggleButton*>(m_gui.createWidget("TaharezLook/Checkbox", glm::vec4(X_POS + (PADDING * 3.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "DebugToggle"));
+		m_debugToggle = static_cast<CEGUI::ToggleButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/Checkbox", glm::vec4(X_POS + (PADDING * 3.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "DebugToggle"));
 		m_debugToggle->setSelected(false);
 		m_debugToggle->subscribeEvent(CEGUI::ToggleButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onDebugToggleClick, this));
 		m_widgetLabels.emplace_back(m_debugToggle, "Debug", TEXT_SCALE);
@@ -646,20 +677,25 @@ void EditorScreen::initUI() {
 
 
 
-	{  // Add save and back buttons
-		m_saveButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.5f, 0.1f, 0.05f), glm::vec4(0.0f), "SaveButton"));
+	{  // Add save, back, and load buttons
+		const float X_POS = 0.2f;
+		const float Y_POS = 0.67f;
+		const float X_DIMS_PERC = 0.6f, Y_DIMS_PERC = 0.076f;
+		const float PADDING = 0.1f;
+
+		m_saveButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/Button", glm::vec4(X_POS, Y_POS, X_DIMS_PERC, Y_DIMS_PERC), glm::vec4(0.0f), "SaveButton"));
 		m_saveButton->setText("Save");
 		m_saveButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onSaveMouseClick, this));
 
 
 
-		m_loadButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.57f, 0.1f, 0.05f), glm::vec4(0.0f), "LoadButton"));
+		m_loadButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/Button", glm::vec4(X_POS, Y_POS + PADDING, X_DIMS_PERC, Y_DIMS_PERC), glm::vec4(0.0f), "LoadButton"));
 		m_loadButton->setText("Load");
 		m_loadButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onLoadMouseClick, this));
 
 
 
-		m_backButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.64f, 0.1f, 0.05f), glm::vec4(0.0f), "BackButton"));
+		m_backButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/Button", glm::vec4(X_POS, Y_POS + (PADDING * 2.0f), X_DIMS_PERC, Y_DIMS_PERC), glm::vec4(0.0f), "BackButton"));
 		m_backButton->setText("Back");
 		m_backButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onBackMouseClick, this));
 	}

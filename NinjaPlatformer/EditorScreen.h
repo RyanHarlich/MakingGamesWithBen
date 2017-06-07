@@ -56,16 +56,17 @@ const int NO_LIGHT = -1;
 class WidgetLabel {
 public:
 	WidgetLabel() {};
-	WidgetLabel(CEGUI::Window* widget, const std::string& text, float scale) :
-		widget(widget), text(text), scale(scale) {
+	WidgetLabel(CEGUI::Window* widget, const std::string& text, float scale, bool isSpinner = false) :
+		widget(widget), text(text), scale(scale), isSpinner(isSpinner) {
 
 	}
-	void draw(Bengine::SpriteBatch& sb, Bengine::SpriteFont& sf, Bengine::Window* w);
+	void draw(Bengine::SpriteBatch& sb, Bengine::SpriteFont& sf, Bengine::Window* window, const CEGUI::GroupBox* groupBox);
 
 	CEGUI::Window* widget = nullptr;
 	std::string text = "";
 	Bengine::ColorRGBA8 color = Bengine::ColorRGBA8(255, 255, 255, 255);
 	float scale = 0.7f;
+	bool isSpinner = false;
 };
 
 

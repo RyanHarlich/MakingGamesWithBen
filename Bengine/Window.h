@@ -26,6 +26,7 @@ namespace Bengine {
 		//getters
 		int getScreenWidth() { return m_screenWidth; }
 		int getScreenHeight() { return m_screenHeight; }
+		SDL_Window* getSDLWindow() { return m_sdlWindow; }
 
 
 	private:

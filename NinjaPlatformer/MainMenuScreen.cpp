@@ -16,6 +16,7 @@ int MainMenuScreen::getPreviousScreenIndex() const {
 }
 
 void MainMenuScreen::build() {
+	SDL_SetWindowTitle(m_window->getSDLWindow(), "Ninja");
 }
 
 void MainMenuScreen::destroy() {
