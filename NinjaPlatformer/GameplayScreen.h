@@ -15,6 +15,7 @@
 #include <Box2D/Box2D.h>
 #include <Bengine/DebugRenderer.h>
 #include <Bengine/GUI.h>
+#include <Bengine/AudioEngine.h>
 
 
 class GameplayScreen : public Bengine::IGameScreen
@@ -60,8 +61,9 @@ private:
 	Player m_player;
 	std::unique_ptr<b2World> m_world;
 	std::vector<Box> m_boxes;
-	
 
+
+	Bengine::AudioEngine m_audio;
 
 };
 

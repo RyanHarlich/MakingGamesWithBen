@@ -46,6 +46,12 @@ void GameplayScreen::destroy() {
 
 void GameplayScreen::onEntry() {
 
+
+	m_audio.init();
+	m_audio.loadMusic("Audio/Music/To The Streets v0_91.wav").play();
+
+
+
 	//b2Vec2 gravity(0.0f, -9.81f); // gravity of earth m/s^2
 	b2Vec2 gravity(0.0f, -25.00f); // gravity of earth m/s^2
 
@@ -127,6 +133,8 @@ void GameplayScreen::onEntry() {
 
 void GameplayScreen::onExit() {
 	m_debugRenderer.dispose();
+
+	m_audio.destory();
 }
 
 
