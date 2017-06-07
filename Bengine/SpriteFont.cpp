@@ -160,14 +160,14 @@ namespace Bengine {
 
 
 
-	/* NEW */
+
 	void SpriteFont::init(const char * font, int size) {
 		init(font, size, FIRST_PRINTABLE_CHAR, LAST_PRINTABLE_CHAR);
 	}
 
 
 
-	/* NEW */
+
 	void SpriteFont::init(const char * font, int size, char cs, char ce) {
 		// Initialize SDL_ttf
 		if (!TTF_WasInit()) {

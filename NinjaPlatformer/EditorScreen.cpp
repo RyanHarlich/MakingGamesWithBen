@@ -1,12 +1,8 @@
 #include "EditorScreen.h"
 #include "ScreenIndices.h"
-
-/* NEW */
 #include "LevelReaderWriter.h"
 
 #include <Bengine/ResourceManager.h>
-
-/* NEW */
 #include <Bengine/IOManager.h>
 
 
@@ -40,9 +36,6 @@ void WidgetLabel::draw(Bengine::SpriteBatch & sb, Bengine::SpriteFont & sf, Beng
 
 EditorScreen::EditorScreen(Bengine::Window* window) :
 	m_window(window)
-
-	/* NEW: moved and changed to init function upon entry */
-	//m_spriteFont("Fonts/framd.ttf", 32)
 {
 	m_screenIndex = SCREEN_INDEX_EDITOR;
 }
@@ -67,7 +60,7 @@ void EditorScreen::destroy() {
 
 void EditorScreen::onEntry() {
 
-	/* NEW */
+
 	m_spriteFont.init("Fonts/framd.ttf", 32);
 
 
@@ -659,11 +652,11 @@ void EditorScreen::initUI() {
 		m_saveButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onSaveMouseClick, this));
 
 
-		/* NEW */
+
 		m_loadButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.57f, 0.1f, 0.05f), glm::vec4(0.0f), "LoadButton"));
 		m_loadButton->setText("Load");
 		m_loadButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onLoadMouseClick, this));
-		/* NEW: end of new */
+
 
 
 		m_backButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget("TaharezLook/Button", glm::vec4(0.03f, 0.64f, 0.1f, 0.05f), glm::vec4(0.0f), "BackButton"));
@@ -673,7 +666,7 @@ void EditorScreen::initUI() {
 
 
 
-	/* NEW */
+
 	{ // Add save window widgets
 
 		m_saveWindow = static_cast<CEGUI::FrameWindow*>(m_gui.createWidget("TaharezLook/FrameWindow", glm::vec4(0.3f, 0.3f, 0.4f, 0.4f), glm::vec4(0.0f), "SaveWindow"));
@@ -694,11 +687,11 @@ void EditorScreen::initUI() {
 		m_saveWindow->setAlpha(0.0f);
 		m_saveWindow->disable();
 	}
-	/* NEW: end of new */
 
 
 
-	/* NEW */
+
+
 	{ // Add load window widgets
 
 		m_loadWindow = static_cast<CEGUI::FrameWindow*>(m_gui.createWidget("TaharezLook/FrameWindow", glm::vec4(0.3f, 0.3f, 0.4f, 0.4f), glm::vec4(0.0f), "LoadWindow"));
@@ -720,7 +713,7 @@ void EditorScreen::initUI() {
 		m_loadWindow->disable();
 
 	}
-	/* NEW: end of new */
+
 
 
 
@@ -743,7 +736,7 @@ void EditorScreen::initUI() {
 
 
 
-/* NEW */
+
 void EditorScreen::clearLevel() {
 	m_boxes.clear();
 	m_lights.clear();
@@ -758,7 +751,7 @@ void EditorScreen::checkInput() {
 
 	SDL_Event evnt;
 
-	/* NEW: this was moved up here from previous tutorial which had the update after polling the events which would cause the new key pressed to go into the previous key, so the new key was the previous key to the previous key would never get updated. */
+
 	m_inputManager.update();
 
 
@@ -769,11 +762,8 @@ void EditorScreen::checkInput() {
 			onExitClicked(CEGUI::EventArgs()); // creates some temporary args 
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-
-			/* NEW: hacky way to disable level editor while saving and loading */
 			if (m_saveWindow->isDisabled() && m_loadWindow->isDisabled())
 				updateMouseDown(evnt);
-
 			break;
 		case SDL_MOUSEBUTTONUP:
 			updateMouseUp(evnt);
@@ -795,13 +785,6 @@ void EditorScreen::checkInput() {
 
 		}
 	}
-
-
-
-
-	/* NEW: this was moved above from previous tutorial which had the update after polling the events which would cause the new key pressed to go into the previous key, so the new key was the previous key to the previous key would never get updated. */
-	//m_inputManager.update();
-
 
 }
 
@@ -1173,8 +1156,6 @@ bool EditorScreen::onPlaceMouseClick(const CEGUI::EventArgs & e) {
 
 bool EditorScreen::onSaveMouseClick(const CEGUI::EventArgs & e) {
 
-
-	/* NEW */
 	Bengine::IOManager::makeDirectory("Levels");
 
 	m_saveWindowCombobox->clearAllSelections();
@@ -1204,12 +1185,11 @@ bool EditorScreen::onSaveMouseClick(const CEGUI::EventArgs & e) {
 	}
 
 
-
 	m_saveWindow->enable();
 	m_saveWindow->setAlpha(1.0f);
 	m_loadWindow->disable();
 	m_loadWindow->setAlpha(0.0f);
-	/* NEW: end of new */
+
 	return true;
 }
 
@@ -1255,7 +1235,7 @@ bool EditorScreen::onDebugToggleClick(const CEGUI::EventArgs & e) {
 	return true;
 }
 
-/* NEW */
+
 bool EditorScreen::onSave(const CEGUI::EventArgs & e) {
 	if (!m_hasPlayer) {
 		puts("Must create player before saving.");
@@ -1282,7 +1262,7 @@ bool EditorScreen::onSave(const CEGUI::EventArgs & e) {
 
 
 
-/* NEW */
+
 bool EditorScreen::onSaveCancelClick(const CEGUI::EventArgs & e) {
 	m_saveWindow->disable();
 	m_saveWindow->setAlpha(0.0f);
@@ -1291,7 +1271,7 @@ bool EditorScreen::onSaveCancelClick(const CEGUI::EventArgs & e) {
 
 
 
-/* NEW */
+
 bool EditorScreen::onLoadCancelClick(const CEGUI::EventArgs & e) {
 	m_loadWindow->disable();
 	m_loadWindow->setAlpha(0.0f);
@@ -1300,7 +1280,7 @@ bool EditorScreen::onLoadCancelClick(const CEGUI::EventArgs & e) {
 
 
 
-/* NEW */
+
 bool EditorScreen::onLoadMouseClick(const CEGUI::EventArgs & e) {
 
 	m_loadWindowCombobox->clearAllSelections();
@@ -1338,7 +1318,7 @@ bool EditorScreen::onLoadMouseClick(const CEGUI::EventArgs & e) {
 }
 
 
-/* NEW */
+
 bool EditorScreen::onLoad(const CEGUI::EventArgs & e) {
 	puts("Loading game...");
 	std::string path = "Levels/" + std::string(m_loadWindowCombobox->getText().c_str());

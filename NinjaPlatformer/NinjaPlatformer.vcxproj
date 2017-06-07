@@ -124,9 +124,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Tutorial 58 - LevelReaderWriter.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Capsule.cpp" />

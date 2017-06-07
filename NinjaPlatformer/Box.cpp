@@ -23,17 +23,16 @@ void Box::init(b2World* world,
 	float angle, /* = 0.0f */	
 	glm::vec4 uvRect /* = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)*/) {
 
+
+
+
 	m_dimensions = dimensions;
 	m_color = color;
 	m_texture = texture;
 	m_uvRect = uvRect;
-
-
-
-	/* NEW */
 	m_fixedRotation = fixedRotation;
 	m_isDynamic = isDynamic;
-	/* NEW: end of new */
+
 
 
 

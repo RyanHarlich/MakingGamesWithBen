@@ -55,7 +55,7 @@ namespace Bengine {
 	class SpriteFont {
 	public:
 
-		/* NEW */
+
 		SpriteFont() {};
 
 		SpriteFont(const char* font, int size, char cs, char ce);
@@ -65,9 +65,7 @@ namespace Bengine {
 
 
 
-		/* NEW */
 		void init(const char* font, int size);
-		/* NEW */
 		void init(const char* font, int size, char cs, char ce);
 
 

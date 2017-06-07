@@ -1,13 +1,11 @@
 #include <fstream>
-
-/* NEW */
 #include <filesystem> /* std::tr2::sys:: */
 
 
 #include "IOManager.h"
 
 
-/* NEW */
+
 namespace fs = std::tr2::sys;
 
 
@@ -67,7 +65,6 @@ namespace Bengine {
 
 
 
-	/* NEW */
 	bool IOManager::getDirectoryEntries(const char * path, std::vector<DirEntry>& rvEntries) {
 		auto dpath = fs::path(path);
 		// Must be directory
@@ -88,7 +85,7 @@ namespace Bengine {
 
 
 
-	/* NEW */
+
 	bool IOManager::makeDirectory(const char * path) {
 		return fs::create_directory(fs::path(path));
 	}

@@ -100,7 +100,7 @@ namespace Bengine {
 
 
 
-	/* NEW*/
+
 	void SpriteBatch::dispose() {
 		if (m_vaoID != 0) {
 			glDeleteVertexArrays(1, &m_vaoID);

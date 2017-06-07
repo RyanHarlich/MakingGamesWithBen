@@ -36,20 +36,17 @@ public:
 
 
 	// Getter
-	b2Body* getBody() const { return m_body; }
-	b2Fixture* getFixture() const  { return m_fixture; }
-	const glm::vec2& getDimensions() const { return m_dimensions; }
-	glm::vec2 getPosition() const { return glm::vec2(m_body->GetPosition().x, m_body->GetPosition().y); }
-	const Bengine::ColorRGBA8& getColor() const { return m_color; }
+	b2Body*						getBody()					const { return m_body; }
+	b2Fixture*					getFixture()				const  { return m_fixture; }
+	const						glm::vec2& getDimensions()	const { return m_dimensions; }
+	glm::vec2					getPosition()				const { return glm::vec2(m_body->GetPosition().x, m_body->GetPosition().y); }
+	const Bengine::ColorRGBA8&  getColor()					const { return m_color; }
+	glm::vec4					getUvRect()					const { return m_uvRect; }
+	float						getAngle()					const { return m_body->GetAngle(); }
+	const Bengine::GLTexture&	getTexture()				const { return m_texture; }
+	const bool&					getFixesRotation()			const { return m_fixedRotation; }
+	const bool&					getIsDynamic()				const { return m_isDynamic; }
 
-
-	/* NEW: accessors */
-	glm::vec4					getUvRect()				const { return m_uvRect; }
-	float						getAngle()				const { return m_body->GetAngle(); }
-	const Bengine::GLTexture&	getTexture()			const { return m_texture; }
-	const bool&					getFixesRotation()		const { return m_fixedRotation; }
-	const bool&					getIsDynamic()			const { return m_isDynamic; }
-	/* NEW: end of new */
 
 
 private:
@@ -59,12 +56,8 @@ private:
 	glm::vec2 m_dimensions;
 	Bengine::ColorRGBA8 m_color;
 	Bengine::GLTexture m_texture;
-
-
-	/* NEW */
 	bool m_fixedRotation;
 	bool m_isDynamic;
-	/* NEW: end of new */
 
 };
 

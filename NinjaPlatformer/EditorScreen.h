@@ -103,7 +103,6 @@ private:
 	void initUI();
 
 
-	/* NEW */
 	void clearLevel();
 
 
@@ -152,14 +151,11 @@ private:
 	bool onWidthValueChange(const CEGUI::EventArgs& e);
 	bool onHeightValueChange(const CEGUI::EventArgs& e);
 	bool onDebugToggleClick(const CEGUI::EventArgs& e);
-
-	/* NEW */
 	bool onSave(const CEGUI::EventArgs& e);
 	bool onSaveCancelClick(const CEGUI::EventArgs& e);
 	bool onLoadCancelClick(const CEGUI::EventArgs& e);
 	bool onLoadMouseClick(const CEGUI::EventArgs& e);
 	bool onLoad(const CEGUI::EventArgs& e);
-	/* NEW: end of new */
 
 
 	/***************************************************************************/
@@ -195,11 +191,6 @@ private:
 	CEGUI::Spinner* m_sizeSpinner = nullptr;
 	CEGUI::Spinner* m_widthSpinner = nullptr;
 	CEGUI::Spinner* m_heightSpinner = nullptr;
-	std::vector<WidgetLabel> m_widgetLabels;
-
-
-
-	/* NEW */
 	CEGUI::PushButton* m_loadButton = nullptr;
 	CEGUI::PushButton* m_saveButton = nullptr;
 	CEGUI::PushButton* m_backButton = nullptr;
@@ -210,8 +201,12 @@ private:
 	std::vector<CEGUI::ListboxTextItem*> m_loadListBoxItems;
 	CEGUI::FrameWindow* m_loadWindow = nullptr;
 	CEGUI::PushButton* m_loadWindowLoadButton = nullptr;
-	CEGUI::Combobox* m_loadWindowCombobox = nullptr;	
-	/* NEW: end of new */
+	CEGUI::Combobox* m_loadWindowCombobox = nullptr;
+	std::vector<WidgetLabel> m_widgetLabels;
+
+
+
+
 
 
 
