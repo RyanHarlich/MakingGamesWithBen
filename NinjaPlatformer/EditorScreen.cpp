@@ -20,7 +20,7 @@ void WidgetLabel::draw(Bengine::SpriteBatch & sb, Bengine::SpriteFont & sf, Beng
 
 	// Font centered above radiobutton in relation to group box
 	glm::vec2 pos;
-	
+
 	// Start at top left of screen rather than the orgin (which sprintFont draw is in world coords)
 	glm::vec2 worldToScreenCoords(-(window->getScreenWidth() / 2.0f), window->getScreenHeight() / 2.0f);
 
@@ -28,7 +28,7 @@ void WidgetLabel::draw(Bengine::SpriteBatch & sb, Bengine::SpriteFont & sf, Beng
 
 
 	// Group box dimensions (which is a percentage of the screen coords)
-	glm::vec2 groupBoxDims((groupBox->getWidth().d_scale * window->getScreenWidth()) , (groupBox->getHeight().d_scale * window->getScreenHeight()));
+	glm::vec2 groupBoxDims((groupBox->getWidth().d_scale * window->getScreenWidth()), (groupBox->getHeight().d_scale * window->getScreenHeight()));
 
 	// Widget position (which is a percentage of the group box dimension/coords, not the screen coords)
 	glm::vec2 widgetPos(widget->getXPosition().d_scale * groupBoxDims.x, widget->getYPosition().d_scale * groupBoxDims.y);
@@ -144,6 +144,18 @@ void EditorScreen::onExit() {
 	m_textureProgram.dispose();
 
 
+	m_audio.destory();
+	for (size_t i = 0; i < m_widgetLabels.size(); ++i) {
+		m_widgetLabels[i].destroy();
+	}	
+	m_debugRenderer.dispose();
+	m_lightProgram.dispose();
+	m_spriteBatch.dispose();
+	m_player.destory(m_world.get());
+	for (size_t i = 0; i < m_boxes.size(); ++i) {
+		m_boxes[i].destroy(m_world.get());
+	}
+
 	m_spriteFont.dispose();
 	m_widgetLabels.clear();
 	m_world.reset();
@@ -151,6 +163,13 @@ void EditorScreen::onExit() {
 }
 
 void EditorScreen::update() {
+
+
+	if (m_finishRadioButton->isSelected() && m_hasPlayer) {
+		m_player.update(m_inputManager);
+		m_world->Step(1.0f / 60.0f, 6, 2); // update the physics simulation
+	}
+
 	m_camera.update();
 
 
@@ -160,74 +179,77 @@ void EditorScreen::update() {
 	checkInput();
 
 
+	// Do not do this input if in play mode
+	if (!m_finishRadioButton->isSelected()) {
 
-	// Platform scaling and rotation from keypress
-	if ((m_objectMode == ObjectMode::PLATFORM && m_selectMode == SelectionMode::PLACE) || m_selectedBox != NO_BOX) {
+		// Platform scaling and rotation from keypress
+		if ((m_objectMode == ObjectMode::PLATFORM && m_selectMode == SelectionMode::PLACE) || m_selectedBox != NO_BOX) {
 
-		const double SCALE_SPEED = 0.01f;
-		const double ROT_SPEED = 0.01f;
+			const double SCALE_SPEED = 0.01f;
+			const double ROT_SPEED = 0.01f;
 
-		// The callbacks will set the member variables for m_boxDims, do not need to set here
-		// Scale
-		if (m_inputManager.isKeyDown(SDLK_LEFT)) {
-			m_widthSpinner->setCurrentValue(m_widthSpinner->getCurrentValue() - SCALE_SPEED);
+			// The callbacks will set the member variables for m_boxDims, do not need to set here
+			// Scale
+			if (m_inputManager.isKeyDown(SDLK_LEFT)) {
+				m_widthSpinner->setCurrentValue(m_widthSpinner->getCurrentValue() - SCALE_SPEED);
+			}
+			else if (m_inputManager.isKeyDown(SDLK_RIGHT)) {
+				m_widthSpinner->setCurrentValue(m_widthSpinner->getCurrentValue() + SCALE_SPEED);
+			}
+			if (m_inputManager.isKeyDown(SDLK_DOWN)) {
+				m_heightSpinner->setCurrentValue(m_heightSpinner->getCurrentValue() - SCALE_SPEED);
+			}
+			else if (m_inputManager.isKeyDown(SDLK_UP)) {
+				m_heightSpinner->setCurrentValue(m_heightSpinner->getCurrentValue() + SCALE_SPEED);
+			}
+			// Rotation
+			if (m_inputManager.isKeyDown(SDLK_e)) {
+				// Have to check wraparound
+				double newValue = m_rotationSpinner->getCurrentValue() - ROT_SPEED;
+				if (newValue < 0.0f) newValue += M_PI * 2.0f;
+				m_rotationSpinner->setCurrentValue(newValue);
+			}
+			else if (m_inputManager.isKeyDown(SDLK_q)) {
+				double newValue = m_rotationSpinner->getCurrentValue() + ROT_SPEED;
+				if (newValue < 0.0f) newValue += M_PI * 2.0f;
+				m_rotationSpinner->setCurrentValue(newValue);
+			}
+
 		}
-		else if (m_inputManager.isKeyDown(SDLK_RIGHT)) {
-			m_widthSpinner->setCurrentValue(m_widthSpinner->getCurrentValue() + SCALE_SPEED);
+
+		// Light scaling from keypress
+		if ((m_objectMode == ObjectMode::LIGHT && m_selectMode == SelectionMode::PLACE) || m_selectedLight != NO_LIGHT) {
+			const double SCALE_SPEED = 0.1;
+			const float ALPHA_SPEED = 1.0f;
+			//Scaling
+			if (m_inputManager.isKeyDown(SDLK_LEFT)) {
+				m_sizeSpinner->setCurrentValue(m_sizeSpinner->getCurrentValue() - SCALE_SPEED);
+			}
+			else if (m_inputManager.isKeyDown(SDLK_RIGHT)) {
+				m_sizeSpinner->setCurrentValue(m_sizeSpinner->getCurrentValue() + SCALE_SPEED);
+			}
+			if (m_inputManager.isKeyDown(SDLK_DOWN)) {
+				m_aSlider->setCurrentValue(m_aSlider->getCurrentValue() - ALPHA_SPEED);
+			}
+			else if (m_inputManager.isKeyDown(SDLK_UP)) {
+				m_aSlider->setCurrentValue(m_aSlider->getCurrentValue() + ALPHA_SPEED);
+			}
 		}
-		if (m_inputManager.isKeyDown(SDLK_DOWN)) {
-			m_heightSpinner->setCurrentValue(m_heightSpinner->getCurrentValue() - SCALE_SPEED);
-		}
-		else if (m_inputManager.isKeyDown(SDLK_UP)) {
-			m_heightSpinner->setCurrentValue(m_heightSpinner->getCurrentValue() + SCALE_SPEED);
-		}
-		// Rotation
-		if (m_inputManager.isKeyDown(SDLK_e)) {
-			// Have to check wraparound
-			double newValue = m_rotationSpinner->getCurrentValue() - ROT_SPEED;
-			if (newValue < 0.0f) newValue += M_PI * 2.0f;
-			m_rotationSpinner->setCurrentValue(newValue);
-		}
-		else if (m_inputManager.isKeyDown(SDLK_q)) {
-			double newValue = m_rotationSpinner->getCurrentValue() + ROT_SPEED;
-			if (newValue < 0.0f) newValue += M_PI * 2.0f;
-			m_rotationSpinner->setCurrentValue(newValue);
+
+		// Check for deleting an object
+		if (m_inputManager.isKeyPressed(SDLK_DELETE)) {
+			if (m_selectedLight != NO_LIGHT) {
+				m_lights.erase(m_lights.begin() + m_selectedLight);
+				m_selectedLight = NO_LIGHT;
+			}
+			else if (m_selectedBox != NO_BOX) {
+				m_boxes[m_selectedBox].destroy(m_world.get());
+				m_boxes.erase(m_boxes.begin() + m_selectedBox);
+				m_selectedBox = NO_BOX;
+			}
 		}
 
 	}
-
-	// Light scaling from keypress
-	if ((m_objectMode == ObjectMode::LIGHT && m_selectMode == SelectionMode::PLACE) || m_selectedLight != NO_LIGHT) {
-		const double SCALE_SPEED = 0.1;
-		const float ALPHA_SPEED = 1.0f;
-		//Scaling
-		if (m_inputManager.isKeyDown(SDLK_LEFT)) {
-			m_sizeSpinner->setCurrentValue(m_sizeSpinner->getCurrentValue() - SCALE_SPEED);
-		}
-		else if (m_inputManager.isKeyDown(SDLK_RIGHT)) {
-			m_sizeSpinner->setCurrentValue(m_sizeSpinner->getCurrentValue() + SCALE_SPEED);
-		}
-		if (m_inputManager.isKeyDown(SDLK_DOWN)) {
-			m_aSlider->setCurrentValue(m_aSlider->getCurrentValue() - ALPHA_SPEED);
-		}
-		else if (m_inputManager.isKeyDown(SDLK_UP)) {
-			m_aSlider->setCurrentValue(m_aSlider->getCurrentValue() + ALPHA_SPEED);
-		}
-	}
-
-	// Check for deleting an object
-	if (m_inputManager.isKeyPressed(SDLK_DELETE)) {
-		if (m_selectedLight != NO_LIGHT) {
-			m_lights.erase(m_lights.begin() + m_selectedLight);
-			m_selectedLight = NO_LIGHT;
-		}
-		else if (m_selectedBox != NO_BOX) {
-			m_boxes[m_selectedBox].destroy(m_world.get());
-			m_boxes.erase(m_boxes.begin() + m_selectedBox);
-			m_selectedBox = NO_BOX;
-		}
-	}
-
 
 	m_gui.update();
 
@@ -358,7 +380,7 @@ void EditorScreen::drawUI() {
 	m_spriteBatch.renderBatch();
 	m_textureProgram.unuse();
 	m_gui.draw();
-	
+
 
 }
 
@@ -508,7 +530,7 @@ void EditorScreen::initUI() {
 
 
 		// Create a alpha slider
-		m_aSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget(m_groupBox, "TaharezLook/Slider", glm::vec4(X_POS + (X_DIM + PADDING) * 2, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "AlphaSlider"));
+		m_aSlider = static_cast<CEGUI::Slider*>(m_gui.createWidget(m_groupBox, "TaharezLook/Slider", glm::vec4(X_POS + (X_DIM + PADDING) * 3, Y_POS, X_DIM, Y_DIM), glm::vec4(0.0f), "AlphaSlider"));
 		m_aSlider->setMaxValue(255.0f);
 		m_aSlider->setCurrentValue(m_colorPickerAlpha); // sets the value of the slider to the following
 		m_aSlider->subscribeEvent(CEGUI::Slider::EventValueChanged, CEGUI::Event::Subscriber(&EditorScreen::onColorPickerAlphaChanged, this));
@@ -528,28 +550,29 @@ void EditorScreen::initUI() {
 
 		m_playerRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlayerButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_playerRadioButton->setSelected(true);
-		m_playerRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onPlayerMouseClick, this));
+		m_playerRadioButton->subscribeEvent(CEGUI::RadioButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onPlayerActivated, this));
 		m_playerRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_playerRadioButton, "Player", TEXT_SCALE);
 
 
 		m_platformRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + PADDING, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlatformButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_platformRadioButton->setSelected(false);
-		m_platformRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onPlatformMouseClick, this));
+		m_platformRadioButton->subscribeEvent(CEGUI::RadioButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onPlatformActivated, this));
 		m_platformRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_platformRadioButton, "Platform", TEXT_SCALE);
 
 
 		m_finishRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "FinishButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_finishRadioButton->setSelected(false);
-		m_finishRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onFinishMouseClick, this));
+		m_finishRadioButton->subscribeEvent(CEGUI::RadioButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onFinishActivated, this));
+		m_finishRadioButton->subscribeEvent(CEGUI::RadioButton::EventDeactivated, CEGUI::Event::Subscriber(&EditorScreen::onFinishDeactivated, this));
 		m_finishRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_finishRadioButton, "Finish", TEXT_SCALE);
 
 
 		m_lightRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 3.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "LightButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_lightRadioButton->setSelected(false);
-		m_lightRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onLightMouseClick, this));
+		m_lightRadioButton->subscribeEvent(CEGUI::RadioButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onLightActivated, this));
 		m_lightRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_lightRadioButton, "Light", TEXT_SCALE);
 
@@ -571,14 +594,14 @@ void EditorScreen::initUI() {
 
 		m_rigidRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "RigidButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_rigidRadioButton->setSelected(true);
-		m_rigidRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onRigidMouseClick, this));
+		m_rigidRadioButton->subscribeEvent(CEGUI::RadioButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onRigidActivated, this));
 		m_rigidRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_rigidRadioButton, "Rigid", TEXT_SCALE);
 
 
 		m_dynamicRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + PADDING, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "DynamicButton")); // here the destRectPixels size is used instead of the destRectPercentage size
 		m_dynamicRadioButton->setSelected(false);
-		m_dynamicRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onDynamicMouseClick, this));
+		m_dynamicRadioButton->subscribeEvent(CEGUI::RadioButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onDynamicActivated, this));
 		m_dynamicRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_dynamicRadioButton, "Dynamic", TEXT_SCALE);
 
@@ -654,19 +677,19 @@ void EditorScreen::initUI() {
 
 		m_selectRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS, Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "SelectButton"));
 		m_selectRadioButton->setSelected(true);
-		m_selectRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onSelectMouseClick, this));
+		m_selectRadioButton->subscribeEvent(CEGUI::RadioButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onSelectActivated, this));
 		m_selectRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_selectRadioButton, "Select", TEXT_SCALE);
 
 		m_placeRadioButton = static_cast<CEGUI::RadioButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/RadioButton", glm::vec4(X_POS + (PADDING * 2.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "PlaceButton"));
 		m_placeRadioButton->setSelected(false);
-		m_placeRadioButton->subscribeEvent(CEGUI::RadioButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onPlaceMouseClick, this));
+		m_placeRadioButton->subscribeEvent(CEGUI::RadioButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onPlaceActivated, this));
 		m_placeRadioButton->setGroupID(GROUP_ID);
 		m_widgetLabels.emplace_back(m_placeRadioButton, "Place", TEXT_SCALE);
 
 		m_debugToggle = static_cast<CEGUI::ToggleButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/Checkbox", glm::vec4(X_POS + (PADDING * 3.0f), Y_POS, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, DIMS_PIXELS, DIMS_PIXELS), "DebugToggle"));
 		m_debugToggle->setSelected(false);
-		m_debugToggle->subscribeEvent(CEGUI::ToggleButton::EventMouseClick, CEGUI::Event::Subscriber(&EditorScreen::onDebugToggleClick, this));
+		m_debugToggle->subscribeEvent(CEGUI::ToggleButton::EventSelectStateChanged, CEGUI::Event::Subscriber(&EditorScreen::onDebugToggleSelect, this));
 		m_widgetLabels.emplace_back(m_debugToggle, "Debug", TEXT_SCALE);
 		m_debugRender = false;
 
@@ -685,19 +708,19 @@ void EditorScreen::initUI() {
 
 		m_saveButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/Button", glm::vec4(X_POS, Y_POS, X_DIMS_PERC, Y_DIMS_PERC), glm::vec4(0.0f), "SaveButton"));
 		m_saveButton->setText("Save");
-		m_saveButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onSaveMouseClick, this));
+		m_saveButton->subscribeEvent(CEGUI::PushButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onSaveActivated, this));
 
 
 
 		m_loadButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/Button", glm::vec4(X_POS, Y_POS + PADDING, X_DIMS_PERC, Y_DIMS_PERC), glm::vec4(0.0f), "LoadButton"));
 		m_loadButton->setText("Load");
-		m_loadButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onLoadMouseClick, this));
+		m_loadButton->subscribeEvent(CEGUI::PushButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onLoadActivated, this));
 
 
 
 		m_backButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_groupBox, "TaharezLook/Button", glm::vec4(X_POS, Y_POS + (PADDING * 2.0f), X_DIMS_PERC, Y_DIMS_PERC), glm::vec4(0.0f), "BackButton"));
 		m_backButton->setText("Back");
-		m_backButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onBackMouseClick, this));
+		m_backButton->subscribeEvent(CEGUI::PushButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onBackActivated, this));
 	}
 
 
@@ -716,7 +739,7 @@ void EditorScreen::initUI() {
 		m_saveWindowCombobox = static_cast<CEGUI::Combobox*>(m_gui.createWidget(m_saveWindow, "TaharezLook/Combobox", glm::vec4(0.1f, 0.1f, 0.8f, 0.4f), glm::vec4(0.0f), "SaveCombobox"));
 		m_saveWindowSaveButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_saveWindow, "TaharezLook/Button", glm::vec4(0.35f, 0.8f, 0.3f, 0.1f), glm::vec4(0.0f), "SaveCancelButton"));
 		m_saveWindowSaveButton->setText("Save");
-		m_saveWindowSaveButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onSave, this));
+		m_saveWindowSaveButton->subscribeEvent(CEGUI::PushButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onSaveWindowSaveActivated, this));
 
 
 		// Start disabled
@@ -741,7 +764,7 @@ void EditorScreen::initUI() {
 		m_loadWindowCombobox = static_cast<CEGUI::Combobox*>(m_gui.createWidget(m_loadWindow, "TaharezLook/Combobox", glm::vec4(0.1f, 0.1f, 0.8f, 0.4f), glm::vec4(0.0f), "LoadCombobox"));
 		m_loadWindowLoadButton = static_cast<CEGUI::PushButton*>(m_gui.createWidget(m_loadWindow, "TaharezLook/Button", glm::vec4(0.35f, 0.8f, 0.3f, 0.1f), glm::vec4(0.0f), "LoadCancelButton"));
 		m_loadWindowLoadButton->setText("Load");
-		m_loadWindowLoadButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&EditorScreen::onLoad, this));
+		m_loadWindowLoadButton->subscribeEvent(CEGUI::PushButton::EventActivated, CEGUI::Event::Subscriber(&EditorScreen::onLoadWindowLoadActivated, this));
 
 
 		// Start disabled
@@ -834,6 +857,12 @@ bool inLightSelect(const Light& l, const glm::vec2& pos) {
 
 void EditorScreen::updateMouseDown(const SDL_Event & evnt) {
 
+	// If load or save window was up, do not select anything in background while select any buttons of window
+	if (m_loadSaveWindowUp){
+		m_loadSaveWindowUp = false;
+		return;
+	}
+
 	// Texture for boxes. Its here because lazy.
 	static Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/Box.png");
 	glm::vec2 pos;
@@ -865,6 +894,12 @@ void EditorScreen::updateMouseDown(const SDL_Event & evnt) {
 			}
 			// If selected a light
 			if (m_selectedLight != NO_LIGHT) {
+
+				// Stop temporary play mode if playing
+				if (m_finishRadioButton->isActive()) {
+					m_finishRadioButton->deactivate();
+				}
+
 				// Get the offset from the center so can drag correctly
 				m_selectOffset = pos - m_lights[m_selectedLight].position;
 				m_selectedBox = NO_LIGHT;
@@ -882,6 +917,9 @@ void EditorScreen::updateMouseDown(const SDL_Event & evnt) {
 				m_sizeSpinner->setCurrentValue(m_lights[m_selectedLight].size);
 				m_lightRadioButton->setSelected(true);
 				m_objectMode = ObjectMode::LIGHT;
+
+				setPlatformWidgetVisibility(false);
+				setLightWidgetVisibility(true);
 				break;
 			}
 			// If a box is already selected, test to see if we just clicked it again
@@ -901,6 +939,12 @@ void EditorScreen::updateMouseDown(const SDL_Event & evnt) {
 			}
 			// If we selected a box
 			if (m_selectedBox != NO_BOX) {
+
+				// Stop temporary play mode if playing
+				if (m_finishRadioButton->isActive()) {
+					m_finishRadioButton->deactivate();
+				}
+
 				// Get the offset from the center so we can drag correctly
 				m_selectOffset = pos - m_boxes[m_selectedBox].getPosition();
 				m_isDragging = true;
@@ -928,6 +972,9 @@ void EditorScreen::updateMouseDown(const SDL_Event & evnt) {
 				}
 				m_platformRadioButton->setSelected(true);
 				m_objectMode = ObjectMode::PLATFORM;
+
+				setPlatformWidgetVisibility(true);
+				setLightWidgetVisibility(false);
 			}
 		}
 		else { //if (m_selectMode == SelectionMode::PLACE) {
@@ -1107,7 +1154,7 @@ bool EditorScreen::onColorPickerBlueChanged(const CEGUI::EventArgs & e) {
 
 
 
-bool EditorScreen::onRigidMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onRigidActivated(const CEGUI::EventArgs & e) {
 	m_physicsMode = PhysicsMode::RIGID;
 	refreshSelectedBox();
 	return true;
@@ -1115,7 +1162,7 @@ bool EditorScreen::onRigidMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-bool EditorScreen::onDynamicMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onDynamicActivated(const CEGUI::EventArgs & e) {
 	m_physicsMode = PhysicsMode::DYNAMIC;
 	refreshSelectedBox();
 	return true;
@@ -1131,7 +1178,7 @@ bool EditorScreen::onColorPickerAlphaChanged(const CEGUI::EventArgs & e) {
 }
 
 
-bool EditorScreen::onPlayerMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onPlayerActivated(const CEGUI::EventArgs & e) {
 	m_objectMode = ObjectMode::PLAYER;
 	setPlatformWidgetVisibility(false);
 	setLightWidgetVisibility(false);
@@ -1140,7 +1187,7 @@ bool EditorScreen::onPlayerMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-bool EditorScreen::onPlatformMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onPlatformActivated(const CEGUI::EventArgs & e) {
 	m_objectMode = ObjectMode::PLATFORM;
 	setPlatformWidgetVisibility(true);
 	setLightWidgetVisibility(false);
@@ -1150,17 +1197,95 @@ bool EditorScreen::onPlatformMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-bool EditorScreen::onFinishMouseClick(const CEGUI::EventArgs & e) {
-	m_objectMode = ObjectMode::FINISH;
-	setPlatformWidgetVisibility(false);
-	setLightWidgetVisibility(false);
+bool EditorScreen::onFinishActivated(const CEGUI::EventArgs & e) {
+
+
+	// if already playing do not reactivate finish/playmode, for preventing deactivation when using debug toggle
+	if (m_isPlaying)
+		return true;
+
+		m_objectMode = ObjectMode::FINISH;
+		setPlatformWidgetVisibility(false);
+		setLightWidgetVisibility(false);
+
+		m_audio.init();
+		m_audio.loadMusic("Audio/Music/To The Streets v0_91.wav").play();
+		m_player.initSoundEffects();
+
+		if (!m_hasPlayer)
+			puts("Need player to play dynamic objects!");
+
+		// Make the ground
+		b2BodyDef groundBodyDef;
+		groundBodyDef.position.Set(0.0f, -22.0f);
+		m_groundBody = m_world->CreateBody(&groundBodyDef);
+		// Make the ground fixture
+		b2PolygonShape groundBox;
+		groundBox.SetAsBox(50.0f, 10.0f);// halfdims (100m x 20m)
+		m_groundBody->CreateFixture(&groundBox, 0.0f);
+
+
+		// Save tmp play world to be able to rewind when not playing
+		if (m_hasPlayer) {
+			// Make sure levels dir exists again, for good measure.
+			Bengine::IOManager::makeDirectory("Levels");
+			Bengine::IOManager::makeDirectory("Levels/TmpPlayWorld");
+			// Save in text
+			std::string filePath = "Levels/TmpPlayWorld/" + std::string("TemporaryPlayWorld");
+			if (LevelReaderWriter::saveAsText(filePath, m_player, m_boxes, m_lights)) {
+				m_tmpPlayWorldLoaded = true;
+			}
+			m_isPlaying = true; // save maped and no playing
+		}
 	return true;
 }
 
 
 
 
-bool EditorScreen::onLightMouseClick(const CEGUI::EventArgs & e) {
+
+
+bool EditorScreen::onFinishDeactivated(const CEGUI::EventArgs& e) {
+
+	// Do not deactivate if selecting debugToggle
+	if (m_debugToggle->isHovering()) {
+
+		if (m_debugToggle->isSelected()) {
+			m_debugToggle->setSelected(false);
+		}
+		else {
+			m_debugToggle->setSelected(true);
+		}
+		m_finishRadioButton->activate(); // prevents deactivation
+		return true;
+	}
+
+		m_world->DestroyBody(m_groundBody);
+		m_audio.destory();
+		m_player.destorySoundEffects();
+
+		// Load tmp play world to be able to rewind when not playing
+		if (m_tmpPlayWorldLoaded) {
+			std::string path = "Levels/TmpPlayWorld/" + std::string("TemporaryPlayWorld");
+
+			clearLevel();
+
+			if (LevelReaderWriter::loadAsText(path, m_world.get(), m_player, m_boxes, m_lights)) {
+				m_hasPlayer = true;
+			}
+			m_tmpPlayWorldLoaded = false;
+			m_isPlaying = false; // reloaded original editor map from play more and no longer playing
+		}
+	return true;
+}
+
+
+
+
+
+
+
+bool EditorScreen::onLightActivated(const CEGUI::EventArgs & e) {
 	m_objectMode = ObjectMode::LIGHT;
 	setPlatformWidgetVisibility(false);
 	setLightWidgetVisibility(true);
@@ -1168,17 +1293,28 @@ bool EditorScreen::onLightMouseClick(const CEGUI::EventArgs & e) {
 }
 
 
-bool EditorScreen::onSelectMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onSelectActivated(const CEGUI::EventArgs & e) {
+
+	if (m_objectMode == ObjectMode::FINISH) {
+		m_objectMode = ObjectMode::PLAYER;
+		m_playerRadioButton->setSelected(true);
+	}
+
 	m_selectMode = SelectionMode::SELECT;
 	return true;
 }
 
 
-bool EditorScreen::onPlaceMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onPlaceActivated(const CEGUI::EventArgs & e) {
 	m_selectMode = SelectionMode::PLACE;
 	m_selectedBox = NO_BOX;
 	m_selectedLight = NO_LIGHT;
-	if (m_objectMode == ObjectMode::LIGHT) {
+
+	if (m_objectMode == ObjectMode::FINISH) {
+		m_objectMode = ObjectMode::PLAYER;
+		m_playerRadioButton->setSelected(true);
+	}
+	else if (m_objectMode == ObjectMode::LIGHT) {
 		setLightWidgetVisibility(true);
 	}
 	else if (m_objectMode == ObjectMode::PLATFORM) {
@@ -1190,7 +1326,7 @@ bool EditorScreen::onPlaceMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-bool EditorScreen::onSaveMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onSaveActivated(const CEGUI::EventArgs & e) {
 
 	Bengine::IOManager::makeDirectory("Levels");
 
@@ -1232,7 +1368,7 @@ bool EditorScreen::onSaveMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-bool EditorScreen::onBackMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onBackActivated(const CEGUI::EventArgs & e) {
 	m_currentState = Bengine::ScreenState::CHANGE_PREVIOUS;
 	return true;
 }
@@ -1266,13 +1402,13 @@ bool EditorScreen::onHeightValueChange(const CEGUI::EventArgs & e) {
 }
 
 
-bool EditorScreen::onDebugToggleClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onDebugToggleSelect(const CEGUI::EventArgs & e) {
 	m_debugRender = m_debugToggle->isSelected();
 	return true;
 }
 
 
-bool EditorScreen::onSave(const CEGUI::EventArgs & e) {
+bool EditorScreen::onSaveWindowSaveActivated(const CEGUI::EventArgs & e) {
 	if (!m_hasPlayer) {
 		puts("Must create player before saving.");
 		return true;
@@ -1293,6 +1429,21 @@ bool EditorScreen::onSave(const CEGUI::EventArgs & e) {
 		puts("Failed to save file.");
 	}
 
+
+
+
+	// Reset to default editor settings
+	m_objectMode = ObjectMode::PLAYER;
+	setPlatformWidgetVisibility(false);
+	setLightWidgetVisibility(false);
+	// Sets to not be able to edit the map or select any thing (since player can only be placed and not selected)
+	m_selectMode = SelectionMode::SELECT;
+	m_playerRadioButton->setSelected(true);
+	m_selectRadioButton->setSelected(true);
+
+
+	m_loadSaveWindowUp = true;
+
 	return true;
 }
 
@@ -1300,8 +1451,19 @@ bool EditorScreen::onSave(const CEGUI::EventArgs & e) {
 
 
 bool EditorScreen::onSaveCancelClick(const CEGUI::EventArgs & e) {
+
+
+	if (m_finishRadioButton->isSelected()) {
+		m_finishRadioButton->activate();
+	}
+
+
+
 	m_saveWindow->disable();
 	m_saveWindow->setAlpha(0.0f);
+
+	m_loadSaveWindowUp = true;
+
 	return true;
 }
 
@@ -1309,15 +1471,25 @@ bool EditorScreen::onSaveCancelClick(const CEGUI::EventArgs & e) {
 
 
 bool EditorScreen::onLoadCancelClick(const CEGUI::EventArgs & e) {
+
+
+	if (m_finishRadioButton->isSelected()) {
+		m_finishRadioButton->activate();
+	}
+
+
 	m_loadWindow->disable();
 	m_loadWindow->setAlpha(0.0f);
+
+	m_loadSaveWindowUp = true;
+
 	return true;
 }
 
 
 
 
-bool EditorScreen::onLoadMouseClick(const CEGUI::EventArgs & e) {
+bool EditorScreen::onLoadActivated(const CEGUI::EventArgs & e) {
 
 	m_loadWindowCombobox->clearAllSelections();
 
@@ -1355,7 +1527,7 @@ bool EditorScreen::onLoadMouseClick(const CEGUI::EventArgs & e) {
 
 
 
-bool EditorScreen::onLoad(const CEGUI::EventArgs & e) {
+bool EditorScreen::onLoadWindowLoadActivated(const CEGUI::EventArgs & e) {
 	puts("Loading game...");
 	std::string path = "Levels/" + std::string(m_loadWindowCombobox->getText().c_str());
 
@@ -1368,8 +1540,19 @@ bool EditorScreen::onLoad(const CEGUI::EventArgs & e) {
 
 	m_loadWindow->disable();
 	m_loadWindow->setAlpha(0.0f);
+
+
+
+	// Reset to default editor settings
+	m_objectMode = ObjectMode::PLAYER;
+	setPlatformWidgetVisibility(false);
+	setLightWidgetVisibility(false);
+	// Sets to not be able to edit the map or select any thing (since player can only be placed and not selected)
+	m_selectMode = SelectionMode::SELECT;
+	m_playerRadioButton->setSelected(true);
+	m_selectRadioButton->setSelected(true);
+
+	m_loadSaveWindowUp = true;
+
 	return true;
 }
-
-
-

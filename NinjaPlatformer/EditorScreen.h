@@ -62,6 +62,8 @@ public:
 	}
 	void draw(Bengine::SpriteBatch& sb, Bengine::SpriteFont& sf, Bengine::Window* window, const CEGUI::GroupBox* groupBox);
 
+	void destroy() { delete widget; }
+
 	CEGUI::Window* widget = nullptr;
 	std::string text = "";
 	Bengine::ColorRGBA8 color = Bengine::ColorRGBA8(255, 255, 255, 255);
@@ -136,27 +138,28 @@ private:
 	bool onColorPickerRedChanged(const CEGUI::EventArgs& e);
 	bool onColorPickerGreenChanged(const CEGUI::EventArgs& e);
 	bool onColorPickerBlueChanged(const CEGUI::EventArgs& e);
-	bool onRigidMouseClick(const CEGUI::EventArgs& e);
-	bool onDynamicMouseClick(const CEGUI::EventArgs& e);
+	bool onRigidActivated(const CEGUI::EventArgs& e);
+	bool onDynamicActivated(const CEGUI::EventArgs& e);
 	bool onColorPickerAlphaChanged(const CEGUI::EventArgs& e);
-	bool onPlayerMouseClick(const CEGUI::EventArgs& e);
-	bool onPlatformMouseClick(const CEGUI::EventArgs& e);
-	bool onFinishMouseClick(const CEGUI::EventArgs& e);
-	bool onLightMouseClick(const CEGUI::EventArgs& e);
-	bool onSelectMouseClick(const CEGUI::EventArgs& e);
-	bool onPlaceMouseClick(const CEGUI::EventArgs& e);
-	bool onSaveMouseClick(const CEGUI::EventArgs& e);
-	bool onBackMouseClick(const CEGUI::EventArgs& e);
+	bool onPlayerActivated(const CEGUI::EventArgs& e);
+	bool onPlatformActivated(const CEGUI::EventArgs& e);
+	bool onFinishActivated(const CEGUI::EventArgs& e);
+	bool onFinishDeactivated(const CEGUI::EventArgs& e);
+	bool onLightActivated(const CEGUI::EventArgs& e);
+	bool onSelectActivated(const CEGUI::EventArgs& e);
+	bool onPlaceActivated(const CEGUI::EventArgs& e);
+	bool onSaveActivated(const CEGUI::EventArgs& e);
+	bool onBackActivated(const CEGUI::EventArgs& e);
 	bool onRotationValueChange(const CEGUI::EventArgs& e);
 	bool onSizeValueChange(const CEGUI::EventArgs& e);
 	bool onWidthValueChange(const CEGUI::EventArgs& e);
 	bool onHeightValueChange(const CEGUI::EventArgs& e);
-	bool onDebugToggleClick(const CEGUI::EventArgs& e);
-	bool onSave(const CEGUI::EventArgs& e);
+	bool onDebugToggleSelect(const CEGUI::EventArgs& e);
+	bool onSaveWindowSaveActivated(const CEGUI::EventArgs& e);
 	bool onSaveCancelClick(const CEGUI::EventArgs& e);
 	bool onLoadCancelClick(const CEGUI::EventArgs& e);
-	bool onLoadMouseClick(const CEGUI::EventArgs& e);
-	bool onLoad(const CEGUI::EventArgs& e);
+	bool onLoadActivated(const CEGUI::EventArgs& e);
+	bool onLoadWindowLoadActivated(const CEGUI::EventArgs& e);
 
 
 	/***************************************************************************/
@@ -246,4 +249,10 @@ private:
 
 	std::unique_ptr<b2World> m_world;
 	
+
+	b2Body* m_groundBody = nullptr;
+	Bengine::AudioEngine m_audio;
+	bool m_tmpPlayWorldLoaded = false; // (only load is already saved a temporary play world)
+	bool m_loadSaveWindowUp = false;   // load or save window up (for not clicking on things in the background)
+	bool m_isPlaying = false;            // do not reactivate when already playing
 };

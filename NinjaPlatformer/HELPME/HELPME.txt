@@ -1,0 +1,25 @@
+arrow keys:
+		- player movement
+		- editing resizing
+q and e
+		- rotation
+
+w 
+		- jump
+
+space
+		- punch and kick
+
+delete
+		- delete selected object
+
+1,2
+		- change between ball renderers
+
+mouse
+		- right, left, movement
+			- right in editor can move around map
+
+if others list here:
+
+a,w,s,d,q,e,arrows,space,delete,1,2 mouse (with both buttons)

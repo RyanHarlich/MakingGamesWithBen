@@ -5,7 +5,7 @@
 #include <Bengine/SpriteBatch.h>
 #include <Bengine/InputManager.h>
 #include <Bengine/TileSheet.h>
-
+#include <Bengine/AudioEngine.h>
 
 
 enum class PlayerMoveState { STANDING, RUNNING, PUNCHING, IN_AIR };
@@ -24,6 +24,10 @@ public:
 		Bengine::ColorRGBA8 color, 
 		bool fixedRotation);
 
+
+
+	void initSoundEffects();
+	void destorySoundEffects();
 
 
 	void destory(b2World* world);
@@ -61,5 +65,11 @@ private:
 	bool m_onGround = false;
 	bool m_isPunching = false; // this is for kicking or punching
 	glm::vec2 m_collisionDims;
+
+
+
+	Bengine::AudioEngine m_audio;
+	Bengine::SoundEffect m_soundKick;
+	Bengine::SoundEffect m_soundPunch;
 
 };

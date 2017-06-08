@@ -6,12 +6,13 @@
 
 
 
-void Player::init(b2World * world, 
-	const glm::vec2 position, 
+void Player::init(b2World * world,
+	const glm::vec2 position,
 	const glm::vec2 drawDims,
-	const glm::vec2 collisionDims, 
-	Bengine::ColorRGBA8 color, 
+	const glm::vec2 collisionDims,
+	Bengine::ColorRGBA8 color,
 	bool fixedRotation) {
+
 
 
 	Bengine::GLTexture texture = Bengine::ResourceManager::getTexture("Textures/Ninja/blue_ninja.png");
@@ -30,8 +31,22 @@ void Player::init(b2World * world,
 
 
 
-void Player::destory(b2World * world){
+void Player::initSoundEffects() {
+	m_soundKick = m_audio.loadSoundEffect("Audio/SoundEffect/hits/6.ogg");
+	m_soundPunch = m_audio.loadSoundEffect("Audio/SoundEffect/hits/11.ogg");
+}
+
+void Player::destorySoundEffects() {
+	m_audio.destory();
+}
+
+
+
+
+
+void Player::destory(b2World * world) {
 	m_capsule.destroy(world);
+
 }
 
 
@@ -64,6 +79,8 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 
 		if (m_isPunching) {
 			// Punching
+			m_soundPunch.play();
+
 			numTiles = 4;
 			tileIndex = 1;
 
@@ -73,8 +90,9 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 			}
 
 
-		} else if (abs(velocity.x) > 1.0f && ((velocity.x > 0 && m_direction == Direction::RIGHT) || (velocity.x < 0 && m_direction == Direction::LEFT))) { // absolute of velocity says to ignore direction
-			// Running
+		}
+		else if (abs(velocity.x) > 1.0f && ((velocity.x > 0 && m_direction == Direction::RIGHT) || (velocity.x < 0 && m_direction == Direction::LEFT))) { // absolute of velocity says to ignore direction
+		 // Running
 			numTiles = 6;
 			tileIndex = 10;
 			animSpeed = abs(velocity.x) * 0.025f; // this will cause legs to slow down when velocity slows down
@@ -93,6 +111,8 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 		// In the air
 		if (m_isPunching) {
 			// Kicking
+			m_soundKick.play();
+
 			numTiles = 1;
 			tileIndex = 18;
 			animSpeed *= 0.25;
@@ -155,7 +175,7 @@ void Player::draw(Bengine::SpriteBatch& spriteBatch) {
 
 
 
-void Player::drawDebug(Bengine::DebugRenderer& debugRenderer){
+void Player::drawDebug(Bengine::DebugRenderer& debugRenderer) {
 	m_capsule.drawDebug(debugRenderer);
 }
 
@@ -197,10 +217,10 @@ void Player::update(Bengine::InputManager& inputManager) {
 	if (body->GetLinearVelocity().x < -MAX_SPEED) {
 		body->SetLinearVelocity(b2Vec2(-MAX_SPEED, body->GetLinearVelocity().y));
 	}
-	else if (body->GetLinearVelocity().x > MAX_SPEED){
+	else if (body->GetLinearVelocity().x > MAX_SPEED) {
 		body->SetLinearVelocity(b2Vec2(MAX_SPEED, body->GetLinearVelocity().y));
 	}
-	
+
 
 	m_onGround = false;
 
