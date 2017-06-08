@@ -171,7 +171,7 @@ void MainGame::initLevel() {
 
 
 void MainGame::initShaders() {
-	m_textureProgram.compileShaders("Shaders/textureShading.vert", "Shaders/textureShading.frag");
+	m_textureProgram.compileShaders("Shaders/textureShadingZ.vert", "Shaders/textureShadingZ.frag");
 	m_textureProgram.addAttribute("vertexPosition");
 	m_textureProgram.addAttribute("vertexColor");
 	m_textureProgram.addAttribute("vertexUV");
@@ -189,7 +189,7 @@ void MainGame::gameLoop() {
 	fpsLimiter.setMaxFPS(20.0f);
 
 
-	const float CAMERA_SCALE = 1.0f / 3.0f;
+	const float CAMERA_SCALE = 1.0f;
 
 
 	m_camera.setScale(CAMERA_SCALE);

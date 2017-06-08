@@ -1,4 +1,4 @@
-Humans: 1000
+Humans: 200
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 G....P..............................P......P.................P.........................................G
 G.@..P...........................Z..P....Z.P.................P.Z.......................................G

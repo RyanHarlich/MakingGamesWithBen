@@ -100,7 +100,7 @@ void GameplayScreen::onEntry() {
 
 
 	m_spriteBatch.init();
-	m_textureProgram.compileShaders("Shaders/textureShading.vert", "Shaders/textureShading.frag");
+	m_textureProgram.compileShaders("Shaders/textureShadingN.vert", "Shaders/textureShadingN.frag");
 	m_textureProgram.addAttribute("vertexPosition");
 	m_textureProgram.addAttribute("vertexColor");
 	m_textureProgram.addAttribute("vertexUV");
